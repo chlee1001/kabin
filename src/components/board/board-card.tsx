@@ -1,0 +1,189 @@
+import { useEffect, useRef, useState } from "react"
+import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+import { attachClosestEdge, extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
+import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
+import { Check, ListChecks, Calendar, Trash2, Copy } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { CardMoveMenu } from "./card-move-menu"
+import { DeadlineBadge } from "@/components/shared/deadline-badge"
+import { useUpdateCard, useDeleteCard, useCloneCard } from "@/hooks/use-cards"
+import { useConfirm } from "@/components/shared/prompt-dialog"
+import type { CardWithTags } from "@/lib/tauri"
+import { Badge } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+
+interface BoardCardProps {
+  card: CardWithTags
+  columnId: string
+  boardId?: string
+  onClick?: () => void
+}
+
+export function BoardCard({ card, columnId, boardId, onClick }: BoardCardProps) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [closestEdge, setClosestEdge] = useState<string | null>(null)
+  const updateCard = useUpdateCard()
+  const deleteCard = useDeleteCard()
+  const cloneCard = useCloneCard()
+  const confirm = useConfirm()
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    return combine(
+      draggable({
+        element: el,
+        getInitialData: () => ({ type: "card", cardId: card.id, columnId }),
+        onDragStart: () => setIsDragging(true),
+        onDrop: () => setIsDragging(false),
+      }),
+      dropTargetForElements({
+        element: el,
+        getData: ({ input, element }) =>
+          attachClosestEdge(
+            { type: "card", cardId: card.id, columnId },
+            { input, element, allowedEdges: ["top", "bottom"] },
+          ),
+        canDrop: ({ source }) => source.data.type === "card" && source.data.cardId !== card.id,
+        onDragEnter: ({ self }) => {
+          setClosestEdge(extractClosestEdge(self.data))
+        },
+        onDrag: ({ self }) => {
+          setClosestEdge(extractClosestEdge(self.data))
+        },
+        onDragLeave: () => setClosestEdge(null),
+        onDrop: () => setClosestEdge(null),
+      }),
+    )
+  }, [card.id, columnId])
+
+  const hasMetadata = card.due_date || card.tags.length > 0 || card.subtask_total > 0
+
+  return (
+    <div className="relative group/card-wrapper">
+      {closestEdge === "top" && (
+        <div className="absolute -top-1.5 left-0 right-0 h-1 rounded-full bg-primary z-10" />
+      )}
+      <div
+        ref={ref}
+        onClick={onClick}
+        role="button"
+        tabIndex={0}
+        aria-label={`Card: ${card.title}`}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick?.() } }}
+        className={cn(
+          "board-card relative flex flex-col gap-3 cursor-grab rounded-xl border border-border bg-card p-3.5 shadow-sm transition-all duration-200 outline-none",
+          "hover:border-primary/40 hover:shadow-md hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+          isDragging && "opacity-40 scale-[0.98] ring-2 ring-primary",
+          card.completed && "bg-muted/30 border-dashed"
+        )}
+      >
+        {/* Color stripe */}
+        {card.color && (
+          <div
+            className="absolute left-0 top-3 bottom-3 w-1.5 rounded-r-full transition-all group-hover/card-wrapper:w-2"
+            style={{ backgroundColor: card.color }}
+          />
+        )}
+
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-start gap-3 min-w-0 flex-1">
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                updateCard.mutate({ id: card.id, updates: { completed: !card.completed } })
+              }}
+              className={cn(
+                "shrink-0 h-5 w-5 mt-0.5 rounded-md border border-input flex items-center justify-center transition-all hover:scale-110",
+                card.completed ? "bg-primary border-primary" : "hover:border-primary",
+              )}
+            >
+              {card.completed && <Check className="h-3.5 w-3.5 text-primary-foreground stroke-[3px]" />}
+            </button>
+            <p className={cn(
+              "text-[13.5px] font-semibold leading-[1.4] text-foreground transition-all",
+              card.completed && "line-through text-muted-foreground/50 font-normal"
+            )}>
+              {card.title}
+            </p>
+          </div>
+          {boardId && (
+            <div className="flex items-center gap-0.5 opacity-0 group-hover/card-wrapper:opacity-100 transition-opacity">
+              <CardMoveMenu cardId={card.id} currentColumnId={columnId} boardId={boardId} />
+              <button
+                onClick={(e) => { e.stopPropagation(); cloneCard.mutate(card.id) }}
+                className="h-6 w-6 flex items-center justify-center rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                title="Clone card"
+              >
+                <Copy className="h-3 w-3" />
+              </button>
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation()
+                  const ok = await confirm(`Delete "${card.title}"?`)
+                  if (ok) deleteCard.mutate(card.id)
+                }}
+                className="h-6 w-6 flex items-center justify-center rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                title="Delete card"
+              >
+                <Trash2 className="h-3 w-3" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {hasMetadata && (
+          <div className="flex flex-wrap items-center gap-2.5 mt-0.5">
+            {card.due_date && (
+              <div className="flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                <DeadlineBadge dueDate={card.due_date} />
+              </div>
+            )}
+            
+            {card.subtask_total > 0 && (
+              <Badge 
+                variant="outline" 
+                className={cn(
+                  "h-5.5 px-2 gap-1.5 text-[10px] font-bold border-muted-foreground/20 transition-colors",
+                  card.subtask_done === card.subtask_total 
+                    ? "bg-green-500/10 text-green-600 border-green-500/20 dark:text-green-400" 
+                    : "bg-muted/50 text-muted-foreground"
+                )}
+              >
+                <ListChecks className="h-3.5 w-3.5" />
+                <span>{card.subtask_done}/{card.subtask_total}</span>
+              </Badge>
+            )}
+
+            {card.tags.length > 0 && (
+              <TooltipProvider delayDuration={200}>
+                <div className="flex gap-1 ml-auto">
+                  {card.tags.map((tag) => (
+                    <Tooltip key={tag.id}>
+                      <TooltipTrigger asChild>
+                        <div
+                          className="h-1.5 w-5 rounded-full transition-all hover:w-8 hover:h-2"
+                          style={{ backgroundColor: tag.color }}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="text-[10px] px-2 py-1 font-medium">
+                        {tag.name}
+                      </TooltipContent>
+                    </Tooltip>
+                  ))}
+                </div>
+              </TooltipProvider>
+            )}
+          </div>
+        )}
+      </div>
+      {closestEdge === "bottom" && (
+        <div className="absolute -bottom-1.5 left-0 right-0 h-1 rounded-full bg-primary z-10" />
+      )}
+    </div>
+  )
+}
+
