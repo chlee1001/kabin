@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/core"
 
+export interface UnifiedCardTag {
+  id: string
+  name: string
+  color: string
+}
+
 export interface UnifiedCard {
   card_id: string
   title: string
@@ -19,6 +25,7 @@ export interface UnifiedCard {
   project_color: string
   subtask_total: number
   subtask_done: number
+  tags: UnifiedCardTag[]
 }
 
 export interface CardFilter {

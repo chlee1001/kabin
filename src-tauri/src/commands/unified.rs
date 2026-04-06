@@ -4,6 +4,13 @@ use tauri::State;
 
 use crate::db::connection::DbState;
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UnifiedCardTag {
+    pub id: String,
+    pub name: String,
+    pub color: String,
+}
+
 #[derive(Debug, Serialize)]
 pub struct UnifiedCard {
     pub card_id: String,
@@ -23,6 +30,7 @@ pub struct UnifiedCard {
     pub project_color: String,
     pub subtask_total: i64,
     pub subtask_done: i64,
+    pub tags: Vec<UnifiedCardTag>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -120,7 +128,9 @@ fn query_unified_cards(
             b.id, b.name,
             p.id, p.name, p.color,
             COALESCE((SELECT COUNT(*) FROM subtasks s WHERE s.card_id = ca.id), 0),
-            COALESCE((SELECT COUNT(*) FROM subtasks s WHERE s.card_id = ca.id AND s.completed = 1), 0)
+            COALESCE((SELECT COUNT(*) FROM subtasks s WHERE s.card_id = ca.id AND s.completed = 1), 0),
+            COALESCE((SELECT json_group_array(json_object('id', t.id, 'name', t.name, 'color', t.color))
+              FROM card_tags ct JOIN tags t ON t.id = ct.tag_id WHERE ct.card_id = ca.id), '[]')
          FROM cards ca
          JOIN columns co ON co.id = ca.column_id
          JOIN boards b ON b.id = co.board_id
@@ -192,6 +202,9 @@ fn query_unified_cards(
 
     let rows = stmt
         .query_map(params_refs.as_slice(), |row| {
+            let tags_json: String = row.get(17)?;
+            let tags: Vec<UnifiedCardTag> =
+                serde_json::from_str(&tags_json).unwrap_or_default();
             Ok(UnifiedCard {
                 card_id: row.get(0)?,
                 title: row.get(1)?,
@@ -210,6 +223,7 @@ fn query_unified_cards(
                 project_color: row.get(14)?,
                 subtask_total: row.get(15)?,
                 subtask_done: row.get(16)?,
+                tags,
             })
         })
         .map_err(|e| e.to_string())?;

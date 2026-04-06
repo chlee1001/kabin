@@ -5,7 +5,7 @@ import { useUpdateCard } from "@/hooks/use-cards"
 import { STATUS_CATEGORIES } from "@/lib/constants"
 import { FilterBar } from "@/components/table/filter-bar"
 import { CardDetailModal } from "@/components/card-detail/card-detail-modal"
-import { Badge } from "@/components/ui/badge"
+import { DeadlineBadge } from "@/components/shared/deadline-badge"
 import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
@@ -222,12 +222,28 @@ function UnifiedCardItem({ card, onClick }: { card: UnifiedCard; onClick?: () =>
             {card.subtask_done}/{card.subtask_total}
           </span>
         )}
-        {card.due_date && (
-          <Badge variant="secondary" className="text-xs">
-            {card.due_date}
-          </Badge>
-        )}
+        {card.due_date && <DeadlineBadge dueDate={card.due_date} />}
       </div>
+      {card.tags.length > 0 && (
+        <div className="ml-6 mt-1.5 flex flex-wrap gap-1">
+          {card.tags.map((tag) => (
+            <span
+              key={tag.id}
+              className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium leading-none"
+              style={{
+                backgroundColor: tag.color + "18",
+                color: tag.color,
+              }}
+            >
+              <span
+                className="h-1.5 w-1.5 rounded-full shrink-0"
+                style={{ backgroundColor: tag.color }}
+              />
+              {tag.name}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

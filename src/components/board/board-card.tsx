@@ -13,7 +13,6 @@ import { useUpdateCard, useDeleteCard, useCloneCard } from "@/hooks/use-cards"
 import { useConfirm } from "@/components/shared/prompt-dialog"
 import type { CardWithTags } from "@/lib/tauri"
 import { Badge } from "@/components/ui/badge"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface BoardCardProps {
   card: CardWithTags
@@ -184,23 +183,24 @@ export function BoardCard({ card, columnId, boardId, onClick }: BoardCardProps) 
             )}
 
             {card.tags.length > 0 && (
-              <TooltipProvider delayDuration={200}>
-                <div className="flex gap-1 ml-auto">
-                  {card.tags.map((tag) => (
-                    <Tooltip key={tag.id}>
-                      <TooltipTrigger asChild>
-                        <div
-                          className="h-1.5 w-5 rounded-full transition-all hover:w-8 hover:h-2"
-                          style={{ backgroundColor: tag.color }}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="text-[10px] px-2 py-1 font-medium">
-                        {tag.name}
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
-                </div>
-              </TooltipProvider>
+              <div className="flex flex-wrap gap-1 ml-auto">
+                {card.tags.map((tag) => (
+                  <span
+                    key={tag.id}
+                    className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-medium leading-none"
+                    style={{
+                      backgroundColor: tag.color + "18",
+                      color: tag.color,
+                    }}
+                  >
+                    <span
+                      className="h-1.5 w-1.5 rounded-full shrink-0"
+                      style={{ backgroundColor: tag.color }}
+                    />
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
             )}
           </div>
         )}

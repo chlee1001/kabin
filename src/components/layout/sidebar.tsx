@@ -18,6 +18,7 @@ import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-d
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from "@/hooks/use-projects"
 import { useBoards, useCreateBoard, useUpdateBoard, useDeleteBoard, useMoveBoard } from "@/hooks/use-boards"
 import { useAppStore } from "@/stores/app-store"
+import { useAppName } from "@/hooks/use-app-name"
 import { usePrompt, useConfirm } from "@/components/shared/prompt-dialog"
 import { Button } from "@/components/ui/button"
 import {
@@ -46,6 +47,7 @@ export function Sidebar() {
   const { t } = useTranslation(["layout", "board", "common"])
   const { sidebarCollapsed, setSidebarCollapsed } = useAppStore()
   const { data: projects } = useProjects()
+  const { data: customAppName } = useAppName()
   const router = useRouter()
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export function Sidebar() {
     >
       <div className="flex h-12 items-center px-4">
         {!sidebarCollapsed && (
-          <span className="text-lg font-semibold">{t("appName")}</span>
+          <span className="text-lg font-semibold">{customAppName || t("appName")}</span>
         )}
       </div>
 
