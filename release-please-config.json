@@ -5,6 +5,7 @@
   "bump-patch-for-minor-pre-major": true,
   "packages": {
     ".": {
+      "component": "kabin",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         {
