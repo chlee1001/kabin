@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.7](https://github.com/chlee1001/kabin/compare/kabin-v0.1.6...kabin-v0.1.7) (2026-04-06)
+
+
+### Features
+
+* **import:** Kanri/Trello JSON 데이터 가져오기 기능 추가 ([8500f11](https://github.com/chlee1001/kabin/commit/8500f111f8727fa5c54b9438840d7114d2c86a81))
+* **import:** Kanri/Trello JSON 데이터 가져오기 기능 추가 ([03b7b6b](https://github.com/chlee1001/kabin/commit/03b7b6b4062fa1627f8602d7eac9fc5a100d8123))
+
 ## [0.1.6](https://github.com/chlee1001/kabin/compare/kabin-v0.1.5...kabin-v0.1.6) (2026-04-06)
 
 
