@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-04-04 | Updated: 2026-04-04 -->
+<!-- Generated: 2026-04-04 | Updated: 2026-04-06 -->
 
 # board
 
@@ -17,6 +17,9 @@ Kanban board view components: board listing, board detail with columns, draggabl
 | `card-move-menu.tsx` | Dropdown to move a card to other columns within the same board |
 | `board-background-picker.tsx` | Picker for board background: gradient presets or image upload |
 | `board-clone-dialog.tsx` | Dialog to duplicate a board with options to include/exclude cards |
+| `column-edit-dialog.tsx` | Dialog for editing column name or deleting a column |
+| `move-board-dialog.tsx` | Dialog to move a board to a different project |
+| `template-panel.tsx` | Board template selector/preview panel for creating cards from templates |
 | `project-boards-page.tsx` | Project overview: grid of boards with create board functionality |
 
 ## For AI Agents

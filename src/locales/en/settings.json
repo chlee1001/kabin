@@ -17,6 +17,14 @@
   "backupNow": "Backup Now",
   "backupCreated": "Backup created",
   "backupFailed": "Backup failed: {{error}}",
+  "backupIntervalLabel": "Auto-backup Interval",
+  "backupInterval": {
+    "30min": "30 min",
+    "1hour": "1 hour",
+    "6hours": "6 hours",
+    "daily": "Daily",
+    "manual": "Manual only"
+  },
   "keyboardShortcuts": "Keyboard Shortcuts",
   "shortcutGroup": {
     "global": "Global",

@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-04-04 | Updated: 2026-04-04 -->
+<!-- Generated: 2026-04-04 | Updated: 2026-04-06 -->
 
 # commands
 
@@ -22,6 +22,7 @@ Tauri IPC command handlers organized by domain entity. Each module exposes `#[ta
 | `search.rs` | Full-text search via SQLite FTS5: global_search returning snippets |
 | `backup.rs` | Backup operations: create_backup, get_last_backup_time |
 | `settings.rs` | Key-value settings: get/set/delete setting |
+| `templates.rs` | CRUD for card templates: create, list, update, delete, create card from template |
 
 ## For AI Agents
 

@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-04-04 | Updated: 2026-04-04 -->
+<!-- Generated: 2026-04-04 | Updated: 2026-04-06 -->
 
 # hooks
 
@@ -20,6 +20,7 @@ Custom React hooks that wrap TanStack React Query operations for all Tauri backe
 | `use-unified.ts` | Fetches filtered cards across all boards by status category |
 | `use-backup.ts` | Backup operations (create, get last backup time) |
 | `use-keyboard.ts` | Global keyboard shortcuts (Cmd+\ sidebar, Cmd+S backup, Cmd+N new card, Cmd+, settings) |
+| `use-templates.ts` | CRUD for card templates: list, create, update, delete, create card from template |
 
 ## For AI Agents
 

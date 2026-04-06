@@ -95,7 +95,9 @@
     "title": "통합 칸반",
     "noCards": "카드 없음",
     "noStatusColumn": "이 보드에 해당 상태의 컬럼이 없어요. 컬럼의 상태 카테고리를 설정해주세요.",
+    "noStatusColumnDetail": "\"{{card}}\" 이동 불가: {{project}} > {{board}}에 해당 상태 컬럼이 없어요",
     "moveFailed": "이동에 실패했어요: {{error}}",
-    "cardMoved": "카드를 {{label}}(으)로 옮겼어요"
+    "cardMoved": "카드를 {{label}}(으)로 옮겼어요",
+    "cardMovedDetail": "\"{{card}}\"을(를) {{label}}(으)로 옮겼어요"
   }
 }

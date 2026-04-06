@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-04-04 | Updated: 2026-04-04 -->
+<!-- Generated: 2026-04-04 | Updated: 2026-04-06 -->
 
 # settings
 
@@ -11,6 +11,7 @@ Application settings page for theme configuration, accent color selection, backu
 | File | Description |
 |------|-------------|
 | `settings-page.tsx` | Settings UI: theme selector (light/dark/system), accent color picker (8 presets + custom), backup controls, keyboard shortcuts display |
+| `tag-manager.tsx` | Tag CRUD management: create, rename, delete tags with color selection |
 
 ## For AI Agents
 

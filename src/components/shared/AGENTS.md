@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-04-04 | Updated: 2026-04-04 -->
+<!-- Generated: 2026-04-04 | Updated: 2026-04-06 -->
 
 # shared
 
@@ -13,6 +13,8 @@ Reusable components used across multiple feature areas: modal prompt system, emp
 | `prompt-dialog.tsx` | Context provider for modal prompts/confirmations: exposes `usePrompt()` and `useConfirm()` hooks |
 | `empty-state.tsx` | Reusable empty state: icon, title, description, optional action button |
 | `deadline-badge.tsx` | Badge showing deadline status: Overdue (red), Today (orange), Tomorrow (yellow), Xd (gray) |
+| `inline-edit.tsx` | Inline text editing component: click to edit, blur/enter to save |
+| `project-edit-dialog.tsx` | Dialog for editing project name or deleting a project |
 
 ## For AI Agents
 

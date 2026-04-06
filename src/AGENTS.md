@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-04-04 | Updated: 2026-04-04 -->
+<!-- Generated: 2026-04-04 | Updated: 2026-04-06 -->
 
 # src
 
@@ -23,6 +23,8 @@ React frontend source code for the Kanban application. Contains all UI component
 | `lib/` | Utility functions and the Tauri API bridge (see `lib/AGENTS.md`) |
 | `stores/` | Zustand client-side state stores (see `stores/AGENTS.md`) |
 | `styles/` | Global CSS and Tailwind theme configuration (see `styles/AGENTS.md`) |
+| `locales/` | i18next translation JSON files, namespace-by-feature (see `locales/AGENTS.md`) |
+| `types/` | TypeScript type declarations and module augmentations (see `types/AGENTS.md`) |
 | `pages/` | Empty — routing is handled via TanStack Router in App.tsx |
 
 ## For AI Agents

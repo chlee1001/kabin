@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
-import { useState, useMemo } from "react"
+import { useRef, useState, useMemo } from "react"
+import { useVirtualizer } from "@tanstack/react-virtual"
 import { useFilteredCards, type CardFilter } from "@/hooks/use-unified"
 import { useUpdateCard } from "@/hooks/use-cards"
 import { STATUS_CATEGORIES } from "@/lib/constants"
@@ -49,9 +50,19 @@ export function TableViewPage() {
     }
   }
 
+  const parentRef = useRef<HTMLDivElement>(null)
+  const virtualizer = useVirtualizer({
+    count: sorted.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 41,
+    overscan: 20,
+  })
+
   if (isLoading) {
     return <div className="flex h-full items-center justify-center text-muted-foreground">{t("common:loading")}</div>
   }
+
+  const virtualItems = virtualizer.getVirtualItems()
 
   return (
     <div className="flex h-full flex-col">
@@ -60,7 +71,7 @@ export function TableViewPage() {
       </div>
       <FilterBar filters={filters} onChange={setFilters} />
 
-      <div className="flex-1 overflow-auto p-4">
+      <div ref={parentRef} className="flex-1 overflow-auto p-4">
         <Table>
           <TableHeader>
             <TableRow>
@@ -75,51 +86,65 @@ export function TableViewPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sorted.map((card) => (
-              <TableRow
-                key={card.card_id}
-                className="cursor-pointer hover:bg-muted/50"
-                onClick={() => setSelectedCardId(card.card_id)}
-              >
-                <TableCell onClick={(e) => e.stopPropagation()}>
-                  <button
-                    onClick={() => updateCard.mutate({ id: card.card_id, updates: { completed: !card.completed } })}
-                    className={cn(
-                      "flex h-4 w-4 items-center justify-center rounded-sm border border-border transition-colors",
-                      card.completed && "bg-primary border-primary",
-                    )}
-                  >
-                    {card.completed && <Check className="h-3 w-3 text-primary-foreground" />}
-                  </button>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <div className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: card.project_color }} />
-                    <span className="text-sm">{card.project_name}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">{card.board_name}</TableCell>
-                <TableCell className={cn("max-w-[300px] truncate text-sm font-medium", card.completed && "line-through opacity-60")}>
-                  {card.title}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="secondary" className="text-xs">
-                    {t(`common:${STATUS_CATEGORIES.find((s) => s.value === card.status_category)?.label ?? card.status_category}` as never)}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">{card.start_date ?? "—"}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">{card.due_date ?? "—"}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {card.subtask_total > 0 ? `${card.subtask_done}/${card.subtask_total}` : "—"}
-                </TableCell>
-              </TableRow>
-            ))}
-            {sorted.length === 0 && (
+            {sorted.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="py-10 text-center text-muted-foreground">
                   {t("noCards")}
                 </TableCell>
               </TableRow>
+            ) : (
+              <>
+                {virtualItems[0]?.start > 0 && (
+                  <tr><td colSpan={8} style={{ height: virtualItems[0].start }} /></tr>
+                )}
+                {virtualItems.map((virtualRow) => {
+                  const card = sorted[virtualRow.index]
+                  return (
+                    <TableRow
+                      key={card.card_id}
+                      ref={virtualizer.measureElement}
+                      data-index={virtualRow.index}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => setSelectedCardId(card.card_id)}
+                    >
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => updateCard.mutate({ id: card.card_id, updates: { completed: !card.completed } })}
+                          className={cn(
+                            "flex h-4 w-4 items-center justify-center rounded-sm border border-border transition-colors",
+                            card.completed && "bg-primary border-primary",
+                          )}
+                        >
+                          {card.completed && <Check className="h-3 w-3 text-primary-foreground" />}
+                        </button>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: card.project_color }} />
+                          <span className="text-sm">{card.project_name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{card.board_name}</TableCell>
+                      <TableCell className={cn("max-w-[300px] truncate text-sm font-medium", card.completed && "line-through opacity-60")}>
+                        {card.title}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="text-xs">
+                          {t(`common:${STATUS_CATEGORIES.find((s) => s.value === card.status_category)?.label ?? card.status_category}` as never)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{card.start_date ?? "—"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{card.due_date ?? "—"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {card.subtask_total > 0 ? `${card.subtask_done}/${card.subtask_total}` : "—"}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+                <tr>
+                  <td colSpan={8} style={{ height: virtualizer.getTotalSize() - (virtualItems[virtualItems.length - 1]?.end ?? 0) }} />
+                </tr>
+              </>
             )}
           </TableBody>
         </Table>

@@ -17,6 +17,14 @@
   "backupNow": "지금 백업",
   "backupCreated": "백업을 완료했어요",
   "backupFailed": "백업에 실패했어요: {{error}}",
+  "backupIntervalLabel": "자동 백업 주기",
+  "backupInterval": {
+    "30min": "30분",
+    "1hour": "1시간",
+    "6hours": "6시간",
+    "daily": "매일",
+    "manual": "수동만"
+  },
   "keyboardShortcuts": "키보드 단축키",
   "shortcutGroup": {
     "global": "전체",

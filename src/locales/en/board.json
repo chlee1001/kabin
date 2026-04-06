@@ -95,7 +95,9 @@
     "title": "Unified Kanban",
     "noCards": "No cards",
     "noStatusColumn": "No column with this status in the board. Set the status category on a column.",
+    "noStatusColumnDetail": "Cannot move \"{{card}}\": no matching status column in {{project}} > {{board}}",
     "moveFailed": "Move failed: {{error}}",
-    "cardMoved": "Card moved to {{label}}"
+    "cardMoved": "Card moved to {{label}}",
+    "cardMovedDetail": "\"{{card}}\" moved to {{label}}"
   }
 }

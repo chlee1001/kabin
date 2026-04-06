@@ -26,13 +26,25 @@ export function UnifiedKanbanPage() {
 
   const handleDrop = (cardId: string, sourceStatus: string, targetStatus: string) => {
     if (sourceStatus === targetStatus) return
+    const card = cards?.find((c) => c.card_id === cardId)
+    const targetLabel = t(`common:${STATUS_CATEGORIES.find((s) => s.value === targetStatus)?.label ?? targetStatus}` as never)
+
     moveCard.mutate(
       { cardId, targetStatus },
       {
+        onSuccess: () => {
+          if (card) {
+            toast.success(t("unified.cardMovedDetail", { card: card.title, label: targetLabel }))
+          }
+        },
         onError: (err) => {
           const msg = String(err)
           if (msg.includes("해당 상태 컬럼이 없습니다")) {
-            toast.error(t("unified.noStatusColumn"))
+            toast.error(t("unified.noStatusColumnDetail", {
+              card: card?.title ?? "",
+              project: card?.project_name ?? "",
+              board: card?.board_name ?? "",
+            }))
           } else {
             toast.error(t("unified.moveFailed", { error: msg }))
           }
@@ -192,6 +204,9 @@ function UnifiedCardItem({ card, onClick }: { card: UnifiedCard; onClick?: () =>
         e.dataTransfer.setData("cardId", card.card_id)
         e.dataTransfer.setData("sourceStatus", card.status_category)
         e.dataTransfer.effectAllowed = "move"
+        // Explicit drag image — absolute-positioned virtualizer items
+        // can produce invisible ghost images in some browsers
+        e.dataTransfer.setDragImage(e.currentTarget, e.currentTarget.offsetWidth / 2, 20)
       }}
       onClick={onClick}
       className="relative cursor-grab rounded-md border border-border bg-card p-3 shadow-sm hover:shadow-md active:opacity-70"

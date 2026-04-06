@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-04-04 | Updated: 2026-04-04 -->
+<!-- Generated: 2026-04-04 | Updated: 2026-04-06 -->
 
 # layout
 
@@ -14,6 +14,7 @@ Application shell components: main layout wrapper, sidebar navigation, top bar, 
 | `sidebar.tsx` | Navigation: Dashboard/Unified/Table routes, projects list with expandable boards, collapsible |
 | `topbar.tsx` | Header: sidebar toggle, search (Cmd+K), theme toggle, backup status, settings link |
 | `command-palette.tsx` | Global search dialog (Cmd+K): uses Tauri `global_search` with project/board/column breadcrumbs |
+| `keyboard-shortcuts-dialog.tsx` | Reference dialog listing all keyboard shortcuts grouped by category |
 
 ## For AI Agents
 

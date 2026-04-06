@@ -15,24 +15,45 @@ pub fn run() {
             let conn = init_db(&app.handle());
             app.manage(DbState(Mutex::new(conn)));
 
-            // Periodic auto-backup every hour
+            // Periodic auto-backup with configurable interval
             let handle = app.handle().clone();
-            std::thread::spawn(move || loop {
-                std::thread::sleep(Duration::from_secs(3600));
-                let backup_dir = handle
-                    .path()
-                    .app_data_dir()
-                    .expect("app data dir")
-                    .join("backups");
-                let db_state = handle.state::<DbState>();
-                let lock_result = db_state.0.lock();
-                match lock_result {
-                    Ok(guard) => {
-                        if let Err(e) = perform_backup(&guard, &backup_dir) {
-                            eprintln!("[backup] periodic backup failed: {}", e);
-                        }
+            std::thread::spawn(move || {
+                let mut elapsed_secs: u64 = 0;
+                loop {
+                    std::thread::sleep(Duration::from_secs(60));
+                    elapsed_secs += 60;
+
+                    let interval = handle.state::<DbState>().0.lock()
+                        .ok()
+                        .and_then(|conn| {
+                            conn.query_row(
+                                "SELECT value FROM settings WHERE key = 'backup_interval_secs'",
+                                [],
+                                |row| row.get::<_, String>(0),
+                            ).ok()
+                        })
+                        .and_then(|v| v.parse::<u64>().ok())
+                        .unwrap_or(3600);
+
+                    // 0 means manual-only
+                    if interval == 0 || elapsed_secs < interval {
+                        continue;
                     }
-                    Err(e) => eprintln!("[backup] failed to acquire db lock: {}", e),
+
+                    elapsed_secs = 0;
+                    let backup_dir = handle
+                        .path()
+                        .app_data_dir()
+                        .expect("app data dir")
+                        .join("backups");
+                    match handle.state::<DbState>().0.lock() {
+                        Ok(guard) => {
+                            if let Err(e) = perform_backup(&guard, &backup_dir) {
+                                eprintln!("[backup] periodic backup failed: {}", e);
+                            }
+                        }
+                        Err(e) => eprintln!("[backup] failed to acquire db lock: {}", e),
+                    }
                 }
             });
 

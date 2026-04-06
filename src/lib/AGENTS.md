@@ -1,5 +1,5 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-04-04 | Updated: 2026-04-04 -->
+<!-- Generated: 2026-04-04 | Updated: 2026-04-06 -->
 
 # lib
 
@@ -13,6 +13,7 @@ Utility functions and the typed Tauri API bridge. This is the critical interface
 | `tauri.ts` | Typed API bridge: defines all TypeScript interfaces (Project, Board, Column, Card, Subtask, Tag) and API namespaces (projectApi, boardApi, columnApi, cardApi, subtaskApi, tagApi, settingsApi) that invoke Tauri commands |
 | `color-utils.ts` | Color conversion: hex↔OKLCH, contrast foreground calculation |
 | `constants.ts` | Status categories, deadline color thresholds, default project colors, board background presets |
+| `i18n.ts` | i18next initialization: language detection, namespace-by-feature loading, ko/en locales |
 | `utils.ts` | `cn()` helper for merging Tailwind classes via clsx + tailwind-merge |
 
 ## For AI Agents

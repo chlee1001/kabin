@@ -1,16 +1,25 @@
 import { useTranslation } from "react-i18next"
 import i18next from "i18next"
 import { DEFAULT_ACCENT_COLORS } from "@/lib/constants"
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useTheme } from "@/components/theme-provider"
 import { useCreateBackup, useLastBackupTime } from "@/hooks/use-backup"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Moon, Sun, Monitor, HardDrive, Tags } from "lucide-react"
+import { Moon, Sun, Monitor, HardDrive, Tags, Clock } from "lucide-react"
 import { TagManager } from "./tag-manager"
+import { settingsApi } from "@/lib/tauri"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+
+const BACKUP_INTERVALS = [
+  { value: "1800", labelKey: "backupInterval.30min" },
+  { value: "3600", labelKey: "backupInterval.1hour" },
+  { value: "21600", labelKey: "backupInterval.6hours" },
+  { value: "86400", labelKey: "backupInterval.daily" },
+  { value: "0", labelKey: "backupInterval.manual" },
+] as const
 
 export function SettingsPage() {
   const { t, i18n } = useTranslation(["settings", "common"])
@@ -18,6 +27,18 @@ export function SettingsPage() {
   const colorInputRef = useRef<HTMLInputElement>(null)
   const { data: lastBackup } = useLastBackupTime()
   const createBackup = useCreateBackup()
+  const [backupInterval, setBackupInterval] = useState("3600")
+
+  useEffect(() => {
+    settingsApi.get("backup_interval_secs").then((val) => {
+      if (val) setBackupInterval(val)
+    })
+  }, [])
+
+  const handleIntervalChange = (value: string) => {
+    setBackupInterval(value)
+    settingsApi.set("backup_interval_secs", value)
+  }
 
   const handleBackup = () => {
     createBackup.mutate(undefined, {
@@ -171,6 +192,27 @@ export function SettingsPage() {
               <HardDrive className="h-4 w-4" />
               {createBackup.isPending ? t("backingUp") : t("backupNow")}
             </Button>
+          </div>
+
+          <Separator />
+
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <p className="text-sm font-medium">{t("backupIntervalLabel")}</p>
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              {BACKUP_INTERVALS.map(({ value, labelKey }) => (
+                <Button
+                  key={value}
+                  variant={backupInterval === value ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handleIntervalChange(value)}
+                >
+                  {t(labelKey)}
+                </Button>
+              ))}
+            </div>
           </div>
 
           <Separator />
