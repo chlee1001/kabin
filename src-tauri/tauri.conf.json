@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/nicklasad/tauri-2/main/crates/tauri/schema.json",
   "productName": "Kabin",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "identifier": "com.kanban.app",
   "build": {
     "beforeBuildCommand": "npm run build",

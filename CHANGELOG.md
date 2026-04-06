@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.6](https://github.com/chlee1001/kabin/compare/kabin-v0.1.5...kabin-v0.1.6) (2026-04-06)
+
+
+### Bug Fixes
+
+* **sidebar:** 긴 프로젝트/보드명에 메뉴 버튼이 가려지는 문제 수정 ([32935f4](https://github.com/chlee1001/kabin/commit/32935f44cabe3bcf53f5fcfeb5d16dd57146f086))
+* **sidebar:** 긴 프로젝트/보드명에 메뉴 버튼이 가려지는 문제 수정 ([8caf60a](https://github.com/chlee1001/kabin/commit/8caf60a68645620de3e0c725f71dfad231aa4e24))
+
 ## [0.1.5](https://github.com/chlee1001/kabin/compare/kabin-v0.1.4...kabin-v0.1.5) (2026-04-06)
 
 
