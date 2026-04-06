@@ -66,8 +66,8 @@ export function InlineEdit({
 
   const triggerProps =
     trigger === "click"
-      ? { onClick: () => setEditing(true) }
-      : { onDoubleClick: () => setEditing(true) }
+      ? { onClick: (e: React.MouseEvent) => { e.stopPropagation(); setEditing(true) } }
+      : { onDoubleClick: (e: React.MouseEvent) => { e.stopPropagation(); setEditing(true) } }
 
   return (
     <span

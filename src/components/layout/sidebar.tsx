@@ -222,13 +222,11 @@ function ProjectItem({
             className="h-2.5 w-2.5 rounded-full shrink-0"
             style={{ backgroundColor: project.color }}
           />
-          <span className="truncate" onClick={(e) => e.stopPropagation()}>
-            <InlineEdit
-              value={project.name}
-              onSave={(name) => updateProject.mutate({ id: project.id, updates: { name } })}
-              className="truncate"
-            />
-          </span>
+          <InlineEdit
+            value={project.name}
+            onSave={(name) => updateProject.mutate({ id: project.id, updates: { name } })}
+            className="truncate"
+          />
         </button>
         <Button
           variant="ghost"
@@ -341,13 +339,11 @@ function SidebarBoardItem({
         className="flex flex-1 cursor-grab items-center gap-2 rounded-md py-1.5 pl-10 pr-1 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
       >
         <FolderOpen className="h-3.5 w-3.5 shrink-0" />
-        <span className="truncate" onClick={(e) => e.stopPropagation()}>
-          <InlineEdit
-            value={board.name}
-            onSave={(name) => onRename(name)}
-            className="truncate"
-          />
-        </span>
+        <InlineEdit
+          value={board.name}
+          onSave={(name) => onRename(name)}
+          className="truncate"
+        />
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
