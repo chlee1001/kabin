@@ -20,6 +20,13 @@
   "backupNow": "Backup Now",
   "backupCreated": "Backup created",
   "backupFailed": "Backup failed: {{error}}",
+  "exportBackup": "Export",
+  "importBackup": "Import",
+  "importWarning": "Your current data will be replaced with the selected file. Existing data will be auto-backed up.",
+  "exportSuccess": "Backup exported",
+  "exportFailed": "Export failed: {{error}}",
+  "importSuccess": "Import complete. Refreshing app.",
+  "importFailed": "Import failed: {{error}}",
   "backupIntervalLabel": "Auto-backup Interval",
   "backupInterval": {
     "30min": "30 min",

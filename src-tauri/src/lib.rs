@@ -130,6 +130,8 @@ pub fn run() {
             // Backup
             commands::backup::create_backup,
             commands::backup::get_last_backup_time,
+            commands::backup::export_backup,
+            commands::backup::import_backup,
             // Tags
             commands::tags::create_tag,
             commands::tags::get_tags,

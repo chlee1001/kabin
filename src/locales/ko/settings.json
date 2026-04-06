@@ -20,6 +20,13 @@
   "backupNow": "지금 백업",
   "backupCreated": "백업을 완료했어요",
   "backupFailed": "백업에 실패했어요: {{error}}",
+  "exportBackup": "내보내기",
+  "importBackup": "가져오기",
+  "importWarning": "현재 데이터가 선택한 파일로 교체돼요. 기존 데이터는 자동 백업돼요.",
+  "exportSuccess": "내보내기를 완료했어요",
+  "exportFailed": "내보내기에 실패했어요: {{error}}",
+  "importSuccess": "가져오기를 완료했어요. 앱을 새로고침합니다.",
+  "importFailed": "가져오기에 실패했어요: {{error}}",
   "backupIntervalLabel": "자동 백업 주기",
   "backupInterval": {
     "30min": "30분",

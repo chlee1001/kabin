@@ -3,11 +3,11 @@ import i18next from "i18next"
 import { DEFAULT_ACCENT_COLORS } from "@/lib/constants"
 import { useEffect, useRef, useState } from "react"
 import { useTheme } from "@/components/theme-provider"
-import { useCreateBackup, useLastBackupTime } from "@/hooks/use-backup"
+import { useCreateBackup, useExportBackup, useImportBackup, useLastBackupTime } from "@/hooks/use-backup"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Moon, Sun, Monitor, HardDrive, Tags, Clock, Type, Info } from "lucide-react"
+import { Moon, Sun, Monitor, HardDrive, Tags, Clock, Type, Info, Download, Upload } from "lucide-react"
 import { getVersion } from "@tauri-apps/api/app"
 import { useQuery } from "@tanstack/react-query"
 import { TagManager } from "./tag-manager"
@@ -30,6 +30,8 @@ export function SettingsPage() {
   const colorInputRef = useRef<HTMLInputElement>(null)
   const { data: lastBackup } = useLastBackupTime()
   const createBackup = useCreateBackup()
+  const exportBackup = useExportBackup()
+  const importBackup = useImportBackup()
   const [backupInterval, setBackupInterval] = useState("3600")
   const { data: appVersion } = useQuery({
     queryKey: ["app", "version"],
@@ -59,6 +61,29 @@ export function SettingsPage() {
     createBackup.mutate(undefined, {
       onSuccess: () => toast.success(t("backupCreated")),
       onError: (err) => toast.error(t("backupFailed", { error: String(err) })),
+    })
+  }
+
+  const handleExport = () => {
+    exportBackup.mutate(undefined, {
+      onSuccess: () => toast.success(t("exportSuccess")),
+      onError: (err) => {
+        if (String(err).includes("cancelled")) return
+        toast.error(t("exportFailed", { error: String(err) }))
+      },
+    })
+  }
+
+  const handleImport = () => {
+    importBackup.mutate(undefined, {
+      onSuccess: () => {
+        toast.success(t("importSuccess"))
+        setTimeout(() => window.location.reload(), 1000)
+      },
+      onError: (err) => {
+        if (String(err).includes("cancelled")) return
+        toast.error(t("importFailed", { error: String(err) }))
+      },
     })
   }
 
@@ -251,6 +276,32 @@ export function SettingsPage() {
               <HardDrive className="h-4 w-4" />
               {createBackup.isPending ? t("backingUp") : t("backupNow")}
             </Button>
+          </div>
+
+          <Separator />
+
+          <div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1 gap-2"
+                onClick={handleExport}
+                disabled={exportBackup.isPending}
+              >
+                <Download className="h-4 w-4" />
+                {t("exportBackup")}
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 gap-2"
+                onClick={handleImport}
+                disabled={importBackup.isPending}
+              >
+                <Upload className="h-4 w-4" />
+                {t("importBackup")}
+              </Button>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">{t("importWarning")}</p>
           </div>
 
           <Separator />
