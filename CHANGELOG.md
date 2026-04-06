@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.3](https://github.com/chlee1001/kabin/compare/kabin-v0.1.2...kabin-v0.1.3) (2026-04-06)
+
+
+### Features
+
+* 설정 페이지에 데모 데이터 삽입 및 데이터 초기화 기능 추가 ([6c95802](https://github.com/chlee1001/kabin/commit/6c95802f90ba4bedd8cb12f34b600e33e0a5f52a))
+
+
+### Bug Fixes
+
+* 대시보드 마감 임박 표현 개선 및 기준일 7일→5일 변경 ([3fcc64f](https://github.com/chlee1001/kabin/commit/3fcc64f545d1cc165e00c91b438d0cf18353f743))
+
 ## [0.1.2](https://github.com/chlee1001/kabin/compare/kabin-v0.1.1...kabin-v0.1.2) (2026-04-06)
 
 
