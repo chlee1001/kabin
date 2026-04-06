@@ -7,9 +7,12 @@ import { useCreateBackup, useLastBackupTime } from "@/hooks/use-backup"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Moon, Sun, Monitor, HardDrive, Tags, Clock } from "lucide-react"
+import { Moon, Sun, Monitor, HardDrive, Tags, Clock, Type, Info } from "lucide-react"
+import { getVersion } from "@tauri-apps/api/app"
+import { useQuery } from "@tanstack/react-query"
 import { TagManager } from "./tag-manager"
 import { settingsApi } from "@/lib/tauri"
+import { useAppName, useSetAppName } from "@/hooks/use-app-name"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
@@ -28,12 +31,24 @@ export function SettingsPage() {
   const { data: lastBackup } = useLastBackupTime()
   const createBackup = useCreateBackup()
   const [backupInterval, setBackupInterval] = useState("3600")
+  const { data: appVersion } = useQuery({
+    queryKey: ["app", "version"],
+    queryFn: getVersion,
+    staleTime: Infinity,
+  })
+  const { data: savedAppName } = useAppName()
+  const setAppName = useSetAppName()
+  const [appNameDraft, setAppNameDraft] = useState("")
 
   useEffect(() => {
     settingsApi.get("backup_interval_secs").then((val) => {
       if (val) setBackupInterval(val)
     })
   }, [])
+
+  useEffect(() => {
+    setAppNameDraft(savedAppName ?? "")
+  }, [savedAppName])
 
   const handleIntervalChange = (value: string) => {
     setBackupInterval(value)
@@ -56,6 +71,50 @@ export function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl p-6">
       <h1 className="mb-6 text-2xl font-semibold">{t("title")}</h1>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Type className="h-4 w-4" />
+            {t("appName")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={appNameDraft}
+              onChange={(e) => setAppNameDraft(e.target.value)}
+              onBlur={() => {
+                if (appNameDraft !== (savedAppName ?? "")) {
+                  setAppName.mutate(appNameDraft)
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.currentTarget.blur()
+                }
+              }}
+              placeholder={t("appNamePlaceholder")}
+              className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+            {appNameDraft && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs text-muted-foreground"
+                onClick={() => {
+                  setAppNameDraft("")
+                  setAppName.mutate("")
+                }}
+              >
+                {t("common:button.reset")}
+              </Button>
+            )}
+          </div>
+          <p className="mt-1.5 text-xs text-muted-foreground">{t("appNameHint")}</p>
+        </CardContent>
+      </Card>
 
       <Card className="mb-6">
         <CardHeader>
@@ -169,7 +228,7 @@ export function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="mb-6">
         <CardHeader>
           <CardTitle className="text-base">{t("backup")}</CardTitle>
         </CardHeader>
@@ -263,6 +322,26 @@ export function SettingsPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Info className="h-4 w-4" />
+            {t("about")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">{t("about.version")}</span>
+              <span className="font-mono">{appVersion ?? "—"}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">{t("about.madeBy")}</span>
+              <span>Chaehyeon Lee</span>
             </div>
           </div>
         </CardContent>

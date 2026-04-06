@@ -1,5 +1,8 @@
 {
   "title": "설정",
+  "appName": "앱 이름",
+  "appNamePlaceholder": "칸반",
+  "appNameHint": "사이드바 상단에 표시돼요",
   "appearance": "외관",
   "theme": {
     "light": "라이트",
@@ -46,6 +49,9 @@
     "goToTable": "테이블 뷰로 이동",
     "focusFilter": "필터/검색 포커스"
   },
+  "about": "정보",
+  "about.version": "버전",
+  "about.madeBy": "만든 사람",
   "tag": {
     "updated": "태그를 수정했어요",
     "updateFailed": "수정에 실패했어요: {{error}}",

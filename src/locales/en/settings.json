@@ -1,5 +1,8 @@
 {
   "title": "Settings",
+  "appName": "App Name",
+  "appNamePlaceholder": "Kanban",
+  "appNameHint": "Displayed in the sidebar header",
   "appearance": "Appearance",
   "theme": {
     "light": "Light",
@@ -46,6 +49,9 @@
     "goToTable": "Go to Table View",
     "focusFilter": "Focus Filter / Search"
   },
+  "about": "About",
+  "about.version": "Version",
+  "about.madeBy": "Made by",
   "tag": {
     "updated": "Tag updated",
     "updateFailed": "Update failed: {{error}}",
