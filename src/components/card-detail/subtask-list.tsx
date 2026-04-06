@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 import {
   useSubtasks,
@@ -14,6 +15,7 @@ interface SubtaskListProps {
 }
 
 export function SubtaskList({ cardId }: SubtaskListProps) {
+  const { t } = useTranslation("card")
   const { data: subtasks } = useSubtasks(cardId)
   const createSubtask = useCreateSubtask()
   const updateSubtask = useUpdateSubtask()
@@ -78,7 +80,7 @@ export function SubtaskList({ cardId }: SubtaskListProps) {
 
       <div className="flex items-center gap-2">
         <Input
-          placeholder="Add subtask..."
+          placeholder={t("addSubtask")}
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleAdd()}

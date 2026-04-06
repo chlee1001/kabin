@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useProjects } from "@/hooks/use-projects"
 import { useAllBoards } from "@/hooks/use-boards"
 import { useColumns } from "@/hooks/use-columns"
@@ -23,6 +24,7 @@ interface MoveCardPickerProps {
 }
 
 export function MoveCardPicker({ cardId, currentColumnId }: MoveCardPickerProps) {
+  const { t } = useTranslation("card")
   const { data: projects } = useProjects()
   const { data: allBoards } = useAllBoards()
   const [selectedBoardId, setSelectedBoardId] = useState<string>("")
@@ -56,11 +58,11 @@ export function MoveCardPicker({ cardId, currentColumnId }: MoveCardPickerProps)
       { cardId, targetColumnId: selectedColumnId, position: 0 },
       {
         onSuccess: () => {
-          toast.success("Card moved")
+          toast.success(t("moved"))
           setSelectedBoardId("")
           setSelectedColumnId("")
         },
-        onError: (err) => toast.error(`Move failed: ${err}`),
+        onError: (err) => toast.error(t("moveFailed", { error: String(err) })),
       },
     )
   }
@@ -81,16 +83,16 @@ export function MoveCardPicker({ cardId, currentColumnId }: MoveCardPickerProps)
                 {selectedBoard.name}
               </span>
             ) : (
-              <span className="text-muted-foreground">Select destination board...</span>
+              <span className="text-muted-foreground">{t("selectBoard")}</span>
             )}
             <Search className="ml-2 h-3 w-3 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[240px] p-0" align="start">
           <Command className="max-h-[300px]">
-            <CommandInput placeholder="Search boards..." className="h-9" />
+            <CommandInput placeholder={t("searchBoards")} className="h-9" />
             <CommandList>
-              <CommandEmpty>No board found.</CommandEmpty>
+              <CommandEmpty>{t("noBoardFound")}</CommandEmpty>
               {groupedBoards.map((project) => (
                 <CommandGroup key={project.id} heading={project.name}>
                   {project.boards.map((board) => (
@@ -146,7 +148,7 @@ export function MoveCardPicker({ cardId, currentColumnId }: MoveCardPickerProps)
               onClick={handleMove}
             >
               <ArrowRight className="h-3.5 w-3.5" />
-              Confirm Move
+              {t("confirmMove")}
             </Button>
           )}
         </div>

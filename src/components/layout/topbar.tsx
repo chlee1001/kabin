@@ -6,8 +6,11 @@ import { useAppStore } from "@/stores/app-store"
 import { useTheme } from "@/components/theme-provider"
 import { useLastBackupTime } from "@/hooks/use-backup"
 import { formatDistanceToNow, parseISO } from "date-fns"
+import { useTranslation } from "react-i18next"
+import { getDateLocale } from "@/lib/i18n"
 
 export function Topbar() {
+  const { t } = useTranslation("layout")
   const { sidebarOpen, toggleSidebar, sidebarCollapsed, setSidebarCollapsed } = useAppStore()
   const { theme, setTheme } = useTheme()
   const { data: lastBackup } = useLastBackupTime()
@@ -26,8 +29,8 @@ export function Topbar() {
   }
 
   const backupLabel = lastBackup
-    ? `Backup: ${formatDistanceToNow(parseISO(lastBackup), { addSuffix: true })}`
-    : "No backup yet"
+    ? t("backupLabel", { time: formatDistanceToNow(parseISO(lastBackup), { addSuffix: true, locale: getDateLocale() }) })
+    : t("noBackupYet")
 
   return (
     <header className="flex h-12 items-center justify-between border-b border-border bg-background px-4">
@@ -47,7 +50,7 @@ export function Topbar() {
           }}
         >
           <Search className="h-3.5 w-3.5" />
-          <span>Search...</span>
+          <span>{t("search")}</span>
           <kbd className="ml-2 rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-medium">
             ⌘K
           </kbd>
@@ -65,7 +68,7 @@ export function Topbar() {
             </TooltipTrigger>
             <TooltipContent>
               <p>{backupLabel}</p>
-              <p className="text-xs text-muted-foreground">⌘S to backup now</p>
+              <p className="text-xs text-muted-foreground">{t("backupHint")}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -82,7 +85,7 @@ export function Topbar() {
           size="icon"
           className="h-8 w-8 cursor-pointer"
           onClick={() => router.navigate({ to: "/settings" })}
-          title="Settings"
+          title={t("nav.settings")}
         >
           <Settings className="h-4 w-4" />
         </Button>

@@ -1,0 +1,38 @@
+{
+  "title": "Settings",
+  "appearance": "Appearance",
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "accentColor": "Accent Color",
+  "customColor": "Custom color",
+  "language": "Language",
+  "tags": "Tags",
+  "backup": "Backup",
+  "lastBackup": "Last backup",
+  "noBackupsYet": "No backups yet",
+  "backingUp": "Backing up...",
+  "backupNow": "Backup Now",
+  "backupCreated": "Backup created",
+  "backupFailed": "Backup failed: {{error}}",
+  "keyboardShortcuts": "Keyboard Shortcuts",
+  "shortcuts": {
+    "globalSearch": "Global Search",
+    "newCard": "New Card (current board)",
+    "manualBackup": "Manual Backup",
+    "toggleSidebar": "Toggle Sidebar",
+    "settings": "Settings",
+    "closeModal": "Close Modal/Palette"
+  },
+  "tag": {
+    "updated": "Tag updated",
+    "updateFailed": "Update failed: {{error}}",
+    "deleted": "Tag deleted",
+    "deleteFailed": "Delete failed: {{error}}",
+    "deleteConfirm": "Delete tag \"{{name}}\"?",
+    "deleteDescription": "This tag will be removed from all cards.",
+    "noTags": "No tags yet. Tags are created when you add them to cards."
+  }
+}

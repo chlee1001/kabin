@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,11 +15,12 @@ interface BoardCloneDialogProps {
 }
 
 export function BoardCloneDialog({ open, onOpenChange, boardId, boardName, projectId }: BoardCloneDialogProps) {
-  const [newName, setNewName] = useState(`${boardName} (Copy)`)
+  const { t } = useTranslation("board")
+  const [newName, setNewName] = useState(t("clone.copy", { name: boardName }))
   const [includeCards, setIncludeCards] = useState(true)
   const cloneBoard = useCloneBoard(projectId)
 
-  useEffect(() => setNewName(`${boardName} (Copy)`), [boardName])
+  useEffect(() => setNewName(t("clone.copy", { name: boardName })), [boardName, t])
 
   const handleClone = () => {
     cloneBoard.mutate(
@@ -31,39 +33,39 @@ export function BoardCloneDialog({ open, onOpenChange, boardId, boardName, proje
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Duplicate Board</DialogTitle>
+          <DialogTitle>{t("clone.title")}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Board name</Label>
+            <Label>{t("clone.boardName")}</Label>
             <Input value={newName} onChange={(e) => setNewName(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label>Include</Label>
+            <Label>{t("clone.include")}</Label>
             <div className="flex gap-2">
               <Button
                 variant={!includeCards ? "default" : "outline"}
                 size="sm"
                 onClick={() => setIncludeCards(false)}
               >
-                Columns only
+                {t("clone.columnsOnly")}
               </Button>
               <Button
                 variant={includeCards ? "default" : "outline"}
                 size="sm"
                 onClick={() => setIncludeCards(true)}
               >
-                Columns + Cards
+                {t("clone.columnsAndCards")}
               </Button>
             </div>
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t("common:button.cancel")}
           </Button>
           <Button onClick={handleClone} disabled={!newName.trim() || cloneBoard.isPending}>
-            {cloneBoard.isPending ? "Cloning..." : "Duplicate"}
+            {cloneBoard.isPending ? t("clone.cloning") : t("common:button.duplicate")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState, useMemo } from "react"
 import { useFilteredCards, type CardFilter } from "@/hooks/use-unified"
 import { useUpdateCard } from "@/hooks/use-cards"
@@ -21,6 +22,7 @@ type SortKey = "title" | "project_name" | "board_name" | "status_category" | "du
 type SortDir = "asc" | "desc"
 
 export function TableViewPage() {
+  const { t } = useTranslation(["table", "common"])
   const [filters, setFilters] = useState<CardFilter>({})
   const { data: cards, isLoading } = useFilteredCards(filters)
   const [sortKey, setSortKey] = useState<SortKey>("due_date")
@@ -48,13 +50,13 @@ export function TableViewPage() {
   }
 
   if (isLoading) {
-    return <div className="flex h-full items-center justify-center text-muted-foreground">Loading...</div>
+    return <div className="flex h-full items-center justify-center text-muted-foreground">{t("common:loading")}</div>
   }
 
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-border px-6 py-3">
-        <h1 className="text-xl font-semibold">Table View</h1>
+        <h1 className="text-xl font-semibold">{t("title")}</h1>
       </div>
       <FilterBar filters={filters} onChange={setFilters} />
 
@@ -62,14 +64,14 @@ export function TableViewPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-12">Done</TableHead>
-              <SortableHeader label="Project" sortKey="project_name" current={sortKey} dir={sortDir} onToggle={toggleSort} />
-              <SortableHeader label="Board" sortKey="board_name" current={sortKey} dir={sortDir} onToggle={toggleSort} />
-              <SortableHeader label="Title" sortKey="title" current={sortKey} dir={sortDir} onToggle={toggleSort} />
-              <SortableHeader label="Status" sortKey="status_category" current={sortKey} dir={sortDir} onToggle={toggleSort} />
-              <SortableHeader label="Start Date" sortKey="start_date" current={sortKey} dir={sortDir} onToggle={toggleSort} />
-              <SortableHeader label="Due Date" sortKey="due_date" current={sortKey} dir={sortDir} onToggle={toggleSort} />
-              <TableHead>Subtasks</TableHead>
+              <TableHead className="w-12">{t("columns.done")}</TableHead>
+              <SortableHeader label={t("columns.project")} sortKey="project_name" current={sortKey} dir={sortDir} onToggle={toggleSort} />
+              <SortableHeader label={t("columns.board")} sortKey="board_name" current={sortKey} dir={sortDir} onToggle={toggleSort} />
+              <SortableHeader label={t("columns.title")} sortKey="title" current={sortKey} dir={sortDir} onToggle={toggleSort} />
+              <SortableHeader label={t("columns.status")} sortKey="status_category" current={sortKey} dir={sortDir} onToggle={toggleSort} />
+              <SortableHeader label={t("columns.startDate")} sortKey="start_date" current={sortKey} dir={sortDir} onToggle={toggleSort} />
+              <SortableHeader label={t("columns.dueDate")} sortKey="due_date" current={sortKey} dir={sortDir} onToggle={toggleSort} />
+              <TableHead>{t("columns.subtasks")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -102,7 +104,7 @@ export function TableViewPage() {
                 </TableCell>
                 <TableCell>
                   <Badge variant="secondary" className="text-xs">
-                    {STATUS_CATEGORIES.find((s) => s.value === card.status_category)?.label ?? card.status_category}
+                    {t(`common:${STATUS_CATEGORIES.find((s) => s.value === card.status_category)?.label ?? card.status_category}` as never)}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">{card.start_date ?? "—"}</TableCell>
@@ -115,7 +117,7 @@ export function TableViewPage() {
             {sorted.length === 0 && (
               <TableRow>
                 <TableCell colSpan={8} className="py-10 text-center text-muted-foreground">
-                  No cards found
+                  {t("noCards")}
                 </TableCell>
               </TableRow>
             )}

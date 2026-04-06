@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
 
 interface InlineEditProps {
   value: string
@@ -17,6 +18,7 @@ export function InlineEdit({
   inputClassName,
   trigger = "doubleClick",
 }: InlineEditProps) {
+  const { t } = useTranslation("common")
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(value)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -71,7 +73,7 @@ export function InlineEdit({
     <span
       {...triggerProps}
       className={cn("cursor-text rounded px-1 -mx-1 hover:bg-muted/50 transition-colors", className)}
-      title={trigger === "doubleClick" ? "Double-click to edit" : "Click to edit"}
+      title={trigger === "doubleClick" ? t("edit.doubleClickToEdit") : t("edit.clickToEdit")}
     >
       {value}
     </span>

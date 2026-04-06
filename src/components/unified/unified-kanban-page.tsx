@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useRef, useState } from "react"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { useFilteredCards, useMoveCardByStatus, type CardFilter } from "@/hooks/use-unified"
@@ -12,6 +13,7 @@ import { toast } from "sonner"
 import type { UnifiedCard } from "@/hooks/use-unified"
 
 export function UnifiedKanbanPage() {
+  const { t } = useTranslation(["board", "common"])
   const [filters, setFilters] = useState<CardFilter>({})
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
   const { data: cards, isLoading } = useFilteredCards(filters)
@@ -30,9 +32,9 @@ export function UnifiedKanbanPage() {
         onError: (err) => {
           const msg = String(err)
           if (msg.includes("해당 상태 컬럼이 없습니다")) {
-            toast.error("이 보드에 해당 상태의 컬럼이 없습니다. 컬럼의 상태 카테고리를 설정해주세요.")
+            toast.error(t("unified.noStatusColumn"))
           } else {
-            toast.error(`이동 실패: ${msg}`)
+            toast.error(t("unified.moveFailed", { error: msg }))
           }
         },
       },
@@ -40,13 +42,13 @@ export function UnifiedKanbanPage() {
   }
 
   if (isLoading) {
-    return <div className="flex h-full items-center justify-center text-muted-foreground">Loading...</div>
+    return <div className="flex h-full items-center justify-center text-muted-foreground">{t("common:loading")}</div>
   }
 
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-border px-6 py-3">
-        <h1 className="text-xl font-semibold">Unified Kanban</h1>
+        <h1 className="text-xl font-semibold">{t("unified.title")}</h1>
       </div>
       <FilterBar filters={filters} onChange={setFilters} />
 
@@ -85,12 +87,13 @@ function StatusColumn({
   onDrop: (cardId: string, sourceStatus: string, targetStatus: string) => void
   onCardClick: (cardId: string) => void
 }) {
+  const { t } = useTranslation(["board", "common"])
   const [isDragOver, setIsDragOver] = useState(false)
 
   return (
     <div
       role="region"
-      aria-label={`${label} column, ${cards.length} cards`}
+      aria-label={`${t(`common:${label}` as never)} column, ${cards.length} cards`}
       className={cn(
         "flex w-72 shrink-0 snap-center flex-col rounded-lg bg-muted/50 transition-colors md:snap-align-none",
         isDragOver && "ring-2 ring-primary/50 bg-primary/5",
@@ -117,13 +120,13 @@ function StatusColumn({
         if (cardId) {
           onDrop(cardId, sourceStatus, value)
           const liveEl = document.getElementById("dnd-live")
-          if (liveEl) liveEl.textContent = `Card moved to ${label}`
+          if (liveEl) liveEl.textContent = t("unified.cardMoved", { label: t(`common:${label}` as never) })
         }
       }}
     >
       <div className="flex items-center gap-2 px-3 py-2">
         <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
-        <span className="text-sm font-medium">{label}</span>
+        <span className="text-sm font-medium">{t(`common:${label}` as never)}</span>
         <span className="text-xs text-muted-foreground">{cards.length}</span>
       </div>
       <VirtualizedCardList cards={cards} onCardClick={onCardClick} />
@@ -132,6 +135,7 @@ function StatusColumn({
 }
 
 function VirtualizedCardList({ cards, onCardClick }: { cards: UnifiedCard[]; onCardClick: (cardId: string) => void }) {
+  const { t } = useTranslation(["board", "common"])
   const parentRef = useRef<HTMLDivElement>(null)
 
   const virtualizer = useVirtualizer({
@@ -144,7 +148,7 @@ function VirtualizedCardList({ cards, onCardClick }: { cards: UnifiedCard[]; onC
   if (cards.length === 0) {
     return (
       <div className="flex-1 py-8 text-center text-xs text-muted-foreground">
-        No cards
+        {t("unified.noCards")}
       </div>
     )
   }

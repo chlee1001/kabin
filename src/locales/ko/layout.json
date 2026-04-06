@@ -1,0 +1,20 @@
+{
+  "appName": "칸반",
+  "nav": {
+    "dashboard": "대시보드",
+    "unifiedKanban": "통합 칸반",
+    "tableView": "테이블 뷰",
+    "settings": "설정"
+  },
+  "projects": "프로젝트",
+  "search": "검색...",
+  "backupLabel": "백업: {{time}}",
+  "noBackupYet": "아직 백업이 없어요",
+  "backupHint": "⌘S로 백업하기",
+  "searchCards": "카드 검색",
+  "searchPlaceholder": "카드 검색...",
+  "typeToSearch": "검색어를 입력하세요...",
+  "noResults": "결과가 없어요.",
+  "cardGroup": "카드",
+  "boardBackground": "보드 배경"
+}

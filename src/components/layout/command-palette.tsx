@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
+import { useTranslation } from "react-i18next"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import {
   Command,
@@ -25,6 +26,7 @@ interface CommandPaletteProps {
 }
 
 export function CommandPalette({ onSelectCard }: CommandPaletteProps) {
+  const { t } = useTranslation("layout")
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState("")
   const [results, setResults] = useState<SearchResult[]>([])
@@ -68,19 +70,19 @@ export function CommandPalette({ onSelectCard }: CommandPaletteProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="overflow-hidden p-0 shadow-lg max-w-lg">
-        <DialogTitle className="sr-only">Search Cards</DialogTitle>
+        <DialogTitle className="sr-only">{t("searchCards")}</DialogTitle>
         <Command shouldFilter={false} className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-input]]:h-12">
           <CommandInput
-            placeholder="Search cards..."
+            placeholder={t("searchPlaceholder")}
             value={query}
             onValueChange={handleSearch}
           />
           <CommandList>
             <CommandEmpty>
-              {query.trim().length < 2 ? "Type to search..." : "No results found."}
+              {query.trim().length < 2 ? t("typeToSearch") : t("noResults")}
             </CommandEmpty>
             {results.length > 0 && (
-              <CommandGroup heading="Cards">
+              <CommandGroup heading={t("cardGroup")}>
                 {results.map((r) => (
                   <CommandItem
                     key={r.card_id}

@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -25,6 +26,7 @@ export function ColumnEditDialog({
   onSave,
   saving,
 }: ColumnEditDialogProps) {
+  const { t } = useTranslation("board")
   const [name, setName] = useState(initialName)
   const [status, setStatus] = useState<StatusCategory>(initialStatus)
 
@@ -42,18 +44,18 @@ export function ColumnEditDialog({
 
         <div className="space-y-4 py-2">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Name</label>
+            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">{t("common:name")}</label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSave()}
-              placeholder="Column name..."
+              placeholder={t("column.namePlaceholder")}
               autoFocus
             />
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Status Category</label>
+            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">{t("column.statusCategory")}</label>
             <div className="grid grid-cols-2 gap-1.5">
               {STATUS_CATEGORIES.map((cat) => (
                 <button
@@ -67,7 +69,7 @@ export function ColumnEditDialog({
                   )}
                 >
                   <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: cat.color }} />
-                  {cat.label}
+                  {t(cat.label, { ns: "common" })}
                 </button>
               ))}
             </div>
@@ -75,9 +77,9 @@ export function ColumnEditDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>{t("common:button.cancel")}</Button>
           <Button onClick={handleSave} disabled={!name.trim() || saving}>
-            {saving ? "Saving..." : "Save"}
+            {saving ? t("card:saving") : t("common:button.save")}
           </Button>
         </DialogFooter>
       </DialogContent>

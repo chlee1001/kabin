@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import i18next from "i18next"
 import { useAppStore } from "@/stores/app-store"
 import { useRouter } from "@tanstack/react-router"
 import { invoke } from "@tauri-apps/api/core"
@@ -22,8 +23,8 @@ export function useGlobalKeyboard() {
       if (meta && e.key === "s") {
         e.preventDefault()
         invoke("create_backup")
-          .then(() => toast.success("Backup created"))
-          .catch((err) => toast.error(`Backup failed: ${err}`))
+          .then(() => toast.success(i18next.t("toast.backupSuccess", { ns: "common" })))
+          .catch((err) => toast.error(i18next.t("toast.backupFailed", { ns: "common", error: String(err) })))
       }
 
       // Cmd+N — New card (context-dependent, handled by current view)

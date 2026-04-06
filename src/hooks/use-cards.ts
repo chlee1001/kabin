@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { cardApi, type Card, type CardUpdate, type CardWithTags } from "@/lib/tauri"
+import { cardApi, type Card, type CardUpdate } from "@/lib/tauri"
 
 export function useCards(columnId: string | undefined) {
   return useQuery({

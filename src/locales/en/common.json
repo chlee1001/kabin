@@ -1,0 +1,44 @@
+{
+  "button": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "save": "Save",
+    "reset": "Reset",
+    "create": "Create",
+    "edit": "Edit",
+    "move": "Move",
+    "duplicate": "Duplicate",
+    "retry": "Retry",
+    "clear": "Clear",
+    "remove": "Remove",
+    "confirm": "Confirm"
+  },
+  "loading": "Loading...",
+  "saved": "Saved",
+  "status": {
+    "todo": "To Do",
+    "inProgress": "In Progress",
+    "done": "Done",
+    "other": "Other"
+  },
+  "deadline": {
+    "overdue": "Overdue",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "days": "{{count}}d"
+  },
+  "edit": {
+    "doubleClickToEdit": "Double-click to edit",
+    "clickToEdit": "Click to edit"
+  },
+  "toast": {
+    "backupSuccess": "Backup created",
+    "backupFailed": "Backup failed: {{error}}"
+  },
+  "name": "Name",
+  "color": "Color",
+  "filters": "Filters:",
+  "from": "From",
+  "to": "To"
+}

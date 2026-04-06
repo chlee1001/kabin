@@ -1,4 +1,5 @@
 import { useState, useCallback, createContext, useContext } from "react"
+import { useTranslation } from "react-i18next"
 import {
   Dialog,
   DialogContent,
@@ -50,6 +51,7 @@ interface ConfirmState {
 type DialogState = PromptState | ConfirmState | null
 
 export function PromptDialogProvider({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation("common")
   const [state, setState] = useState<DialogState>(null)
   const [inputValue, setInputValue] = useState("")
 
@@ -98,12 +100,12 @@ export function PromptDialogProvider({ children }: { children: React.ReactNode }
             />
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={handleClose}>Cancel</Button>
+            <Button variant="outline" onClick={handleClose}>{t("button.cancel")}</Button>
             <Button
               onClick={handleOk}
               variant={state?.type === "confirm" ? "destructive" : "default"}
             >
-              {state?.type === "confirm" ? "Delete" : "OK"}
+              {state?.type === "confirm" ? t("button.delete") : t("button.ok")}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useCard, useCardLocation, useUpdateCard, useDeleteCard } from "@/hooks/use-cards"
 import { RichTextEditor } from "./rich-text-editor"
@@ -21,6 +22,7 @@ interface CardDetailModalProps {
 }
 
 export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
+  const { t } = useTranslation(["card", "common"])
   const { data: card } = useCard(cardId ?? undefined)
   const { data: location } = useCardLocation(cardId ?? undefined)
   const updateCard = useUpdateCard()
@@ -54,11 +56,11 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
 
   const handleDelete = async () => {
     if (!card) return
-    const ok = await confirm(`Delete card "${card.title}"?`)
+    const ok = await confirm(t("deleteConfirm", { name: card.title }))
     if (ok) {
       deleteCard.mutate(card.id, {
         onSuccess: () => {
-          toast.success("Card deleted")
+          toast.success(t("deleted"))
           onClose()
         },
       })
@@ -71,7 +73,7 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
     <Dialog open={!!cardId} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[90vh] max-w-5xl overflow-hidden flex flex-col p-0 gap-0 border-none shadow-2xl">
         <DialogHeader className="p-6 pb-2 pr-12">
-          <DialogTitle className="sr-only">Card Detail</DialogTitle>
+          <DialogTitle className="sr-only">{t("detail")}</DialogTitle>
           {location && (
             <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground/70 mb-2">
               <Badge variant="outline" className="h-5 px-1.5 font-normal border-muted-foreground/20">
@@ -91,7 +93,7 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
                 onChange={(e) => setTitle(e.target.value)}
                 onBlur={handleTitleBlur}
                 onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
-                placeholder="Card title..."
+                placeholder={t("titlePlaceholder")}
                 className="h-auto border-transparent text-2xl font-bold shadow-none hover:bg-muted/50 focus-visible:bg-transparent focus-visible:border-primary/30 focus-visible:ring-0 px-2 transition-all"
               />
             </div>
@@ -99,7 +101,7 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
               {saved && (
                 <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-green-500/20 gap-1 animate-in fade-in zoom-in duration-300">
                   <Check className="h-3 w-3" />
-                  <span className="text-[10px]">Saved</span>
+                  <span className="text-[10px]">{t("common:saved")}</span>
                 </Badge>
               )}
             </div>
@@ -113,7 +115,7 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
               <section>
                 <div className="flex items-center gap-2 mb-3 text-sm font-semibold text-foreground">
                   <AlignLeft className="h-4 w-4 text-primary" />
-                  <h3>Description</h3>
+                  <h3>{t("description")}</h3>
                 </div>
                 <div className="rounded-lg border bg-card/50">
                   <RichTextEditor
@@ -126,7 +128,7 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
               <section>
                 <div className="flex items-center gap-2 mb-3 text-sm font-semibold text-foreground">
                   <ListTodo className="h-4 w-4 text-primary" />
-                  <h3>Subtasks</h3>
+                  <h3>{t("subtasks")}</h3>
                 </div>
                 <SubtaskList cardId={card.id} />
               </section>
@@ -138,11 +140,11 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
                 <div>
                   <label className="flex items-center gap-2 mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
                     <Calendar className="h-3.5 w-3.5" />
-                    Timeline
+                    {t("timeline")}
                   </label>
                   <div className="space-y-2">
                     <div className="space-y-1">
-                      <span className="text-[10px] text-muted-foreground ml-1">Start Date</span>
+                      <span className="text-[10px] text-muted-foreground ml-1">{t("startDate")}</span>
                       <DatePicker
                         value={card.start_date}
                         onChange={(date) =>
@@ -151,7 +153,7 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
                       />
                     </div>
                     <div className="space-y-1">
-                      <span className="text-[10px] text-muted-foreground ml-1">Due Date</span>
+                      <span className="text-[10px] text-muted-foreground ml-1">{t("dueDate")}</span>
                       <DatePicker
                         value={card.due_date}
                         onChange={(date) =>
@@ -167,7 +169,7 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
                 <div>
                   <label className="flex items-center gap-2 mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
                     <Palette className="h-3.5 w-3.5" />
-                    Appearance
+                    {t("appearance")}
                   </label>
                   <ColorPicker
                     value={card.color}
@@ -182,7 +184,7 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
                 <div>
                   <label className="flex items-center gap-2 mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
                     <Tag className="h-3.5 w-3.5" />
-                    Tags
+                    {t("tags")}
                   </label>
                   <TagPicker cardId={card.id} />
                 </div>
@@ -192,7 +194,7 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
                 <div>
                   <label className="flex items-center gap-2 mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
                     <MoveRight className="h-3.5 w-3.5" />
-                    Move
+                    {t("move")}
                   </label>
                   <MoveCardPicker cardId={card.id} currentColumnId={card.column_id} />
                 </div>
@@ -208,7 +210,7 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
                   }}
                 >
                   <Check className="h-4 w-4" />
-                  Save & Close
+                  {t("saveAndClose")}
                 </Button>
 
                 <Button
@@ -218,7 +220,7 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
                   onClick={handleDelete}
                 >
                   <Trash2 className="h-4 w-4" />
-                  Delete Card
+                  {t("deleteCard")}
                 </Button>
               </div>
             </aside>

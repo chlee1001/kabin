@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import type { UrgentCard } from "@/hooks/use-dashboard"
 import { DeadlineBadge } from "@/components/shared/deadline-badge"
 
@@ -7,10 +8,11 @@ interface UrgentListProps {
 }
 
 export function UrgentList({ cards, onCardClick }: UrgentListProps) {
+  const { t } = useTranslation("dashboard")
   if (cards.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-border p-8 text-center text-muted-foreground">
-        No urgent deadlines this week
+        {t("noUrgentDeadlines")}
       </div>
     )
   }

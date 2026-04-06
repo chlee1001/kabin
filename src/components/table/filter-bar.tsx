@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useProjects } from "@/hooks/use-projects"
 import { useAllBoards } from "@/hooks/use-boards"
 import { useTags } from "@/hooks/use-tags"
@@ -14,6 +15,7 @@ interface FilterBarProps {
 }
 
 export function FilterBar({ filters, onChange }: FilterBarProps) {
+  const { t } = useTranslation("common")
   const { data: projects } = useProjects()
   const { data: allBoards } = useAllBoards()
   const { data: tags } = useTags()
@@ -64,7 +66,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
 
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-border px-4 py-2">
-      <span className="text-xs font-medium text-muted-foreground">Filters:</span>
+      <span className="text-xs font-medium text-muted-foreground">{t("filters")}</span>
 
       {projects?.map((p) => (
         <Badge
@@ -103,7 +105,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
           className="cursor-pointer text-xs"
           onClick={() => toggleStatus(s.value)}
         >
-          {s.label}
+          {t(s.label as never)}
         </Badge>
       ))}
 
@@ -130,7 +132,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
         value={filters.due_date_from ?? ""}
         onChange={(e) => onChange({ ...filters, due_date_from: e.target.value || undefined })}
         className="h-7 w-32 text-xs"
-        placeholder="From"
+        placeholder={t("from")}
       />
       <span className="text-xs text-muted-foreground">~</span>
       <Input
@@ -138,7 +140,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
         value={filters.due_date_to ?? ""}
         onChange={(e) => onChange({ ...filters, due_date_to: e.target.value || undefined })}
         className="h-7 w-32 text-xs"
-        placeholder="To"
+        placeholder={t("to")}
       />
 
       {hasFilters && (
@@ -149,7 +151,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
           onClick={() => onChange({})}
         >
           <X className="h-3 w-3" />
-          Clear
+          {t("button.clear")}
         </Button>
       )}
     </div>

@@ -1,0 +1,20 @@
+{
+  "appName": "Kanban",
+  "nav": {
+    "dashboard": "Dashboard",
+    "unifiedKanban": "Unified Kanban",
+    "tableView": "Table View",
+    "settings": "Settings"
+  },
+  "projects": "Projects",
+  "search": "Search...",
+  "backupLabel": "Backup: {{time}}",
+  "noBackupYet": "No backup yet",
+  "backupHint": "⌘S to backup now",
+  "searchCards": "Search Cards",
+  "searchPlaceholder": "Search cards...",
+  "typeToSearch": "Type to search...",
+  "noResults": "No results found.",
+  "cardGroup": "Cards",
+  "boardBackground": "Board background"
+}

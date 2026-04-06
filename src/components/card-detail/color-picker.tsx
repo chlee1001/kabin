@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useRef } from "react"
 import { cn } from "@/lib/utils"
 import { Plus } from "lucide-react"
@@ -14,6 +15,7 @@ interface ColorPickerProps {
 }
 
 export function ColorPicker({ value, onChange }: ColorPickerProps) {
+  const { t } = useTranslation("card")
   const colorInputRef = useRef<HTMLInputElement>(null)
   const isCustomColor = value !== null && !COLORS.includes(value)
 
@@ -29,7 +31,7 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
             !color && "bg-muted",
           )}
           style={color ? { backgroundColor: color } : undefined}
-          title={color ?? "No color"}
+          title={color ?? t("noColor")}
         />
       ))}
       <div className="relative">
@@ -40,7 +42,7 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
             isCustomColor ? "border-foreground" : "border-dashed border-muted-foreground bg-muted",
           )}
           style={isCustomColor ? { backgroundColor: value } : undefined}
-          title="Custom color"
+          title={t("customColor")}
         >
           {!isCustomColor && <Plus className="h-3 w-3 text-muted-foreground" />}
         </button>

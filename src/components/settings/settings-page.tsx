@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next"
+import i18next from "i18next"
 import { DEFAULT_ACCENT_COLORS } from "@/lib/constants"
 import { useRef } from "react"
 import { useTheme } from "@/components/theme-provider"
@@ -11,6 +13,7 @@ import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
 export function SettingsPage() {
+  const { t, i18n } = useTranslation(["settings", "common"])
   const { theme, setTheme, accentColor, setAccentColor } = useTheme()
   const colorInputRef = useRef<HTMLInputElement>(null)
   const { data: lastBackup } = useLastBackupTime()
@@ -18,24 +21,24 @@ export function SettingsPage() {
 
   const handleBackup = () => {
     createBackup.mutate(undefined, {
-      onSuccess: () => toast.success("Backup created"),
-      onError: (err) => toast.error(`Backup failed: ${err}`),
+      onSuccess: () => toast.success(t("backupCreated")),
+      onError: (err) => toast.error(t("backupFailed", { error: String(err) })),
     })
   }
 
   const themes = [
-    { value: "light" as const, label: "Light", icon: Sun },
-    { value: "dark" as const, label: "Dark", icon: Moon },
-    { value: "system" as const, label: "System", icon: Monitor },
+    { value: "light" as const, label: t("theme.light"), icon: Sun },
+    { value: "dark" as const, label: t("theme.dark"), icon: Moon },
+    { value: "system" as const, label: t("theme.system"), icon: Monitor },
   ]
 
   return (
     <div className="mx-auto max-w-2xl p-6">
-      <h1 className="mb-6 text-2xl font-semibold">Settings</h1>
+      <h1 className="mb-6 text-2xl font-semibold">{t("title")}</h1>
 
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle className="text-base">Appearance</CardTitle>
+          <CardTitle className="text-base">{t("appearance")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2">
@@ -55,7 +58,7 @@ export function SettingsPage() {
           <Separator className="my-4" />
 
           <div>
-            <p className="mb-2 text-sm font-medium">Accent Color</p>
+            <p className="mb-2 text-sm font-medium">{t("accentColor")}</p>
             <div className="flex flex-wrap items-center gap-2">
               {DEFAULT_ACCENT_COLORS.map((hex) => (
                 <button
@@ -83,7 +86,7 @@ export function SettingsPage() {
                     ? { backgroundColor: accentColor }
                     : undefined
                 }
-                aria-label="Custom color"
+                aria-label={t("customColor")}
               >
                 {!(accentColor && !DEFAULT_ACCENT_COLORS.includes(accentColor)) && "+"}
               </button>
@@ -102,7 +105,7 @@ export function SettingsPage() {
                   className="h-7 px-2 text-xs text-muted-foreground"
                   onClick={() => setAccentColor(null)}
                 >
-                  Reset
+                  {t("common:button.reset")}
                 </Button>
               )}
             </div>
@@ -112,9 +115,32 @@ export function SettingsPage() {
 
       <Card className="mb-6">
         <CardHeader>
+          <CardTitle className="text-base">{t("language")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2">
+            {[
+              { value: "en", label: "English" },
+              { value: "ko", label: "한국어" },
+            ].map(({ value, label }) => (
+              <Button
+                key={value}
+                variant={i18n.language === value ? "default" : "outline"}
+                className="flex-1 gap-2"
+                onClick={() => i18n.changeLanguage(value)}
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Tags className="h-4 w-4" />
-            Tags
+            {t("tags")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -124,16 +150,16 @@ export function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Backup</CardTitle>
+          <CardTitle className="text-base">{t("backup")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm">Last backup</p>
+              <p className="text-sm">{t("lastBackup")}</p>
               <p className="text-xs text-muted-foreground">
                 {lastBackup
-                  ? new Date(lastBackup).toLocaleString()
-                  : "No backups yet"}
+                  ? new Date(lastBackup).toLocaleString(i18next.language)
+                  : t("noBackupsYet")}
               </p>
             </div>
             <Button
@@ -143,22 +169,22 @@ export function SettingsPage() {
               disabled={createBackup.isPending}
             >
               <HardDrive className="h-4 w-4" />
-              {createBackup.isPending ? "Backing up..." : "Backup Now"}
+              {createBackup.isPending ? t("backingUp") : t("backupNow")}
             </Button>
           </div>
 
           <Separator />
 
           <div>
-            <h3 className="mb-1 text-sm font-medium">Keyboard Shortcuts</h3>
+            <h3 className="mb-1 text-sm font-medium">{t("keyboardShortcuts")}</h3>
             <div className="space-y-1 text-sm text-muted-foreground">
               {[
-                ["⌘K", "Global Search"],
-                ["⌘N", "New Card (current board)"],
-                ["⌘S", "Manual Backup"],
-                ["⌘\\", "Toggle Sidebar"],
-                ["⌘,", "Settings"],
-                ["Escape", "Close Modal/Palette"],
+                ["⌘K", t("shortcuts.globalSearch")],
+                ["⌘N", t("shortcuts.newCard")],
+                ["⌘S", t("shortcuts.manualBackup")],
+                ["⌘\\", t("shortcuts.toggleSidebar")],
+                ["⌘,", t("shortcuts.settings")],
+                ["Escape", t("shortcuts.closeModal")],
               ].map(([key, desc]) => (
                 <div key={key} className="flex items-center justify-between">
                   <span>{desc}</span>

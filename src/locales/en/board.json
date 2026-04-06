@@ -1,0 +1,101 @@
+{
+  "sort": {
+    "manual": "Manual",
+    "dueDate": "Due Date",
+    "title": "Title",
+    "created": "Created"
+  },
+  "addColumn": "Column",
+  "duplicateBoard": "Duplicate Board",
+  "empty": "No boards yet",
+  "createFirstBoard": "Create your first board",
+  "newBoard": "New Board",
+  "boardName": "Board name",
+  "boards": "Boards",
+  "columnReorderFailed": "Column reorder failed. Reverted.",
+  "card": {
+    "moveFailed": "Card move failed. Reverted.",
+    "reorderFailed": "Card reorder failed. Reverted.",
+    "title": "Card title",
+    "clone": "Clone card",
+    "delete": "Delete card",
+    "deleteConfirm": "Delete \"{{name}}\"?",
+    "moveToColumn": "Move card to another column",
+    "moveTo": "Move to {{name}}",
+    "moveError": "Card move failed"
+  },
+  "column": {
+    "new": "New Column",
+    "edit": "Edit Column",
+    "namePlaceholder": "Column name...",
+    "statusCategory": "Status Category",
+    "editColumn": "Edit Column",
+    "deleteConfirm": "Delete column \"{{name}}\"?",
+    "deleteDescription": "Cards in this column will also be deleted."
+  },
+  "moveToProject": "Move to Project",
+  "noOtherProjects": "No other projects available.",
+  "boardMoved": "Board moved",
+  "moveFailed": "Move failed: {{error}}",
+  "moving": "Moving...",
+  "clone": {
+    "title": "Duplicate Board",
+    "boardName": "Board name",
+    "include": "Include",
+    "columnsOnly": "Columns only",
+    "columnsAndCards": "Columns + Cards",
+    "cloning": "Cloning...",
+    "copy": "{{name}} (Copy)"
+  },
+  "template": {
+    "templates": "Templates",
+    "cardTemplates": "Card Templates",
+    "name": "Template name",
+    "noTemplates": "No templates yet",
+    "edit": "Edit Template",
+    "templateName": "Template Name",
+    "cardTitle": "Card Title",
+    "description": "Description",
+    "color": "Color",
+    "saving": "Saving...",
+    "saveTemplate": "Save Template",
+    "saved": "Template saved",
+    "createFrom": "Create from \"{{name}}\"",
+    "column": "Column",
+    "creating": "Creating...",
+    "createCard": "Create Card",
+    "cardCreated": "Card created from template",
+    "deleteConfirm": "Delete template \"{{name}}\"?",
+    "namePlaceholder": "Template name...",
+    "cardTitlePlaceholder": "Card title..."
+  },
+  "background": {
+    "title": "Background",
+    "uploadImage": "Upload Image"
+  },
+  "bg": {
+    "nebula": "Nebula",
+    "midnight": "Midnight",
+    "deepSea": "Deep Sea",
+    "emeraldDusk": "Emerald Dusk",
+    "sunsetGlow": "Sunset Glow",
+    "slateStorm": "Slate Storm",
+    "lavenderMist": "Lavender Mist",
+    "roseShadow": "Rose Shadow"
+  },
+  "project": {
+    "deleteConfirm": "Delete project \"{{name}}\"?",
+    "deleteDescription": "All boards and cards will be deleted.",
+    "new": "New Project",
+    "edit": "Edit Project"
+  },
+  "boardDeleteConfirm": "Delete board \"{{name}}\"?",
+  "boardDeleteDescription": "All columns and cards will be deleted.",
+  "unified": {
+    "title": "Unified Kanban",
+    "noCards": "No cards",
+    "noStatusColumn": "No column with this status in the board. Set the status category on a column.",
+    "moveFailed": "Move failed: {{error}}",
+    "cardMoved": "Card moved to {{label}}"
+  }
+}

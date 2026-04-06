@@ -1,0 +1,14 @@
+{
+  "title": "Table View",
+  "noCards": "No cards found",
+  "columns": {
+    "done": "Done",
+    "project": "Project",
+    "board": "Board",
+    "title": "Title",
+    "status": "Status",
+    "startDate": "Start Date",
+    "dueDate": "Due Date",
+    "subtasks": "Subtasks"
+  }
+}

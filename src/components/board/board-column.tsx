@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import { attachClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
@@ -22,6 +23,7 @@ interface BoardColumnProps {
 }
 
 export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", sortDir = "asc" }: BoardColumnProps) {
+  const { t } = useTranslation("board")
   const { data: cards } = useCardsEnriched(column.id)
   const createCard = useCreateCard()
   const reorderCards = useReorderCards()
@@ -88,7 +90,7 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
           reorderCards.mutate(
             { columnId: column.id, cardIds: [...currentIds, cardId] },
             {
-              onError: () => toast.error("카드 이동 실패. 이전 상태로 복원됨"),
+              onError: () => toast.error(t("card.moveFailed")),
             },
           )
         },
@@ -123,7 +125,7 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
         reorderCards.mutate(
           { columnId: column.id, cardIds: reordered.map((c) => c.id) },
           {
-            onError: () => toast.error("카드 순서 변경 실패. 이전 상태로 복원됨"),
+            onError: () => toast.error(t("card.reorderFailed")),
           },
         )
       },
@@ -132,7 +134,7 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
 
   const prompt = usePrompt()
   const handleAddCard = async () => {
-    const title = await prompt("Card title")
+    const title = await prompt(t("card.title"))
     if (title) createCard.mutate({ columnId: column.id, title })
   }
 

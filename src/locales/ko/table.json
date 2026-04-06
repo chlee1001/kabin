@@ -1,0 +1,14 @@
+{
+  "title": "테이블 뷰",
+  "noCards": "카드가 없어요",
+  "columns": {
+    "done": "완료",
+    "project": "프로젝트",
+    "board": "보드",
+    "title": "제목",
+    "status": "상태",
+    "startDate": "시작일",
+    "dueDate": "마감일",
+    "subtasks": "하위 작업"
+  }
+}

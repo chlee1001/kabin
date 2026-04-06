@@ -1,0 +1,44 @@
+{
+  "button": {
+    "ok": "확인",
+    "cancel": "취소",
+    "delete": "삭제",
+    "save": "저장",
+    "reset": "초기화",
+    "create": "만들기",
+    "edit": "수정",
+    "move": "이동",
+    "duplicate": "복제",
+    "retry": "다시 시도",
+    "clear": "초기화",
+    "remove": "제거",
+    "confirm": "확인"
+  },
+  "loading": "불러오는 중...",
+  "saved": "저장됨",
+  "status": {
+    "todo": "할 일",
+    "inProgress": "진행 중",
+    "done": "완료",
+    "other": "기타"
+  },
+  "deadline": {
+    "overdue": "기한 지남",
+    "today": "오늘",
+    "tomorrow": "내일",
+    "days": "{{count}}일"
+  },
+  "edit": {
+    "doubleClickToEdit": "더블클릭하여 수정",
+    "clickToEdit": "클릭하여 수정"
+  },
+  "toast": {
+    "backupSuccess": "백업을 완료했어요",
+    "backupFailed": "백업에 실패했어요: {{error}}"
+  },
+  "name": "이름",
+  "color": "색상",
+  "filters": "필터:",
+  "from": "시작일",
+  "to": "종료일"
+}

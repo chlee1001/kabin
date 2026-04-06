@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { ProjectSummary } from "@/hooks/use-dashboard"
 
@@ -6,6 +7,7 @@ interface ProjectSummaryCardProps {
 }
 
 export function ProjectSummaryCard({ summary }: ProjectSummaryCardProps) {
+  const { t } = useTranslation("dashboard")
   const { total_cards, todo_count, in_progress_count, done_count, other_count } = summary
   const total = total_cards || 1
 
@@ -19,7 +21,7 @@ export function ProjectSummaryCard({ summary }: ProjectSummaryCardProps) {
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">
-          {total_cards} card{total_cards !== 1 ? "s" : ""}
+          {t("cardCount", { count: total_cards })}
         </p>
 
         <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
@@ -39,7 +41,7 @@ export function ProjectSummaryCard({ summary }: ProjectSummaryCardProps) {
 
         {summary.urgent_count > 0 && (
           <p className="text-xs font-medium text-destructive">
-            {summary.urgent_count} urgent deadline{summary.urgent_count !== 1 ? "s" : ""}
+            {t("urgentCount", { count: summary.urgent_count })}
           </p>
         )}
       </CardContent>

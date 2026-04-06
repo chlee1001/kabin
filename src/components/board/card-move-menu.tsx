@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useColumns } from "@/hooks/use-columns"
 import { useMoveCard } from "@/hooks/use-cards"
 import {
@@ -17,6 +18,7 @@ interface CardMoveMenuProps {
 }
 
 export function CardMoveMenu({ cardId, currentColumnId, boardId }: CardMoveMenuProps) {
+  const { t } = useTranslation("board")
   const { data: columns } = useColumns(boardId)
   const moveCard = useMoveCard()
 
@@ -33,9 +35,9 @@ export function CardMoveMenu({ cardId, currentColumnId, boardId }: CardMoveMenuP
           if (liveEl) liveEl.textContent = `Card moved to ${columnName}`
         },
         onError: () =>
-          toast.error("Card move failed", {
+          toast.error(t("card.moveError"), {
             action: {
-              label: "Retry",
+              label: t("common:button.retry"),
               onClick: () => handleMove(targetColumnId, columnName),
             },
           }),
@@ -50,7 +52,7 @@ export function CardMoveMenu({ cardId, currentColumnId, boardId }: CardMoveMenuP
           variant="ghost"
           size="icon"
           className="h-6 w-6 opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
-          aria-label="Move card to another column"
+          aria-label={t("card.moveToColumn")}
         >
           <MoveHorizontal className="h-3.5 w-3.5" />
         </Button>
@@ -64,7 +66,7 @@ export function CardMoveMenu({ cardId, currentColumnId, boardId }: CardMoveMenuP
               handleMove(col.id, col.name)
             }}
           >
-            Move to {col.name}
+            {t("card.moveTo", { name: col.name })}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

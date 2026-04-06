@@ -1,0 +1,14 @@
+{
+  "title": "Dashboard",
+  "newProject": "New Project",
+  "projectsOverview": "Projects Overview",
+  "urgentFocus": "Urgent Focus",
+  "noProjectsYet": "No projects yet",
+  "createFirstProject": "Create your first project",
+  "projectName": "Project name",
+  "cardCount": "{{count}} card",
+  "cardCount_other": "{{count}} cards",
+  "urgentCount": "{{count}} urgent deadline",
+  "urgentCount_other": "{{count}} urgent deadlines",
+  "noUrgentDeadlines": "No urgent deadlines this week"
+}

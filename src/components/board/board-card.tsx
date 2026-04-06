@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import { attachClosestEdge, extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
@@ -20,6 +21,7 @@ interface BoardCardProps {
 }
 
 export function BoardCard({ card, columnId, boardId, onClick }: BoardCardProps) {
+  const { t } = useTranslation("board")
   const ref = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [closestEdge, setClosestEdge] = useState<string | null>(null)
@@ -115,18 +117,18 @@ export function BoardCard({ card, columnId, boardId, onClick }: BoardCardProps) 
               <button
                 onClick={(e) => { e.stopPropagation(); cloneCard.mutate(card.id) }}
                 className="h-6 w-6 flex items-center justify-center rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                title="Clone card"
+                title={t("card.clone")}
               >
                 <Copy className="h-3 w-3" />
               </button>
               <button
                 onClick={async (e) => {
                   e.stopPropagation()
-                  const ok = await confirm(`Delete "${card.title}"?`)
+                  const ok = await confirm(t("card.deleteConfirm", { name: card.title }))
                   if (ok) deleteCard.mutate(card.id)
                 }}
                 className="h-6 w-6 flex items-center justify-center rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                title="Delete card"
+                title={t("card.delete")}
               >
                 <Trash2 className="h-3 w-3" />
               </button>

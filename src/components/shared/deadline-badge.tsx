@@ -1,11 +1,13 @@
 import { differenceInDays, parseISO } from "date-fns"
 import { Badge } from "@/components/ui/badge"
+import { useTranslation } from "react-i18next"
 
 interface DeadlineBadgeProps {
   dueDate: string
 }
 
 export function DeadlineBadge({ dueDate }: DeadlineBadgeProps) {
+  const { t } = useTranslation("common")
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const due = parseISO(dueDate)
@@ -15,16 +17,16 @@ export function DeadlineBadge({ dueDate }: DeadlineBadgeProps) {
   let variant: "destructive" | "default" | "secondary" | "outline"
 
   if (diff < 0) {
-    label = "Overdue"
+    label = t("deadline.overdue")
     variant = "destructive"
   } else if (diff === 0) {
-    label = "Today"
+    label = t("deadline.today")
     variant = "destructive"
   } else if (diff === 1) {
-    label = "Tomorrow"
+    label = t("deadline.tomorrow")
     variant = "default"
   } else {
-    label = `${diff}d`
+    label = t("deadline.days", { count: diff })
     variant = "secondary"
   }
 

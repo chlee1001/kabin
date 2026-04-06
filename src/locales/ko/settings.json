@@ -1,0 +1,38 @@
+{
+  "title": "설정",
+  "appearance": "외관",
+  "theme": {
+    "light": "라이트",
+    "dark": "다크",
+    "system": "시스템"
+  },
+  "accentColor": "강조 색상",
+  "customColor": "직접 선택",
+  "language": "언어",
+  "tags": "태그",
+  "backup": "백업",
+  "lastBackup": "마지막 백업",
+  "noBackupsYet": "아직 백업이 없어요",
+  "backingUp": "백업 중...",
+  "backupNow": "지금 백업",
+  "backupCreated": "백업을 완료했어요",
+  "backupFailed": "백업에 실패했어요: {{error}}",
+  "keyboardShortcuts": "키보드 단축키",
+  "shortcuts": {
+    "globalSearch": "전체 검색",
+    "newCard": "새 카드 (현재 보드)",
+    "manualBackup": "수동 백업",
+    "toggleSidebar": "사이드바 토글",
+    "settings": "설정",
+    "closeModal": "모달/팔레트 닫기"
+  },
+  "tag": {
+    "updated": "태그를 수정했어요",
+    "updateFailed": "수정에 실패했어요: {{error}}",
+    "deleted": "태그를 삭제했어요",
+    "deleteFailed": "삭제에 실패했어요: {{error}}",
+    "deleteConfirm": "\"{{name}}\" 태그를 삭제할까요?",
+    "deleteDescription": "이 태그가 모든 카드에서 제거돼요.",
+    "noTags": "아직 태그가 없어요. 카드에 태그를 추가하면 자동으로 생성돼요."
+  }
+}

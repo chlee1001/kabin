@@ -1,4 +1,5 @@
 import { forwardRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useConfirm } from "@/components/shared/prompt-dialog"
 import { MoreHorizontal, Plus, Trash2, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,7 @@ interface ColumnHeaderProps {
 
 export const ColumnHeader = forwardRef<HTMLDivElement, ColumnHeaderProps>(
   function ColumnHeader({ column, cardCount, onAddCard }, ref) {
+    const { t } = useTranslation(["board", "common"])
     const updateColumn = useUpdateColumn()
     const deleteColumn = useDeleteColumn()
     const statusInfo = STATUS_CATEGORY_MAP[column.status_category]
@@ -39,7 +41,7 @@ export const ColumnHeader = forwardRef<HTMLDivElement, ColumnHeaderProps>(
     }
 
     const handleDelete = async () => {
-      const ok = await confirm(`Delete column "${column.name}"?`, "Cards in this column will also be deleted.")
+      const ok = await confirm(t("column.deleteConfirm", { name: column.name }), t("column.deleteDescription"))
       if (ok) deleteColumn.mutate(column.id)
     }
 
@@ -71,12 +73,12 @@ export const ColumnHeader = forwardRef<HTMLDivElement, ColumnHeaderProps>(
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setEditOpen(true)}>
                   <Pencil className="mr-2 h-3.5 w-3.5" />
-                  Edit Column
+                  {t("column.editColumn")}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleDelete} className="text-destructive">
                   <Trash2 className="mr-2 h-3.5 w-3.5" />
-                  Delete
+                  {t("common:button.delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -86,7 +88,7 @@ export const ColumnHeader = forwardRef<HTMLDivElement, ColumnHeaderProps>(
         <ColumnEditDialog
           open={editOpen}
           onOpenChange={setEditOpen}
-          title="Edit Column"
+          title={t("column.edit")}
           initialName={column.name}
           initialStatus={column.status_category}
           onSave={handleEdit}

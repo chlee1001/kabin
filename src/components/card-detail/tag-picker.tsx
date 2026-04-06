@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState } from "react"
 import { useCardTags, useTags, useCreateTag, useAddCardTag, useRemoveCardTag } from "@/hooks/use-tags"
 import { Badge } from "@/components/ui/badge"
@@ -10,6 +11,7 @@ interface TagPickerProps {
 }
 
 export function TagPicker({ cardId }: TagPickerProps) {
+  const { t } = useTranslation("card")
   const { data: cardTags } = useCardTags(cardId)
   const { data: allTags } = useTags()
   const createTag = useCreateTag()
@@ -80,7 +82,7 @@ export function TagPicker({ cardId }: TagPickerProps) {
             value={newTagName}
             onChange={(e) => setNewTagName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-            placeholder="Tag name..."
+            placeholder={t("tagPlaceholder")}
             className="h-7 text-xs"
             autoFocus
           />

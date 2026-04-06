@@ -1,4 +1,5 @@
 import { useParams, Link } from "@tanstack/react-router"
+import { useTranslation } from "react-i18next"
 import { useBoards, useCreateBoard } from "@/hooks/use-boards"
 import { useProjects } from "@/hooks/use-projects"
 import { usePrompt } from "@/components/shared/prompt-dialog"
@@ -7,6 +8,7 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, FolderOpen } from "lucide-react"
 
 export function ProjectBoardsPage() {
+  const { t } = useTranslation("board")
   const { projectId } = useParams({ from: "/projects/$projectId" })
   const { data: boards, isLoading } = useBoards(projectId)
   const { data: projects } = useProjects()
@@ -15,12 +17,12 @@ export function ProjectBoardsPage() {
 
   const prompt = usePrompt()
   const handleCreate = async () => {
-    const name = await prompt("Board name")
+    const name = await prompt(t("boardName"))
     if (name) createBoard.mutate({ projectId, name })
   }
 
   if (isLoading) {
-    return <div className="flex h-full items-center justify-center text-muted-foreground">Loading...</div>
+    return <div className="flex h-full items-center justify-center text-muted-foreground">{t("common:loading")}</div>
   }
 
   return (
@@ -30,21 +32,21 @@ export function ProjectBoardsPage() {
           {project && (
             <div className="h-3.5 w-3.5 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
           )}
-          <h1 className="text-2xl font-semibold">{project?.name ?? "Boards"}</h1>
+          <h1 className="text-2xl font-semibold">{project?.name ?? t("boards")}</h1>
         </div>
         <Button onClick={handleCreate} className="gap-2">
           <Plus className="h-4 w-4" />
-          New Board
+          {t("newBoard")}
         </Button>
       </div>
 
       {boards?.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
           <FolderOpen className="mb-4 h-12 w-12" />
-          <p>No boards yet</p>
+          <p>{t("empty")}</p>
           <Button variant="outline" className="mt-4 gap-2" onClick={handleCreate}>
             <Plus className="h-4 w-4" />
-            Create your first board
+            {t("createFirstBoard")}
           </Button>
         </div>
       ) : (

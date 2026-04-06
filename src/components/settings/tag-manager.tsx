@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { useState, useRef } from "react"
 import { useTags, useUpdateTag, useDeleteTag } from "@/hooks/use-tags"
 import { useConfirm } from "@/components/shared/prompt-dialog"
@@ -7,6 +8,7 @@ import { Pencil, Trash2, Check, X } from "lucide-react"
 import { toast } from "sonner"
 
 export function TagManager() {
+  const { t } = useTranslation("settings")
   const { data: tags } = useTags()
   const updateTag = useUpdateTag()
   const deleteTag = useDeleteTag()
@@ -35,22 +37,22 @@ export function TagManager() {
       {
         onSuccess: () => {
           cancelEdit()
-          toast.success("Tag updated")
+          toast.success(t("tag.updated"))
         },
-        onError: (err) => toast.error(`Update failed: ${err}`),
+        onError: (err) => toast.error(t("tag.updateFailed", { error: String(err) })),
       },
     )
   }
 
   const handleDelete = async (tag: { id: string; name: string }) => {
     const ok = await confirm(
-      `Delete tag "${tag.name}"?`,
-      "This tag will be removed from all cards.",
+      t("tag.deleteConfirm", { name: tag.name }),
+      t("tag.deleteDescription"),
     )
     if (ok) {
       deleteTag.mutate(tag.id, {
-        onSuccess: () => toast.success("Tag deleted"),
-        onError: (err) => toast.error(`Delete failed: ${err}`),
+        onSuccess: () => toast.success(t("tag.deleted")),
+        onError: (err) => toast.error(t("tag.deleteFailed", { error: String(err) })),
       })
     }
   }
@@ -58,7 +60,7 @@ export function TagManager() {
   if (!tags || tags.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
-        No tags yet. Tags are created when you add them to cards.
+        {t("tag.noTags")}
       </p>
     )
   }

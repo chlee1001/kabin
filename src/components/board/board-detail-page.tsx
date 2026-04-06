@@ -1,4 +1,5 @@
 import { useParams } from "@tanstack/react-router"
+import { useTranslation } from "react-i18next"
 import { useColumns, useCreateColumn, useReorderColumns } from "@/hooks/use-columns"
 import { useBoard, useUpdateBoard } from "@/hooks/use-boards"
 import { useProjects, useUpdateProject } from "@/hooks/use-projects"
@@ -21,7 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Select } from "@/components/ui/select"
-import { Copy, Plus, ChevronRight, MoreHorizontal, Image, FileText } from "lucide-react"
+import { Copy, Plus, ChevronRight, MoreHorizontal } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
 import { convertFileSrc } from "@tauri-apps/api/core"
@@ -31,6 +32,7 @@ type SortBy = "manual" | "due_date" | "title" | "created_at"
 type SortDir = "asc" | "desc"
 
 export function BoardDetailPage() {
+  const { t } = useTranslation(["board", "common"])
   const { boardId } = useParams({ from: "/boards/$boardId" })
   const { data: board } = useBoard(boardId)
   const { data: projects } = useProjects()
@@ -89,7 +91,7 @@ export function BoardDetailPage() {
           reorderColumns.mutate(
             { boardId, columnIds: reordered.map((c) => c.id) },
             {
-              onError: () => toast.error("컬럼 순서 변경 실패. 이전 상태로 복원됨"),
+              onError: () => toast.error(t("columnReorderFailed")),
             },
           )
         }
@@ -100,7 +102,7 @@ export function BoardDetailPage() {
   const handleAddColumn = () => setAddColumnOpen(true)
 
   if (isLoading) {
-    return <div className="flex h-full items-center justify-center text-muted-foreground">Loading...</div>
+    return <div className="flex h-full items-center justify-center text-muted-foreground">{t("common:loading")}</div>
   }
 
   return (
@@ -139,10 +141,10 @@ export function BoardDetailPage() {
           onChange={(e) => setSortBy(e.target.value as SortBy)}
           className="w-36 h-8 text-xs"
         >
-          <option value="manual">Manual</option>
-          <option value="due_date">Due Date</option>
-          <option value="title">Title</option>
-          <option value="created_at">Created</option>
+          <option value="manual">{t("sort.manual")}</option>
+          <option value="due_date">{t("sort.dueDate")}</option>
+          <option value="title">{t("sort.title")}</option>
+          <option value="created_at">{t("sort.created")}</option>
         </Select>
         {sortBy !== "manual" && (
           <button
@@ -155,7 +157,7 @@ export function BoardDetailPage() {
 
         <Button variant="outline" size="sm" className="h-8 gap-1.5" onClick={handleAddColumn}>
           <Plus className="h-3.5 w-3.5" />
-          Column
+          {t("addColumn")}
         </Button>
 
         <div className="flex-1" />
@@ -173,7 +175,7 @@ export function BoardDetailPage() {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setCloneDialogOpen(true)}>
                   <Copy className="mr-2 h-3.5 w-3.5" />
-                  Duplicate Board
+                  {t("duplicateBoard")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -196,7 +198,7 @@ export function BoardDetailPage() {
       <ColumnEditDialog
         open={addColumnOpen}
         onOpenChange={setAddColumnOpen}
-        title="New Column"
+        title={t("column.new")}
         onSave={(name, status) => {
           createColumn.mutate({ boardId, name, statusCategory: status })
           setAddColumnOpen(false)

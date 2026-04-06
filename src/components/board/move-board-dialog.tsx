@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useProjects } from "@/hooks/use-projects"
 import { useMoveBoard } from "@/hooks/use-boards"
 import {
@@ -24,6 +25,7 @@ export function MoveBoardDialog({
   boardId,
   currentProjectId,
 }: MoveBoardDialogProps) {
+  const { t } = useTranslation("board")
   const { data: projects } = useProjects()
   const moveBoard = useMoveBoard()
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
@@ -36,11 +38,11 @@ export function MoveBoardDialog({
       { boardId, targetProjectId: selectedProjectId },
       {
         onSuccess: () => {
-          toast.success("Board moved")
+          toast.success(t("boardMoved"))
           setSelectedProjectId(null)
           onOpenChange(false)
         },
-        onError: (err) => toast.error(`Move failed: ${err}`),
+        onError: (err) => toast.error(t("moveFailed", { error: String(err) })),
       },
     )
   }
@@ -49,11 +51,11 @@ export function MoveBoardDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Move to Project</DialogTitle>
+          <DialogTitle>{t("moveToProject")}</DialogTitle>
         </DialogHeader>
 
         {availableProjects.length === 0 ? (
-          <p className="py-4 text-sm text-muted-foreground">No other projects available.</p>
+          <p className="py-4 text-sm text-muted-foreground">{t("noOtherProjects")}</p>
         ) : (
           <div className="flex flex-col gap-1 py-2">
             {availableProjects.map((project) => (
@@ -78,13 +80,13 @@ export function MoveBoardDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t("common:button.cancel")}
           </Button>
           <Button
             onClick={handleMove}
             disabled={!selectedProjectId || moveBoard.isPending}
           >
-            {moveBoard.isPending ? "Moving..." : "Move"}
+            {moveBoard.isPending ? t("moving") : t("common:button.move")}
           </Button>
         </DialogFooter>
       </DialogContent>

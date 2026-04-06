@@ -15,7 +15,6 @@ import {
 } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from "@/hooks/use-projects"
 import { useBoards, useCreateBoard, useUpdateBoard, useDeleteBoard, useMoveBoard } from "@/hooks/use-boards"
 import { useAppStore } from "@/stores/app-store"
@@ -33,14 +32,16 @@ import { MoveBoardDialog } from "@/components/board/move-board-dialog"
 import { InlineEdit } from "@/components/shared/inline-edit"
 import { ProjectEditDialog } from "@/components/shared/project-edit-dialog"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "react-i18next"
 
 const NAV_ITEMS = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/unified", label: "Unified Kanban", icon: Kanban },
-  { to: "/table", label: "Table View", icon: Table2 },
+  { to: "/dashboard", labelKey: "nav.dashboard", icon: LayoutDashboard },
+  { to: "/unified", labelKey: "nav.unifiedKanban", icon: Kanban },
+  { to: "/table", labelKey: "nav.tableView", icon: Table2 },
 ] as const
 
 export function Sidebar() {
+  const { t } = useTranslation(["layout", "board", "common"])
   const { sidebarCollapsed, setSidebarCollapsed } = useAppStore()
   const { data: projects } = useProjects()
   const router = useRouter()
@@ -64,14 +65,14 @@ export function Sidebar() {
     >
       <div className="flex h-12 items-center px-4">
         {!sidebarCollapsed && (
-          <span className="text-lg font-semibold">Kanban</span>
+          <span className="text-lg font-semibold">{t("appName")}</span>
         )}
       </div>
 
       <Separator />
 
       <nav className="flex flex-col gap-1 p-2">
-        {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+        {NAV_ITEMS.map(({ to, labelKey, icon: Icon }) => (
           <Link
             key={to}
             to={to}
@@ -82,7 +83,7 @@ export function Sidebar() {
             )}
           >
             <Icon className="h-4 w-4 shrink-0" />
-            {!sidebarCollapsed && <span>{label}</span>}
+            {!sidebarCollapsed && <span>{t(labelKey)}</span>}
           </Link>
         ))}
       </nav>
@@ -92,7 +93,7 @@ export function Sidebar() {
       {!sidebarCollapsed && (
         <div className="flex items-center justify-between px-4 py-2">
           <span className="text-xs font-medium uppercase text-muted-foreground">
-            Projects
+            {t("projects")}
           </span>
           <NewProjectButton />
         </div>
@@ -112,7 +113,7 @@ export function Sidebar() {
           className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
           <Settings className="h-4 w-4 shrink-0" />
-          {!sidebarCollapsed && <span>Settings</span>}
+          {!sidebarCollapsed && <span>{t("nav.settings")}</span>}
         </Link>
       </nav>
     </aside>
@@ -120,6 +121,7 @@ export function Sidebar() {
 }
 
 function NewProjectButton() {
+  const { t } = useTranslation(["board", "common"])
   const createProject = useCreateProject()
   const [open, setOpen] = useState(false)
   return (
@@ -130,7 +132,7 @@ function NewProjectButton() {
       <ProjectEditDialog
         open={open}
         onOpenChange={setOpen}
-        title="New Project"
+        title={t("project.new")}
         onSave={(name, color) => {
           createProject.mutate({ name, color })
           setOpen(false)
@@ -162,6 +164,7 @@ function ProjectItem({
   const deleteProject = useDeleteProject()
   const prompt = usePrompt()
   const confirm = useConfirm()
+  const { t } = useTranslation(["board", "common"])
 
   // Make project a drop target for board drags
   useEffect(() => {
@@ -184,7 +187,7 @@ function ProjectItem({
 
   const handleNewBoard = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    const name = await prompt("Board name")
+    const name = await prompt(t("boardName"))
     if (name) createBoard.mutate({ projectId: project.id, name })
   }
 
@@ -248,17 +251,17 @@ function ProjectItem({
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setEditProjectOpen(true)}>
               <Pencil className="mr-2 h-3.5 w-3.5" />
-              Edit
+              {t("common:button.edit")}
             </DropdownMenuItem>
             <DropdownMenuItem
               className="text-destructive"
               onClick={async () => {
-                const ok = await confirm(`Delete project "${project.name}"?`, "All boards and cards will be deleted.")
+                const ok = await confirm(t("project.deleteConfirm", { name: project.name }), t("project.deleteDescription"))
                 if (ok) deleteProject.mutate(project.id)
               }}
             >
               <Trash2 className="mr-2 h-3.5 w-3.5" />
-              Delete
+              {t("common:button.delete")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -272,7 +275,7 @@ function ProjectItem({
           onRename={(name) => updateBoard.mutate({ id: board.id, updates: { name } })}
           onMove={() => setMovingBoardId(board.id)}
           onDelete={async () => {
-            const ok = await confirm(`Delete board "${board.name}"?`, "All columns and cards will be deleted.")
+            const ok = await confirm(t("boardDeleteConfirm", { name: board.name }), t("boardDeleteDescription"))
             if (ok) deleteBoard.mutate(board.id)
           }}
         />
@@ -287,7 +290,7 @@ function ProjectItem({
       <ProjectEditDialog
         open={editProjectOpen}
         onOpenChange={setEditProjectOpen}
-        title="Edit Project"
+        title={t("project.edit")}
         initialName={project.name}
         initialColor={project.color}
         onSave={(name, color) => {
@@ -312,6 +315,7 @@ function SidebarBoardItem({
   onMove: () => void
   onDelete: () => void
 }) {
+  const { t } = useTranslation(["board", "common"])
   const boardRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const router = useRouter()
@@ -358,11 +362,11 @@ function SidebarBoardItem({
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={onMove}>
             <ArrowRightLeft className="mr-2 h-3.5 w-3.5" />
-            Move to Project
+            {t("moveToProject")}
           </DropdownMenuItem>
           <DropdownMenuItem className="text-destructive" onClick={onDelete}>
             <Trash2 className="mr-2 h-3.5 w-3.5" />
-            Delete
+            {t("common:button.delete")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

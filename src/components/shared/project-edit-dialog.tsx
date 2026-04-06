@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -24,6 +25,7 @@ export function ProjectEditDialog({
   onSave,
   saving,
 }: ProjectEditDialogProps) {
+  const { t } = useTranslation(["common", "dashboard", "card"])
   const [name, setName] = useState(initialName)
   const [color, setColor] = useState(initialColor)
 
@@ -48,18 +50,18 @@ export function ProjectEditDialog({
 
         <div className="space-y-4 py-2">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Name</label>
+            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">{t("name")}</label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSave()}
-              placeholder="Project name..."
+              placeholder={t("dashboard:projectName") + "..."}
               autoFocus
             />
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">Color</label>
+            <label className="mb-1.5 block text-xs font-medium text-muted-foreground">{t("color")}</label>
             <div className="flex flex-wrap gap-1.5">
               {DEFAULT_ACCENT_COLORS.map((hex) => (
                 <button
@@ -77,9 +79,9 @@ export function ProjectEditDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>{t("button.cancel")}</Button>
           <Button onClick={handleSave} disabled={!name.trim() || saving}>
-            {saving ? "Saving..." : "Save"}
+            {saving ? t("card:saving") : t("button.save")}
           </Button>
         </DialogFooter>
       </DialogContent>

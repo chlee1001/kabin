@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useTemplates, useCreateTemplate, useUpdateTemplate, useDeleteTemplate, useCreateCardFromTemplate } from "@/hooks/use-templates"
 import { useColumns } from "@/hooks/use-columns"
 import { usePrompt, useConfirm } from "@/components/shared/prompt-dialog"
@@ -19,6 +20,7 @@ interface TemplatePanelProps {
 }
 
 export function TemplatePanel({ boardId }: TemplatePanelProps) {
+  const { t } = useTranslation("board")
   const { data: templates } = useTemplates(boardId)
   const createTemplate = useCreateTemplate()
   const prompt = usePrompt()
@@ -26,7 +28,7 @@ export function TemplatePanel({ boardId }: TemplatePanelProps) {
   const [creatingFrom, setCreatingFrom] = useState<CardTemplate | null>(null)
 
   const handleNew = async () => {
-    const name = await prompt("Template name")
+    const name = await prompt(t("template.name"))
     if (name) {
       createTemplate.mutate(
         { boardId, name },
@@ -41,7 +43,7 @@ export function TemplatePanel({ boardId }: TemplatePanelProps) {
         <PopoverTrigger asChild>
           <Button variant="outline" size="sm" className="h-8 gap-1.5">
             <FileText className="h-3.5 w-3.5" />
-            Templates
+            {t("template.templates")}
             {templates && templates.length > 0 && (
               <span className="text-xs text-muted-foreground">({templates.length})</span>
             )}
@@ -49,7 +51,7 @@ export function TemplatePanel({ boardId }: TemplatePanelProps) {
         </PopoverTrigger>
         <PopoverContent align="start" className="w-64 p-2">
           <div className="mb-2 flex items-center justify-between px-1">
-            <span className="text-xs font-medium text-muted-foreground">Card Templates</span>
+            <span className="text-xs font-medium text-muted-foreground">{t("template.cardTemplates")}</span>
             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleNew}>
               <Plus className="h-3.5 w-3.5" />
             </Button>
@@ -57,7 +59,7 @@ export function TemplatePanel({ boardId }: TemplatePanelProps) {
           <Separator className="mb-2" />
           {!templates || templates.length === 0 ? (
             <p className="py-4 text-center text-xs text-muted-foreground">
-              No templates yet
+              {t("template.noTemplates")}
             </p>
           ) : (
             <ScrollArea className="max-h-60">
@@ -103,6 +105,7 @@ function TemplateItem({
   onEdit: () => void
   onUse: () => void
 }) {
+  const { t } = useTranslation("board")
   const deleteTemplate = useDeleteTemplate()
   const confirm = useConfirm()
 
@@ -119,7 +122,7 @@ function TemplateItem({
       </button>
       <button
         onClick={async () => {
-          const ok = await confirm(`Delete template "${template.name}"?`)
+          const ok = await confirm(t("template.deleteConfirm", { name: template.name }))
           if (ok) deleteTemplate.mutate(template.id)
         }}
         className="h-5 w-5 flex items-center justify-center rounded opacity-0 group-hover:opacity-100 hover:bg-destructive/10"
@@ -137,6 +140,7 @@ function TemplateEditorDialog({
   template: CardTemplate
   onClose: () => void
 }) {
+  const { t } = useTranslation("board")
   const updateTemplate = useUpdateTemplate()
   const [title, setTitle] = useState(template.title)
   const [description, setDescription] = useState(template.description)
@@ -156,7 +160,7 @@ function TemplateEditorDialog({
       },
       {
         onSuccess: () => {
-          toast.success("Template saved")
+          toast.success(t("template.saved"))
           onClose()
         },
       },
@@ -167,32 +171,32 @@ function TemplateEditorDialog({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[85vh] max-w-3xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Template</DialogTitle>
+          <DialogTitle>{t("template.edit")}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">Template Name</label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Template name..." />
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("template.templateName")}</label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("template.namePlaceholder")} />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">Card Title</label>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Card title..." />
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("template.cardTitle")}</label>
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("template.cardTitlePlaceholder")} />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">Description</label>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("template.description")}</label>
             <RichTextEditor content={description} onChange={setDescription} />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">Color</label>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("template.color")}</label>
             <ColorPicker value={color} onChange={setColor} />
           </div>
         </div>
 
         <div className="mt-4 flex justify-end gap-2">
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="outline" onClick={onClose}>{t("common:button.cancel")}</Button>
           <Button onClick={handleSave} disabled={updateTemplate.isPending}>
-            {updateTemplate.isPending ? "Saving..." : "Save Template"}
+            {updateTemplate.isPending ? t("template.saving") : t("template.saveTemplate")}
           </Button>
         </div>
       </DialogContent>
@@ -209,6 +213,7 @@ function CreateFromTemplateDialog({
   boardId: string
   onClose: () => void
 }) {
+  const { t } = useTranslation("board")
   const { data: columns } = useColumns(boardId)
   const createCard = useCreateCardFromTemplate()
   const [selectedColumnId, setSelectedColumnId] = useState<string | null>(null)
@@ -220,7 +225,7 @@ function CreateFromTemplateDialog({
       { templateId: template.id, columnId },
       {
         onSuccess: () => {
-          toast.success("Card created from template")
+          toast.success(t("template.cardCreated"))
           onClose()
         },
       },
@@ -231,12 +236,12 @@ function CreateFromTemplateDialog({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Create from "{template.name}"</DialogTitle>
+          <DialogTitle>{t("template.createFrom", { name: template.name })}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-3">
           <div>
-            <label className="mb-1 block text-xs font-medium text-muted-foreground">Column</label>
+            <label className="mb-1 block text-xs font-medium text-muted-foreground">{t("template.column")}</label>
             <div className="space-y-1">
               {columns?.map((col) => (
                 <button
@@ -256,9 +261,9 @@ function CreateFromTemplateDialog({
         </div>
 
         <div className="mt-2 flex justify-end gap-2">
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="outline" onClick={onClose}>{t("common:button.cancel")}</Button>
           <Button onClick={handleCreate} disabled={createCard.isPending || !columns?.length}>
-            {createCard.isPending ? "Creating..." : "Create Card"}
+            {createCard.isPending ? t("template.creating") : t("template.createCard")}
           </Button>
         </div>
       </DialogContent>
