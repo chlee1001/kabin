@@ -91,5 +91,29 @@
     "cancel": "Cancel",
     "color": "Color",
     "namePlaceholder": "Tag name"
+  },
+  "import": {
+    "title": "Import Data",
+    "description": "Import boards from Kanri or Trello. Adds new boards without affecting existing data.",
+    "source": "Source",
+    "selectFile": "Select JSON File",
+    "analyzing": "Analyzing...",
+    "preview": {
+      "title": "Preview",
+      "project": "Project",
+      "boards": "Boards",
+      "columns": "Columns",
+      "cards": "Cards",
+      "tags": "Tags",
+      "subtasks": "Subtasks",
+      "tagNote": "Existing tags with the same name will be reused."
+    },
+    "confirm": "Import",
+    "importing": "Importing...",
+    "success": "Successfully imported {{count}} board(s)",
+    "error": {
+      "failed": "Import failed: {{error}}",
+      "invalidFile": "This file is not a valid {{source}} export"
+    }
   }
 }

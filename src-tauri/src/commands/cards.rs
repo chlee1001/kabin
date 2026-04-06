@@ -39,7 +39,7 @@ pub struct CardUpdate {
     pub completed: Option<bool>,
 }
 
-fn extract_plain_text(tiptap_json: &str) -> String {
+pub fn extract_plain_text(tiptap_json: &str) -> String {
     fn walk(node: &Value, buf: &mut String) {
         if let Some(text) = node.get("text").and_then(|t| t.as_str()) {
             buf.push_str(text);
