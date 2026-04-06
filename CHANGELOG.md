@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4](https://github.com/chlee1001/kabin/compare/kabin-v0.1.3...kabin-v0.1.4) (2026-04-06)
+
+
+### Bug Fixes
+
+* 보드/통합칸반에서 카드 DnD 시 원하는 위치에 삽입 가능하도록 개선 ([ae13151](https://github.com/chlee1001/kabin/commit/ae13151ef7be86766bbcdf6ab40c75e3fb34c379))
+* 카드 DnD 시 원하는 위치에 삽입 가능하도록 개선 ([ea9ec8a](https://github.com/chlee1001/kabin/commit/ea9ec8ab5c0ad38e11f51f656e9537d1bf0459b6))
+
 ## [0.1.3](https://github.com/chlee1001/kabin/compare/kabin-v0.1.2...kabin-v0.1.3) (2026-04-06)
 
 
