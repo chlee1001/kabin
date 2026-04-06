@@ -2,13 +2,14 @@
   "title": "Dashboard",
   "newProject": "New Project",
   "projectsOverview": "Projects Overview",
-  "urgentFocus": "Urgent Focus",
+  "urgentFocus": "Due Soon",
+  "urgentFocusDesc": "Cards due within 5 days",
   "noProjectsYet": "No projects yet",
   "createFirstProject": "Create your first project",
   "projectName": "Project name",
   "cardCount": "{{count}} card",
   "cardCount_other": "{{count}} cards",
-  "urgentCount": "{{count}} urgent deadline",
-  "urgentCount_other": "{{count}} urgent deadlines",
-  "noUrgentDeadlines": "No urgent deadlines this week"
+  "urgentCount": "{{count}} due soon",
+  "urgentCount_other": "{{count}} due soon",
+  "noUrgentDeadlines": "No upcoming deadlines"
 }

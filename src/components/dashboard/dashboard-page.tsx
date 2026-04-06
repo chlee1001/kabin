@@ -57,7 +57,10 @@ export function DashboardPage() {
       </section>
 
       <section>
-        <h2 className="mb-4 text-lg font-medium">{t("urgentFocus")}</h2>
+        <div className="mb-4 flex items-baseline gap-2">
+          <h2 className="text-lg font-medium">{t("urgentFocus")}</h2>
+          <span className="text-sm text-muted-foreground">{t("urgentFocusDesc")}</span>
+        </div>
         {loadingUrgent ? (
           <p className="text-muted-foreground">{t("common:loading")}</p>
         ) : (

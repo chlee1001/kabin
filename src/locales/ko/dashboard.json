@@ -2,13 +2,14 @@
   "title": "대시보드",
   "newProject": "새 프로젝트",
   "projectsOverview": "프로젝트 현황",
-  "urgentFocus": "긴급 마감",
+  "urgentFocus": "마감 임박",
+  "urgentFocusDesc": "5일 이내 마감인 카드",
   "noProjectsYet": "아직 프로젝트가 없어요",
   "createFirstProject": "첫 프로젝트를 만들어보세요",
   "projectName": "프로젝트 이름",
   "cardCount": "카드 {{count}}개",
   "cardCount_other": "카드 {{count}}개",
-  "urgentCount": "긴급 마감 {{count}}건",
-  "urgentCount_other": "긴급 마감 {{count}}건",
-  "noUrgentDeadlines": "이번 주 긴급한 마감이 없어요"
+  "urgentCount": "마감 임박 {{count}}건",
+  "urgentCount_other": "마감 임박 {{count}}건",
+  "noUrgentDeadlines": "임박한 마감이 없어요"
 }
