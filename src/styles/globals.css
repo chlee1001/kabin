@@ -109,19 +109,77 @@
   }
 }
 
+/* ── Board background: Frosted Glass Hierarchy ────────────── */
+
 .has-background {
   background-attachment: fixed;
 }
 
+/* Toolbar: lightest frosted layer — image color bleeds through */
+.has-background .board-toolbar {
+  @apply bg-white/50 dark:bg-black/40 backdrop-blur-md
+         border-b border-white/10 dark:border-white/5
+         transition-[backdrop-filter,background-color] duration-400;
+}
+
+.has-background .board-toolbar * {
+  text-shadow: 0 1px 2px oklch(0 0 0 / 0.12);
+}
+
+/* Toolbar controls: glass-chip appearance */
+.has-background .board-toolbar select {
+  @apply bg-white/60 dark:bg-black/35 border-white/25 dark:border-white/15 backdrop-blur-sm;
+}
+
+.has-background .board-toolbar button {
+  @apply text-foreground;
+}
+
+.has-background .board-toolbar button:hover {
+  @apply bg-white/20 dark:bg-white/10;
+}
+
+/* Columns: medium frosted layer */
 .has-background .board-column {
   @apply bg-background/60 backdrop-blur-md;
 }
 
+/* Column headers: separator within frosted column */
 .has-background .column-header {
-  @apply bg-transparent;
+  @apply bg-transparent border-b border-white/10 dark:border-white/5;
 }
 
+.has-background .column-header span {
+  @apply drop-shadow-sm;
+}
+
+/* Cards: highest opacity — most readable */
 .has-background .board-card {
-  @apply bg-card/80 backdrop-blur-sm border-transparent shadow-sm;
+  @apply bg-card/85 backdrop-blur-sm border-white/20 dark:border-white/10 shadow-md;
+}
+
+.has-background .board-card:hover {
+  @apply bg-card/95 shadow-lg;
+}
+
+/* Scroll area: soft fade at right edge */
+.has-background .board-scroll {
+  position: relative;
+}
+
+.has-background .board-scroll::after {
+  content: "";
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 3rem;
+  background: linear-gradient(to left, rgb(255 255 255 / 0.3), transparent);
+  pointer-events: none;
+  z-index: 5;
+}
+
+:is(.dark) .has-background .board-scroll::after {
+  background: linear-gradient(to left, rgb(0 0 0 / 0.35), transparent);
 }
 

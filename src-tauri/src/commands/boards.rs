@@ -16,12 +16,22 @@ pub struct Board {
     pub background_value: Option<String>,
 }
 
+fn deserialize_optional_nullable<'de, D>(deserializer: D) -> Result<Option<Option<String>>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    // Field present with null → Some(None), field present with value → Some(Some(v)), field absent → None
+    Ok(Some(Option::deserialize(deserializer)?))
+}
+
 #[derive(Debug, Deserialize)]
 pub struct UpdateBoard {
     pub name: Option<String>,
     pub sort_order: Option<i64>,
-    pub background_type: Option<String>,
-    pub background_value: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_optional_nullable")]
+    pub background_type: Option<Option<String>>,
+    #[serde(default, deserialize_with = "deserialize_optional_nullable")]
+    pub background_value: Option<Option<String>>,
 }
 
 #[tauri::command]
@@ -132,9 +142,17 @@ pub fn update_board(
         .map_err(|e| e.to_string())?;
     }
     if updates.background_type.is_some() || updates.background_value.is_some() {
+        // Some(Some("image")) → set to "image", Some(None) → set to NULL, None → don't touch
+        let bg_type = updates.background_type.unwrap_or_else(|| {
+            // Field not provided — keep current value by reading it
+            conn.query_row("SELECT background_type FROM boards WHERE id = ?1", params![id], |r| r.get(0)).ok()
+        });
+        let bg_value = updates.background_value.unwrap_or_else(|| {
+            conn.query_row("SELECT background_value FROM boards WHERE id = ?1", params![id], |r| r.get(0)).ok()
+        });
         conn.execute(
             "UPDATE boards SET background_type = ?1, background_value = ?2, updated_at = datetime('now') WHERE id = ?3",
-            params![updates.background_type, updates.background_value, id],
+            params![bg_type, bg_value, id],
         )
         .map_err(|e| e.to_string())?;
     }

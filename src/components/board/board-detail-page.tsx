@@ -106,8 +106,9 @@ export function BoardDetailPage() {
   }
 
   return (
-    <div className={cn("flex h-full flex-col", bgStyle && "has-background")} style={bgStyle}>
+    <div className={cn("flex h-full flex-col transition-all duration-500", bgStyle && "has-background")} style={bgStyle}>
       <div aria-live="polite" aria-atomic="true" className="sr-only" id="dnd-live" />
+      <div className="board-toolbar">
       {board && (
         <div className="flex items-center gap-1.5 px-4 pt-4 pb-1 text-sm">
           {project && (
@@ -182,7 +183,8 @@ export function BoardDetailPage() {
           </>
         )}
       </div>
-      <div ref={ref} className="flex flex-1 gap-4 overflow-x-auto p-4 pt-0">
+      </div>
+      <div ref={ref} className="board-scroll flex flex-1 gap-4 overflow-x-auto p-4 pt-2">
         {columns?.map((column) => (
           <BoardColumn
             key={column.id}
