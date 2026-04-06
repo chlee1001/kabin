@@ -115,7 +115,7 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
           }
         },
         onDragLeave: () => { setIsDragOver(false); setIsCardDragOver(false); setClosestColumnEdge(null) },
-        onDrop: ({ source }) => {
+        onDrop: ({ source, location }) => {
           setIsDragOver(false)
           setIsCardDragOver(false)
           setClosestColumnEdge(null)
@@ -127,7 +127,13 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
 
           if (sourceColumnId === column.id) return
 
-          // Move card to this column (append to end)
+          // If dropped on a specific card, let the monitor handle precise positioning
+          const cardTarget = location.current.dropTargets.find(
+            (dt) => dt.data.type === "card" && dt.data.columnId === column.id,
+          )
+          if (cardTarget) return
+
+          // Dropped on column empty area → append to end
           const currentIds = cards?.map((c) => c.id) ?? []
           reorderCards.mutate(
             { columnId: column.id, cardIds: [...currentIds, cardId] },
@@ -140,36 +146,52 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
     )
   }, [column.id, cards, reorderCards, sortBy])
 
-  // Monitor card reordering within this column
+  // Monitor card drops targeting cards in this column (same-column reorder + cross-column insert)
   useEffect(() => {
     return monitorForElements({
-      canMonitor: ({ source }) =>
-        source.data.type === "card" && source.data.columnId === column.id,
+      canMonitor: ({ source }) => source.data.type === "card",
       onDrop: ({ source, location }) => {
         if (sortBy !== "manual") return
-        const target = location.current.dropTargets[0]
-        if (!target || target.data.type !== "card") return
+        // Find a card drop target belonging to THIS column
+        const cardTarget = location.current.dropTargets.find(
+          (dt) => dt.data.type === "card" && dt.data.columnId === column.id,
+        )
+        if (!cardTarget) return
         if (!cards) return
 
         const sourceId = source.data.cardId as string
-        const targetId = target.data.cardId as string
+        const sourceColumnId = source.data.columnId as string
+        const targetId = cardTarget.data.cardId as string
         if (sourceId === targetId) return
 
-        const edge = extractClosestEdge(target.data)
-        const reordered = reorderWithEdge({
-          list: cards,
-          startIndex: cards.findIndex((c) => c.id === sourceId),
-          indexOfTarget: cards.findIndex((c) => c.id === targetId),
-          closestEdgeOfTarget: edge,
-          axis: "vertical",
-        })
+        const edge = extractClosestEdge(cardTarget.data)
 
-        reorderCards.mutate(
-          { columnId: column.id, cardIds: reordered.map((c) => c.id) },
-          {
-            onError: () => toast.error(t("card.reorderFailed")),
-          },
-        )
+        if (sourceColumnId === column.id) {
+          // Same-column reorder
+          const reordered = reorderWithEdge({
+            list: cards,
+            startIndex: cards.findIndex((c) => c.id === sourceId),
+            indexOfTarget: cards.findIndex((c) => c.id === targetId),
+            closestEdgeOfTarget: edge,
+            axis: "vertical",
+          })
+          reorderCards.mutate(
+            { columnId: column.id, cardIds: reordered.map((c) => c.id) },
+            { onError: () => toast.error(t("card.reorderFailed")) },
+          )
+        } else {
+          // Cross-column: insert at the precise position
+          const currentIds = cards.map((c) => c.id)
+          const targetIndex = currentIds.indexOf(targetId)
+          if (targetIndex === -1) return
+          const insertIndex = edge === "top" ? targetIndex : targetIndex + 1
+          const newIds = [...currentIds]
+          newIds.splice(insertIndex, 0, sourceId)
+          reorderCards.mutate(
+            { columnId: column.id, cardIds: newIds },
+            { onError: () => toast.error(t("card.moveFailed")) },
+          )
+        }
       },
     })
   }, [column.id, cards, reorderCards, sortBy])

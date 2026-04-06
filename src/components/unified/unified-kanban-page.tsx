@@ -43,11 +43,18 @@ export function UnifiedKanbanPage() {
 
     const card = cards?.find((c) => c.card_id === cardId)
     const targetLabel = t(`common:${STATUS_CATEGORIES.find((s) => s.value === targetStatus)?.label ?? targetStatus}` as never)
+    const targetCol = cardsByCategory.find((c) => c.value === targetStatus)
 
     moveCard.mutate(
       { cardId, targetStatus },
       {
         onSuccess: () => {
+          // If dropped on a specific card position, reorder after move
+          if (targetIndex != null && targetCol) {
+            const targetIds = targetCol.cards.map((c) => c.card_id)
+            targetIds.splice(targetIndex, 0, cardId)
+            reorderCards.mutate(targetIds)
+          }
           if (card) {
             toast.success(t("unified.cardMovedDetail", { card: card.title, label: targetLabel }))
           }
