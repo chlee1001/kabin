@@ -176,21 +176,49 @@ export function SettingsPage() {
           <Separator />
 
           <div>
-            <h3 className="mb-1 text-sm font-medium">{t("keyboardShortcuts")}</h3>
-            <div className="space-y-1 text-sm text-muted-foreground">
+            <h3 className="mb-3 text-sm font-medium">{t("keyboardShortcuts")}</h3>
+            <div className="space-y-4">
               {[
-                ["⌘K", t("shortcuts.globalSearch")],
-                ["⌘N", t("shortcuts.newCard")],
-                ["⌘S", t("shortcuts.manualBackup")],
-                ["⌘\\", t("shortcuts.toggleSidebar")],
-                ["⌘,", t("shortcuts.settings")],
-                ["Escape", t("shortcuts.closeModal")],
-              ].map(([key, desc]) => (
-                <div key={key} className="flex items-center justify-between">
-                  <span>{desc}</span>
-                  <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-xs font-medium">
-                    {key}
-                  </kbd>
+                {
+                  group: t("shortcutGroup.global"),
+                  items: [
+                    ["⌘K", t("shortcuts.globalSearch")],
+                    ["⌘S", t("shortcuts.manualBackup")],
+                    ["⌘\\", t("shortcuts.toggleSidebar")],
+                    ["⌘,", t("shortcuts.settings")],
+                    ["?", t("shortcuts.showHelp")],
+                    ["Esc", t("shortcuts.closeModal")],
+                  ],
+                },
+                {
+                  group: t("shortcutGroup.navigation"),
+                  items: [
+                    ["⌘1", t("shortcuts.goToDashboard")],
+                    ["⌘2", t("shortcuts.goToUnified")],
+                    ["⌘3", t("shortcuts.goToTable")],
+                  ],
+                },
+                {
+                  group: t("shortcutGroup.board"),
+                  items: [
+                    ["N / C", t("shortcuts.newCard")],
+                    ["⌘N", t("shortcuts.newCardGlobal")],
+                    ["F", t("shortcuts.focusFilter")],
+                  ],
+                },
+              ].map(({ group, items }) => (
+                <div key={group}>
+                  <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">{group}</p>
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    {items.map(([key, desc]) => (
+                      <div key={key} className="flex items-center justify-between">
+                        <span>{desc}</span>
+                        <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-xs font-medium">
+                          {key}
+                        </kbd>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>

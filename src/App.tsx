@@ -19,6 +19,7 @@ import { TableViewPage } from "@/components/table/table-view-page"
 import { SettingsPage } from "@/components/settings/settings-page"
 import { PromptDialogProvider } from "@/components/shared/prompt-dialog"
 import { CommandPalette } from "@/components/layout/command-palette"
+import { KeyboardShortcutsDialog } from "@/components/layout/keyboard-shortcuts-dialog"
 import { CardDetailModal } from "@/components/card-detail/card-detail-modal"
 import { Toaster } from "sonner"
 import { useState } from "react"
@@ -106,6 +107,7 @@ function AppInner() {
     <>
       <RouterProvider router={router} />
       <CommandPalette onSelectCard={setSearchCardId} />
+      <KeyboardShortcutsDialog />
       <CardDetailModal cardId={searchCardId} onClose={() => setSearchCardId(null)} />
       <Toaster position="bottom-right" richColors />
     </>

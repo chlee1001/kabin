@@ -1,6 +1,8 @@
 import { useParams } from "@tanstack/react-router"
 import { useTranslation } from "react-i18next"
 import { useColumns, useCreateColumn, useReorderColumns } from "@/hooks/use-columns"
+import { useCreateCard } from "@/hooks/use-cards"
+import { usePrompt } from "@/components/shared/prompt-dialog"
 import { useBoard, useUpdateBoard } from "@/hooks/use-boards"
 import { useProjects, useUpdateProject } from "@/hooks/use-projects"
 import React, { useEffect, useRef, useState } from "react"
@@ -99,7 +101,22 @@ export function BoardDetailPage() {
     })
   }, [columns, boardId, reorderColumns])
 
+  const createCard = useCreateCard()
+  const promptForTitle = usePrompt()
+
   const handleAddColumn = () => setAddColumnOpen(true)
+
+  // Listen for kanban:new-card event (from ⌘N or N key)
+  useEffect(() => {
+    const handler = async () => {
+      if (!columns || columns.length === 0) return
+      const lastColumn = columns[columns.length - 1]
+      const title = await promptForTitle(t("card.title"))
+      if (title) createCard.mutate({ columnId: lastColumn.id, title })
+    }
+    window.addEventListener("kanban:new-card", handler)
+    return () => window.removeEventListener("kanban:new-card", handler)
+  }, [columns, createCard, promptForTitle, t])
 
   if (isLoading) {
     return <div className="flex h-full items-center justify-center text-muted-foreground">{t("common:loading")}</div>

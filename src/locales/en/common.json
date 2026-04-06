@@ -39,6 +39,22 @@
   "name": "Name",
   "color": "Color",
   "filters": "Filters:",
+  "filter": {
+    "project": "Project",
+    "board": "Board",
+    "status": "Status",
+    "tags": "Tags",
+    "dueDate": "Due Date",
+    "search": "Search cards...",
+    "noResults": "No results",
+    "selected": "{{count}} selected",
+    "allProjects": "All projects",
+    "allBoards": "All boards",
+    "allStatuses": "All statuses",
+    "allTags": "All tags",
+    "dateRange": "Date range",
+    "clearAll": "Clear all filters"
+  },
   "from": "From",
   "to": "To"
 }

@@ -18,13 +18,25 @@
   "backupCreated": "Backup created",
   "backupFailed": "Backup failed: {{error}}",
   "keyboardShortcuts": "Keyboard Shortcuts",
+  "shortcutGroup": {
+    "global": "Global",
+    "navigation": "Navigation",
+    "board": "Board"
+  },
   "shortcuts": {
     "globalSearch": "Global Search",
-    "newCard": "New Card (current board)",
+    "newCard": "New Card",
+    "newCardAlt": "New Card",
+    "newCardGlobal": "New Card (any view)",
     "manualBackup": "Manual Backup",
     "toggleSidebar": "Toggle Sidebar",
     "settings": "Settings",
-    "closeModal": "Close Modal/Palette"
+    "closeModal": "Close Modal / Palette",
+    "showHelp": "Show Keyboard Shortcuts",
+    "goToDashboard": "Go to Dashboard",
+    "goToUnified": "Go to Unified Kanban",
+    "goToTable": "Go to Table View",
+    "focusFilter": "Focus Filter / Search"
   },
   "tag": {
     "updated": "Tag updated",

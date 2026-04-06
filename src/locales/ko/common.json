@@ -39,6 +39,22 @@
   "name": "이름",
   "color": "색상",
   "filters": "필터:",
+  "filter": {
+    "project": "프로젝트",
+    "board": "보드",
+    "status": "상태",
+    "tags": "태그",
+    "dueDate": "마감일",
+    "search": "카드 검색...",
+    "noResults": "결과 없음",
+    "selected": "{{count}}개 선택",
+    "allProjects": "전체 프로젝트",
+    "allBoards": "전체 보드",
+    "allStatuses": "전체 상태",
+    "allTags": "전체 태그",
+    "dateRange": "기간 설정",
+    "clearAll": "필터 초기화"
+  },
   "from": "시작일",
   "to": "종료일"
 }

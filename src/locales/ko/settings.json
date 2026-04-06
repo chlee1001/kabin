@@ -18,13 +18,25 @@
   "backupCreated": "백업을 완료했어요",
   "backupFailed": "백업에 실패했어요: {{error}}",
   "keyboardShortcuts": "키보드 단축키",
+  "shortcutGroup": {
+    "global": "전체",
+    "navigation": "이동",
+    "board": "보드"
+  },
   "shortcuts": {
     "globalSearch": "전체 검색",
-    "newCard": "새 카드 (현재 보드)",
+    "newCard": "새 카드",
+    "newCardAlt": "새 카드",
+    "newCardGlobal": "새 카드 (어디서든)",
     "manualBackup": "수동 백업",
     "toggleSidebar": "사이드바 토글",
     "settings": "설정",
-    "closeModal": "모달/팔레트 닫기"
+    "closeModal": "모달/팔레트 닫기",
+    "showHelp": "단축키 도움말",
+    "goToDashboard": "대시보드로 이동",
+    "goToUnified": "통합 칸반으로 이동",
+    "goToTable": "테이블 뷰로 이동",
+    "focusFilter": "필터/검색 포커스"
   },
   "tag": {
     "updated": "태그를 수정했어요",
