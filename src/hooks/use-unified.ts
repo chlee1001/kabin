@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query"
 import { invoke } from "@tauri-apps/api/core"
 
 export interface UnifiedCardTag {
@@ -49,6 +49,7 @@ export function useFilteredCards(filters: CardFilter) {
   return useQuery({
     queryKey: ["filtered-cards", filters],
     queryFn: () => invoke<UnifiedCard[]>("get_all_cards_with_filters", { filters }),
+    placeholderData: keepPreviousData,
   })
 }
 
