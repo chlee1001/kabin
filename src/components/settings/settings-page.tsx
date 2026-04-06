@@ -7,14 +7,17 @@ import { useCreateBackup, useExportBackup, useImportBackup, useLastBackupTime } 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Moon, Sun, Monitor, HardDrive, Tags, Clock, Type, Info, Download, Upload, Keyboard } from "lucide-react"
+import { Moon, Sun, Monitor, HardDrive, Tags, Clock, Type, Info, Download, Upload, Keyboard, Database, Trash2 } from "lucide-react"
 import { getVersion } from "@tauri-apps/api/app"
 import { useQuery } from "@tanstack/react-query"
 import { TagManager } from "./tag-manager"
 import { settingsApi } from "@/lib/tauri"
+import { seedDemoData, resetAllData } from "@/lib/seed-data"
+import { useQueryClient } from "@tanstack/react-query"
 import { useAppName, useSetAppName } from "@/hooks/use-app-name"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { useConfirm } from "@/components/shared/prompt-dialog"
 
 const BACKUP_INTERVALS = [
   { value: "1800", labelKey: "backupInterval.30min" },
@@ -41,6 +44,10 @@ export function SettingsPage() {
   const { data: savedAppName } = useAppName()
   const setAppName = useSetAppName()
   const [appNameDraft, setAppNameDraft] = useState("")
+  const [seedingDemo, setSeedingDemo] = useState(false)
+  const [resettingData, setResettingData] = useState(false)
+  const queryClient = useQueryClient()
+  const confirm = useConfirm()
 
   useEffect(() => {
     settingsApi.get("backup_interval_secs").then((val) => {
@@ -72,6 +79,34 @@ export function SettingsPage() {
         toast.error(t("exportFailed", { error: String(err) }))
       },
     })
+  }
+
+  const handleResetData = async () => {
+    const ok = await confirm(t("resetDataConfirm"), t("demoDataDesc"))
+    if (!ok) return
+    setResettingData(true)
+    try {
+      await resetAllData()
+      queryClient.invalidateQueries()
+      toast.success(t("resetDataSuccess"))
+    } catch (err) {
+      toast.error(t("resetDataFailed", { error: String(err) }))
+    } finally {
+      setResettingData(false)
+    }
+  }
+
+  const handleSeedDemo = async () => {
+    setSeedingDemo(true)
+    try {
+      await seedDemoData()
+      queryClient.invalidateQueries()
+      toast.success(t("demoDataSuccess"))
+    } catch (err) {
+      toast.error(t("demoDataFailed", { error: String(err) }))
+    } finally {
+      setSeedingDemo(false)
+    }
   }
 
   const handleImport = () => {
@@ -388,6 +423,51 @@ export function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Trash2 className="h-4 w-4" />
+            {t("resetData")}
+          </CardTitle>
+          <CardDescription>{t("resetDataConfirm")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button
+            variant="outline"
+            className="gap-2 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            onClick={handleResetData}
+            disabled={resettingData}
+          >
+            <Trash2 className="h-4 w-4" />
+            {resettingData ? t("resettingData") : t("resetData")}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {import.meta.env.DEV && (
+        <Card className="mb-6 border-dashed">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Database className="h-4 w-4" />
+              {t("demoData")}
+              <span className="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">DEV</span>
+            </CardTitle>
+            <CardDescription>{t("demoDataDesc")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={handleSeedDemo}
+              disabled={seedingDemo}
+            >
+              <Database className="h-4 w-4" />
+              {seedingDemo ? t("demoDataInserting") : t("demoDataInsert")}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
