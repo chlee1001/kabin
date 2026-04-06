@@ -18,6 +18,7 @@ import { useAppName, useSetAppName } from "@/hooks/use-app-name"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { useConfirm } from "@/components/shared/prompt-dialog"
+import { ImportSection } from "./import-section"
 
 const BACKUP_INTERVALS = [
   { value: "1800", labelKey: "backupInterval.30min" },
@@ -366,6 +367,8 @@ export function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <ImportSection />
 
       <Card className="mb-6">
         <CardHeader>

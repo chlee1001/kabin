@@ -1,5 +1,6 @@
 mod commands;
 mod db;
+mod import;
 
 use db::backup::perform_backup;
 use db::connection::{init_db, DbState};
@@ -151,6 +152,9 @@ pub fn run() {
             commands::settings::get_setting,
             commands::settings::set_setting,
             commands::settings::delete_setting,
+            // Import
+            commands::import::preview_import,
+            commands::import::execute_import,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

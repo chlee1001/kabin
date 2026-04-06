@@ -10,3 +10,4 @@ pub mod search;
 pub mod backup;
 pub mod settings;
 pub mod templates;
+pub mod import;

@@ -91,5 +91,29 @@
     "cancel": "취소",
     "color": "색상",
     "namePlaceholder": "태그 이름"
+  },
+  "import": {
+    "title": "데이터 가져오기",
+    "description": "Kanri 또는 Trello에서 보드를 가져옵니다. 기존 데이터에 영향을 주지 않습니다.",
+    "source": "소스",
+    "selectFile": "JSON 파일 선택",
+    "analyzing": "분석 중...",
+    "preview": {
+      "title": "미리보기",
+      "project": "프로젝트",
+      "boards": "보드",
+      "columns": "컬럼",
+      "cards": "카드",
+      "tags": "태그",
+      "subtasks": "하위작업",
+      "tagNote": "같은 이름의 기존 태그가 있으면 재사용됩니다."
+    },
+    "confirm": "가져오기",
+    "importing": "가져오는 중...",
+    "success": "{{count}}개 보드를 가져왔습니다",
+    "error": {
+      "failed": "가져오기 실패: {{error}}",
+      "invalidFile": "유효한 {{source}} 내보내기 파일이 아닙니다"
+    }
   }
 }
