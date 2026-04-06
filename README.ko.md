@@ -1,10 +1,12 @@
 <div align="center">
 
-# Kanban
+<img src="src-tauri/icons/128x128@2x.png" alt="Kabin" width="128" />
 
-**빠르고, 오프라인으로 동작하는 데스크톱 칸반 보드.**
+# Kabin
 
-Tauri 2, React 19, SQLite로 만들었습니다. 계정도, 인터넷도 필요 없습니다. 데이터는 내 컴퓨터에만 저장됩니다.
+**나만의 오프라인 칸반 보드.**
+
+Cabin + Kanban. 내 컴퓨터 안에서만 동작하는 칸반 데스크톱 앱. 계정도, 인터넷도 필요 없습니다.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](#라이선스)
 [![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri%202-ffc131.svg)](https://tauri.app)
@@ -13,7 +15,7 @@ Tauri 2, React 19, SQLite로 만들었습니다. 계정도, 인터넷도 필요 
 [English](./README.md) | [한국어](./README.ko.md)
 
 <!-- TODO: 스크린샷 추가 -->
-<!-- ![Kanban 스크린샷](docs/screenshot.png) -->
+<!-- ![Kabin 스크린샷](docs/screenshot.png) -->
 
 </div>
 
@@ -157,6 +159,6 @@ MIT
 
 <div align="center">
 
-오프라인 도구를 선호하는 사람들을 위해 만들었습니다.
+오프라인 도구를 선호하는 사람들을 위해 만들었습니다. 나만의 Kabin에 오신 걸 환영합니다.
 
 </div>

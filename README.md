@@ -1,10 +1,12 @@
 <div align="center">
 
-# Kanban
+<img src="src-tauri/icons/128x128@2x.png" alt="Kabin" width="128" />
 
-**A fast, offline-first Kanban board for your desktop.**
+# Kabin
 
-Built with Tauri 2, React 19, and SQLite. No account required, no internet needed — your data stays on your machine.
+**Your cozy, offline Kanban board.**
+
+Cabin + Kanban. A fast desktop app where your tasks stay on your machine — no account, no internet, no compromise.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
 [![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri%202-ffc131.svg)](https://tauri.app)
@@ -13,7 +15,7 @@ Built with Tauri 2, React 19, and SQLite. No account required, no internet neede
 [English](./README.md) | [한국어](./README.ko.md)
 
 <!-- TODO: Add screenshot -->
-<!-- ![Kanban Screenshot](docs/screenshot.png) -->
+<!-- ![Kabin Screenshot](docs/screenshot.png) -->
 
 </div>
 
@@ -157,6 +159,6 @@ MIT
 
 <div align="center">
 
-Made with care for people who prefer their tools offline.
+Made with care for people who prefer their tools offline. Welcome to your Kabin.
 
 </div>

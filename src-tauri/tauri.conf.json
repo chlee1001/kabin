@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/nicklasad/tauri-2/main/crates/tauri/schema.json",
-  "productName": "Kanban",
+  "productName": "Kabin",
   "version": "0.1.0",
   "identifier": "com.kanban.app",
   "build": {
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Kanban",
+        "title": "Kabin",
         "width": 1280,
         "height": 800,
         "minWidth": 800,
