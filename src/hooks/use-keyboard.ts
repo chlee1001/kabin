@@ -24,6 +24,17 @@ export function useGlobalKeyboard() {
   const toggleSidebar = useAppStore((s) => s.toggleSidebar)
   const router = useRouter()
 
+  // Prevent Backspace from navigating back (capture phase to beat webview default)
+  useEffect(() => {
+    const blockBackspace = (e: KeyboardEvent) => {
+      if (e.key === "Backspace" && !isTyping()) {
+        e.preventDefault()
+      }
+    }
+    document.addEventListener("keydown", blockBackspace, true)
+    return () => document.removeEventListener("keydown", blockBackspace, true)
+  }, [])
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const meta = e.metaKey || e.ctrlKey
