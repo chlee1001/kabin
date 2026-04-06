@@ -75,7 +75,7 @@ export function TableViewPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-12">{t("columns.done")}</TableHead>
+              <TableHead className="w-15">{t("columns.done")}</TableHead>
               <SortableHeader label={t("columns.project")} sortKey="project_name" current={sortKey} dir={sortDir} onToggle={toggleSort} />
               <SortableHeader label={t("columns.board")} sortKey="board_name" current={sortKey} dir={sortDir} onToggle={toggleSort} />
               <SortableHeader label={t("columns.title")} sortKey="title" current={sortKey} dir={sortDir} onToggle={toggleSort} />
