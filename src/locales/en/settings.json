@@ -1,9 +1,11 @@
 {
   "title": "Settings",
   "appName": "App Name",
+  "appNameDesc": "Customize how the app is named in the sidebar.",
   "appNamePlaceholder": "Kanban",
   "appNameHint": "Displayed in the sidebar header",
   "appearance": "Appearance",
+  "appearanceDesc": "Choose your theme and accent color preference.",
   "theme": {
     "light": "Light",
     "dark": "Dark",
@@ -12,8 +14,11 @@
   "accentColor": "Accent Color",
   "customColor": "Custom color",
   "language": "Language",
+  "languageDesc": "Select your preferred interface language.",
   "tags": "Tags",
+  "tagsDesc": "Manage available tags and their colors.",
   "backup": "Backup",
+  "backupDesc": "Back up your data or restore from a previous export.",
   "lastBackup": "Last backup",
   "noBackupsYet": "No backups yet",
   "backingUp": "Backing up...",
@@ -36,6 +41,7 @@
     "manual": "Manual only"
   },
   "keyboardShortcuts": "Keyboard Shortcuts",
+  "keyboardShortcutsDesc": "A list of shortcuts to help you navigate faster.",
   "shortcutGroup": {
     "global": "Global",
     "navigation": "Navigation",
@@ -57,6 +63,7 @@
     "focusFilter": "Focus Filter / Search"
   },
   "about": "About",
+  "aboutDesc": "Information about the application.",
   "about.version": "Version",
   "about.madeBy": "Made by",
   "tag": {
@@ -66,6 +73,12 @@
     "deleteFailed": "Delete failed: {{error}}",
     "deleteConfirm": "Delete tag \"{{name}}\"?",
     "deleteDescription": "This tag will be removed from all cards.",
-    "noTags": "No tags yet. Tags are created when you add them to cards."
+    "noTags": "No tags yet. Tags are created when you add them to cards.",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "color": "Color",
+    "namePlaceholder": "Tag name"
   }
 }

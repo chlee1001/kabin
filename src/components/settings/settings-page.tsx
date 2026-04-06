@@ -5,9 +5,9 @@ import { useEffect, useRef, useState } from "react"
 import { useTheme } from "@/components/theme-provider"
 import { useCreateBackup, useExportBackup, useImportBackup, useLastBackupTime } from "@/hooks/use-backup"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Moon, Sun, Monitor, HardDrive, Tags, Clock, Type, Info, Download, Upload } from "lucide-react"
+import { Moon, Sun, Monitor, HardDrive, Tags, Clock, Type, Info, Download, Upload, Keyboard } from "lucide-react"
 import { getVersion } from "@tauri-apps/api/app"
 import { useQuery } from "@tanstack/react-query"
 import { TagManager } from "./tag-manager"
@@ -103,6 +103,7 @@ export function SettingsPage() {
             <Type className="h-4 w-4" />
             {t("appName")}
           </CardTitle>
+          <CardDescription>{t("appNameDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2">
@@ -144,14 +145,15 @@ export function SettingsPage() {
       <Card className="mb-6">
         <CardHeader>
           <CardTitle className="text-base">{t("appearance")}</CardTitle>
+          <CardDescription>{t("appearanceDesc")}</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           <div className="flex gap-2">
             {themes.map(({ value, label, icon: Icon }) => (
               <Button
                 key={value}
                 variant={theme === value ? "default" : "outline"}
-                className={cn("flex-1 gap-2")}
+                className="flex-1 gap-2"
                 onClick={() => setTheme(value)}
               >
                 <Icon className="h-4 w-4" />
@@ -160,10 +162,10 @@ export function SettingsPage() {
             ))}
           </div>
 
-          <Separator className="my-4" />
+          <Separator />
 
           <div>
-            <p className="mb-2 text-sm font-medium">{t("accentColor")}</p>
+            <p className="mb-3 text-sm font-medium">{t("accentColor")}</p>
             <div className="flex flex-wrap items-center gap-2">
               {DEFAULT_ACCENT_COLORS.map((hex) => (
                 <button
@@ -221,6 +223,7 @@ export function SettingsPage() {
       <Card className="mb-6">
         <CardHeader>
           <CardTitle className="text-base">{t("language")}</CardTitle>
+          <CardDescription>{t("languageDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2">
@@ -247,6 +250,7 @@ export function SettingsPage() {
             <Tags className="h-4 w-4" />
             {t("tags")}
           </CardTitle>
+          <CardDescription>{t("tagsDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <TagManager />
@@ -256,6 +260,7 @@ export function SettingsPage() {
       <Card className="mb-6">
         <CardHeader>
           <CardTitle className="text-base">{t("backup")}</CardTitle>
+          <CardDescription>{t("backupDesc")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
@@ -324,56 +329,62 @@ export function SettingsPage() {
               ))}
             </div>
           </div>
+        </CardContent>
+      </Card>
 
-          <Separator />
-
-          <div>
-            <h3 className="mb-3 text-sm font-medium">{t("keyboardShortcuts")}</h3>
-            <div className="space-y-4">
-              {[
-                {
-                  group: t("shortcutGroup.global"),
-                  items: [
-                    ["⌘K", t("shortcuts.globalSearch")],
-                    ["⌘S", t("shortcuts.manualBackup")],
-                    ["⌘\\", t("shortcuts.toggleSidebar")],
-                    ["⌘,", t("shortcuts.settings")],
-                    ["?", t("shortcuts.showHelp")],
-                    ["Esc", t("shortcuts.closeModal")],
-                  ],
-                },
-                {
-                  group: t("shortcutGroup.navigation"),
-                  items: [
-                    ["⌘1", t("shortcuts.goToDashboard")],
-                    ["⌘2", t("shortcuts.goToUnified")],
-                    ["⌘3", t("shortcuts.goToTable")],
-                  ],
-                },
-                {
-                  group: t("shortcutGroup.board"),
-                  items: [
-                    ["N / C", t("shortcuts.newCard")],
-                    ["⌘N", t("shortcuts.newCardGlobal")],
-                    ["F", t("shortcuts.focusFilter")],
-                  ],
-                },
-              ].map(({ group, items }) => (
-                <div key={group}>
-                  <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">{group}</p>
-                  <div className="space-y-1 text-sm text-muted-foreground">
-                    {items.map(([key, desc]) => (
-                      <div key={key} className="flex items-center justify-between">
-                        <span>{desc}</span>
-                        <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-xs font-medium">
-                          {key}
-                        </kbd>
-                      </div>
-                    ))}
-                  </div>
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Keyboard className="h-4 w-4" />
+            {t("keyboardShortcuts")}
+          </CardTitle>
+          <CardDescription>{t("keyboardShortcutsDesc")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {[
+              {
+                group: t("shortcutGroup.global"),
+                items: [
+                  ["⌘K", t("shortcuts.globalSearch")],
+                  ["⌘S", t("shortcuts.manualBackup")],
+                  ["⌘\\", t("shortcuts.toggleSidebar")],
+                  ["⌘,", t("shortcuts.settings")],
+                  ["?", t("shortcuts.showHelp")],
+                  ["Esc", t("shortcuts.closeModal")],
+                ],
+              },
+              {
+                group: t("shortcutGroup.navigation"),
+                items: [
+                  ["⌘1", t("shortcuts.goToDashboard")],
+                  ["⌘2", t("shortcuts.goToUnified")],
+                  ["⌘3", t("shortcuts.goToTable")],
+                ],
+              },
+              {
+                group: t("shortcutGroup.board"),
+                items: [
+                  ["N / C", t("shortcuts.newCard")],
+                  ["⌘N", t("shortcuts.newCardGlobal")],
+                  ["F", t("shortcuts.focusFilter")],
+                ],
+              },
+            ].map(({ group, items }) => (
+              <div key={group}>
+                <p className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">{group}</p>
+                <div className="space-y-1 text-sm text-muted-foreground">
+                  {items.map(([key, desc]) => (
+                    <div key={key} className="flex items-center justify-between">
+                      <span>{desc}</span>
+                      <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-xs font-medium">
+                        {key}
+                      </kbd>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -383,6 +394,7 @@ export function SettingsPage() {
             <Info className="h-4 w-4" />
             {t("about")}
           </CardTitle>
+          <CardDescription>{t("aboutDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2 text-sm">
