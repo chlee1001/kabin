@@ -248,10 +248,10 @@ function ProjectItem({
 
   return (
     <div ref={projectRef} className={cn("mb-0.5 rounded-md transition-colors", isDragOver && "bg-primary/10 ring-1 ring-primary/40")}>
-      <div className="group flex items-center">
+      <div className="group relative flex items-center overflow-hidden rounded-md hover:bg-sidebar-accent">
         <button
           onClick={() => setExpanded(!expanded)}
-          className="flex flex-1 cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 text-sm hover:bg-sidebar-accent"
+          className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 overflow-hidden px-3 py-1.5 text-sm"
         >
           {expanded ? (
             <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
@@ -268,41 +268,43 @@ function ProjectItem({
             className="truncate"
           />
         </button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-6 w-6 cursor-pointer opacity-0 group-hover:opacity-100"
-          onClick={handleNewBoard}
-        >
-          <Plus className="h-3 w-3" />
-        </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 cursor-pointer opacity-0 group-hover:opacity-100"
-            >
-              <MoreHorizontal className="h-3 w-3" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setEditProjectOpen(true)}>
-              <Pencil className="mr-2 h-3.5 w-3.5" />
-              {t("common:button.edit")}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-destructive"
-              onClick={async () => {
-                const ok = await confirm(t("project.deleteConfirm", { name: project.name }), t("project.deleteDescription"))
-                if (ok) deleteProject.mutate(project.id)
-              }}
-            >
-              <Trash2 className="mr-2 h-3.5 w-3.5" />
-              {t("common:button.delete")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="absolute right-0 top-0 flex h-full items-center gap-0.5 pl-4 pr-1 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-transparent to-sidebar-accent to-30%">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 shrink-0 cursor-pointer"
+            onClick={handleNewBoard}
+          >
+            <Plus className="h-3 w-3" />
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 shrink-0 cursor-pointer"
+              >
+                <MoreHorizontal className="h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setEditProjectOpen(true)}>
+                <Pencil className="mr-2 h-3.5 w-3.5" />
+                {t("common:button.edit")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={async () => {
+                  const ok = await confirm(t("project.deleteConfirm", { name: project.name }), t("project.deleteDescription"))
+                  if (ok) deleteProject.mutate(project.id)
+                }}
+              >
+                <Trash2 className="mr-2 h-3.5 w-3.5" />
+                {t("common:button.delete")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {expanded && boards?.map((board) => (
@@ -424,11 +426,11 @@ function SidebarBoardItem({
   return (
     <div
       ref={boardRef}
-      className={cn("group/board flex items-center", isDragging && "opacity-40")}
+      className={cn("group/board relative flex items-center overflow-hidden rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground", isDragging && "opacity-40")}
     >
       <div
         onClick={() => router.navigate({ to: "/boards/$boardId", params: { boardId: board.id } })}
-        className="flex flex-1 cursor-grab items-center gap-2 rounded-md py-1.5 pl-10 pr-1 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        className="flex min-w-0 flex-1 cursor-grab items-center gap-2 overflow-hidden py-1.5 pl-10 pr-1 text-sm text-muted-foreground"
       >
         <FolderOpen className="h-3.5 w-3.5 shrink-0" />
         <InlineEdit
@@ -437,27 +439,29 @@ function SidebarBoardItem({
           className="truncate"
         />
       </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6 shrink-0 opacity-0 group-hover/board:opacity-100"
-          >
-            <MoreHorizontal className="h-3 w-3" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={onMove}>
-            <ArrowRightLeft className="mr-2 h-3.5 w-3.5" />
-            {t("moveToProject")}
-          </DropdownMenuItem>
-          <DropdownMenuItem className="text-destructive" onClick={onDelete}>
-            <Trash2 className="mr-2 h-3.5 w-3.5" />
-            {t("common:button.delete")}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="absolute right-2 top-0 flex h-full items-center pl-4 pr-1 opacity-0 group-hover/board:opacity-100 bg-linear-to-r from-transparent to-sidebar-accent to-30%">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 shrink-0"
+            >
+              <MoreHorizontal className="h-3 w-3" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={onMove}>
+              <ArrowRightLeft className="mr-2 h-3.5 w-3.5" />
+              {t("moveToProject")}
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive" onClick={onDelete}>
+              <Trash2 className="mr-2 h-3.5 w-3.5" />
+              {t("common:button.delete")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   )
 }

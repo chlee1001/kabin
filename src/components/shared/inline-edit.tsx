@@ -72,7 +72,7 @@ export function InlineEdit({
   return (
     <span
       {...triggerProps}
-      className={cn("cursor-text rounded px-1 -mx-1 hover:bg-muted/50 transition-colors", className)}
+      className={cn("block min-w-0 cursor-text rounded px-1 -mx-1 hover:bg-muted/50 transition-colors", className)}
       title={trigger === "doubleClick" ? t("edit.doubleClickToEdit") : t("edit.clickToEdit")}
     >
       {value}
