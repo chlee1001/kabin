@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview"
+import { preserveOffsetOnSource } from "@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source"
 import { attachClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
 import { useCardsEnriched, useCreateCard, useReorderCards } from "@/hooks/use-cards"
@@ -30,6 +32,9 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
   const columnRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
   const [isDragOver, setIsDragOver] = useState(false)
+  const [isCardDragOver, setIsCardDragOver] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const [closestColumnEdge, setClosestColumnEdge] = useState<string | null>(null)
 
   const sortedCards = useMemo(() => {
     if (!cards || sortBy === "manual") return cards
@@ -63,6 +68,28 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
         element: el,
         dragHandle: handle,
         getInitialData: () => ({ type: "column", columnId: column.id }),
+        onGenerateDragPreview: ({ nativeSetDragImage, location }) => {
+          setCustomNativeDragPreview({
+            nativeSetDragImage,
+            getOffset: preserveOffsetOnSource({ element: el, input: location.current.input }),
+            render({ container }) {
+              const rect = el.getBoundingClientRect()
+              const preview = el.cloneNode(true) as HTMLElement
+              Object.assign(preview.style, {
+                width: `${rect.width}px`,
+                height: `${Math.min(rect.height, 300)}px`,
+                overflow: "hidden",
+                transform: "rotate(1.5deg) scale(0.95)",
+                boxShadow: "0 24px 48px rgba(0,0,0,0.2), 0 8px 16px rgba(0,0,0,0.1)",
+                borderRadius: "0.5rem",
+                opacity: "0.9",
+              })
+              container.appendChild(preview)
+            },
+          })
+        },
+        onDragStart: () => setIsDragging(true),
+        onDrop: () => setIsDragging(false),
       }),
       dropTargetForElements({
         element: el,
@@ -73,10 +100,25 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
           ),
         canDrop: ({ source }) =>
           source.data.type === "card" || source.data.type === "column",
-        onDragEnter: () => setIsDragOver(true),
-        onDragLeave: () => setIsDragOver(false),
+        onDragEnter: ({ source, self }) => {
+          setIsDragOver(true)
+          if (source.data.type === "card" && source.data.columnId !== column.id) {
+            setIsCardDragOver(true)
+          }
+          if (source.data.type === "column" && source.data.columnId !== column.id) {
+            setClosestColumnEdge(extractClosestEdge(self.data))
+          }
+        },
+        onDrag: ({ source, self }) => {
+          if (source.data.type === "column" && source.data.columnId !== column.id) {
+            setClosestColumnEdge(extractClosestEdge(self.data))
+          }
+        },
+        onDragLeave: () => { setIsDragOver(false); setIsCardDragOver(false); setClosestColumnEdge(null) },
         onDrop: ({ source }) => {
           setIsDragOver(false)
+          setIsCardDragOver(false)
+          setClosestColumnEdge(null)
           if (source.data.type !== "card") return
           if (sortBy !== "manual") return
 
@@ -139,13 +181,21 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
   }
 
   return (
+    <div className="relative shrink-0 h-full">
+      {closestColumnEdge === "left" && (
+        <div className="absolute -left-2.5 top-0 bottom-0 z-10 flex items-stretch">
+          <div className="w-[3px] rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.5)]" />
+        </div>
+      )}
     <div
       ref={columnRef}
       role="region"
       aria-label={`Column: ${column.name}`}
       className={cn(
-        "board-column flex w-72 shrink-0 flex-col rounded-lg bg-muted/40",
-        isDragOver && "ring-2 ring-primary/50 bg-primary-subtle/20",
+        "board-column flex w-72 h-full min-h-0 flex-col rounded-lg bg-muted/40 transition-all duration-200",
+        isDragOver && "ring-2 ring-primary/50 bg-primary/[0.06]",
+        isCardDragOver && "ring-2 ring-primary/60 bg-primary/[0.08] scale-[1.01]",
+        isDragging && "opacity-25 border-2 border-dashed border-primary/30 bg-primary/[0.04] shadow-none [&>*]:opacity-40",
       )}
     >
       <ColumnHeader
@@ -154,11 +204,27 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
         cardCount={cards?.length ?? 0}
         onAddCard={handleAddCard}
       />
-      <div className="flex flex-1 flex-col gap-1.5 overflow-y-auto p-2">
+      <div className="flex flex-1 min-h-0 flex-col gap-1.5 overflow-y-auto p-2">
         {sortedCards?.map((card) => (
           <BoardCard key={card.id} card={card} columnId={column.id} boardId={boardId} onClick={() => onCardClick?.(card.id)} />
         ))}
+        {isCardDragOver && (
+          <div className="mx-1 h-10 rounded-lg border-2 border-dashed border-primary/40 bg-primary/[0.06] flex items-center justify-center transition-all animate-in fade-in duration-200">
+            <span className="text-[11px] text-primary/60 font-medium">{t("card.dropHere", "여기에 놓기")}</span>
+          </div>
+        )}
+        {(!sortedCards || sortedCards.length === 0) && !isCardDragOver && (
+          <div className="flex flex-1 min-h-[120px] items-center justify-center rounded-lg border border-dashed border-muted-foreground/15 text-muted-foreground/40 text-xs">
+            {t("column.empty", "카드 없음")}
+          </div>
+        )}
       </div>
+    </div>
+      {closestColumnEdge === "right" && (
+        <div className="absolute -right-2.5 top-0 bottom-0 z-10 flex items-stretch">
+          <div className="w-[3px] rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.5)]" />
+        </div>
+      )}
     </div>
   )
 }

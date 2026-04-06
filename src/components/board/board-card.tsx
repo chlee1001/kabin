@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview"
+import { preserveOffsetOnSource } from "@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source"
 import { attachClosestEdge, extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
 import { Check, ListChecks, Calendar, Trash2, Copy } from "lucide-react"
@@ -38,6 +40,25 @@ export function BoardCard({ card, columnId, boardId, onClick }: BoardCardProps) 
       draggable({
         element: el,
         getInitialData: () => ({ type: "card", cardId: card.id, columnId }),
+        onGenerateDragPreview: ({ nativeSetDragImage, location }) => {
+          setCustomNativeDragPreview({
+            nativeSetDragImage,
+            getOffset: preserveOffsetOnSource({ element: el, input: location.current.input }),
+            render({ container }) {
+              const rect = el.getBoundingClientRect()
+              const preview = el.cloneNode(true) as HTMLElement
+              Object.assign(preview.style, {
+                width: `${rect.width}px`,
+                transform: "rotate(2deg) scale(1.02)",
+                boxShadow: "0 20px 44px rgba(0,0,0,0.18), 0 6px 12px rgba(0,0,0,0.08)",
+                borderRadius: "0.75rem",
+                opacity: "0.92",
+                background: "var(--card)",
+              })
+              container.appendChild(preview)
+            },
+          })
+        },
         onDragStart: () => setIsDragging(true),
         onDrop: () => setIsDragging(false),
       }),
@@ -66,7 +87,9 @@ export function BoardCard({ card, columnId, boardId, onClick }: BoardCardProps) 
   return (
     <div className="relative group/card-wrapper">
       {closestEdge === "top" && (
-        <div className="absolute -top-1.5 left-0 right-0 h-1 rounded-full bg-primary z-10" />
+        <div className="absolute -top-1.5 left-1 right-1 z-10 flex flex-col items-center">
+          <div className="h-[3px] w-full rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.5)]" />
+        </div>
       )}
       <div
         ref={ref}
@@ -78,7 +101,7 @@ export function BoardCard({ card, columnId, boardId, onClick }: BoardCardProps) 
         className={cn(
           "board-card relative flex flex-col gap-3 cursor-grab rounded-xl border border-border bg-card p-3.5 shadow-sm transition-all duration-200 outline-none",
           "hover:border-primary/40 hover:shadow-md hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-          isDragging && "opacity-40 scale-[0.98] ring-2 ring-primary",
+          isDragging && "opacity-20 border-dashed border-primary/30 bg-primary/[0.04] shadow-none scale-[0.97] [&>*]:opacity-40",
           card.completed && "bg-muted/30 border-dashed"
         )}
       >
@@ -183,7 +206,9 @@ export function BoardCard({ card, columnId, boardId, onClick }: BoardCardProps) 
         )}
       </div>
       {closestEdge === "bottom" && (
-        <div className="absolute -bottom-1.5 left-0 right-0 h-1 rounded-full bg-primary z-10" />
+        <div className="absolute -bottom-1.5 left-1 right-1 z-10 flex flex-col items-center">
+          <div className="h-[3px] w-full rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.5)]" />
+        </div>
       )}
     </div>
   )

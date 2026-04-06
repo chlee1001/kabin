@@ -31,6 +31,8 @@ import { Separator } from "@/components/ui/separator"
 import { MoveBoardDialog } from "@/components/board/move-board-dialog"
 import { InlineEdit } from "@/components/shared/inline-edit"
 import { ProjectEditDialog } from "@/components/shared/project-edit-dialog"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { useTranslation } from "react-i18next"
 
@@ -72,25 +74,52 @@ export function Sidebar() {
       <Separator />
 
       <nav className="flex flex-col gap-1 p-2">
-        {NAV_ITEMS.map(({ to, labelKey, icon: Icon }) => (
-          <Link
-            key={to}
-            to={to}
-            className={cn(
-              "flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-              router.state.location.pathname === to &&
-                "bg-sidebar-accent text-sidebar-accent-foreground font-medium",
-            )}
-          >
-            <Icon className="h-4 w-4 shrink-0" />
-            {!sidebarCollapsed && <span>{t(labelKey)}</span>}
-          </Link>
-        ))}
+        <TooltipProvider delayDuration={0}>
+          {NAV_ITEMS.map(({ to, labelKey, icon: Icon }) => {
+            const link = (
+              <Link
+                key={to}
+                to={to}
+                className={cn(
+                  "flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                  sidebarCollapsed && "justify-center px-2",
+                  router.state.location.pathname === to &&
+                    "bg-sidebar-accent text-sidebar-accent-foreground font-medium",
+                )}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                {!sidebarCollapsed && <span>{t(labelKey)}</span>}
+              </Link>
+            )
+            if (!sidebarCollapsed) return link
+            return (
+              <Tooltip key={to}>
+                <TooltipTrigger asChild>{link}</TooltipTrigger>
+                <TooltipContent side="right" className="text-xs font-medium">
+                  {t(labelKey)}
+                </TooltipContent>
+              </Tooltip>
+            )
+          })}
+        </TooltipProvider>
       </nav>
 
       <Separator />
 
-      {!sidebarCollapsed && (
+      {sidebarCollapsed ? (
+        <div className="flex justify-center py-2">
+          <TooltipProvider delayDuration={0}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div><NewProjectButton /></div>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="text-xs font-medium">
+                {t("board:project.new")}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      ) : (
         <div className="flex items-center justify-between px-4 py-2">
           <span className="text-xs font-medium uppercase text-muted-foreground">
             {t("projects")}
@@ -108,13 +137,31 @@ export function Sidebar() {
       <Separator />
 
       <nav className="p-2">
-        <Link
-          to="/settings"
-          className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-        >
-          <Settings className="h-4 w-4 shrink-0" />
-          {!sidebarCollapsed && <span>{t("nav.settings")}</span>}
-        </Link>
+        <TooltipProvider delayDuration={0}>
+          {sidebarCollapsed ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  to="/settings"
+                  className="flex cursor-pointer items-center justify-center rounded-md px-2 py-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                >
+                  <Settings className="h-4 w-4 shrink-0" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="text-xs font-medium">
+                {t("nav.settings")}
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Link
+              to="/settings"
+              className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            >
+              <Settings className="h-4 w-4 shrink-0" />
+              <span>{t("nav.settings")}</span>
+            </Link>
+          )}
+        </TooltipProvider>
       </nav>
     </aside>
   )
@@ -193,16 +240,7 @@ function ProjectItem({
 
   if (collapsed) {
     return (
-      <Link
-        to="/projects/$projectId"
-        params={{ projectId: project.id }}
-        className="flex cursor-pointer items-center justify-center rounded-md p-2 hover:bg-sidebar-accent"
-      >
-        <div
-          className="h-3 w-3 rounded-full"
-          style={{ backgroundColor: project.color }}
-        />
-      </Link>
+      <CollapsedProjectItem project={project} />
     )
   }
 
@@ -297,6 +335,58 @@ function ProjectItem({
         }}
       />
     </div>
+  )
+}
+
+function CollapsedProjectItem({
+  project,
+}: {
+  project: { id: string; name: string; color: string }
+}) {
+  const { t } = useTranslation(["board", "common"])
+  const { data: boards } = useBoards(project.id)
+  const router = useRouter()
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          className="flex w-full cursor-pointer items-center justify-center rounded-md p-2 hover:bg-sidebar-accent"
+        >
+          <div
+            className="h-3 w-3 rounded-full"
+            style={{ backgroundColor: project.color }}
+          />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent side="right" align="start" className="w-48 p-0">
+        <div
+          className="flex items-center gap-2 px-3 py-2 border-b cursor-pointer hover:bg-accent/50 transition-colors"
+          onClick={() => router.navigate({ to: "/projects/$projectId", params: { projectId: project.id } })}
+        >
+          <div className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
+          <span className="text-sm font-medium truncate">{project.name}</span>
+        </div>
+        {boards && boards.length > 0 ? (
+          <div className="py-1">
+            {boards.map((board) => (
+              <div
+                key={board.id}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
+                onClick={() => router.navigate({ to: "/boards/$boardId", params: { boardId: board.id } })}
+              >
+                <FolderOpen className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">{board.name}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="px-3 py-2 text-xs text-muted-foreground/60">
+            {t("project.noBoards", "보드 없음")}
+          </div>
+        )}
+      </PopoverContent>
+    </Popover>
   )
 }
 

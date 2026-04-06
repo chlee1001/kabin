@@ -184,7 +184,7 @@ export function BoardDetailPage() {
         )}
       </div>
       </div>
-      <div ref={ref} className="board-scroll flex flex-1 gap-4 overflow-x-auto p-4 pt-2">
+      <div ref={ref} className="board-scroll flex flex-1 gap-4 overflow-x-auto overflow-y-hidden p-4 pt-2">
         {columns?.map((column) => (
           <BoardColumn
             key={column.id}
