@@ -125,6 +125,7 @@ pub fn run() {
             commands::unified::get_cards_by_status_category,
             commands::unified::get_all_cards_with_filters,
             commands::unified::move_card_by_status_category,
+            commands::unified::reorder_unified_cards,
             // Search
             commands::search::global_search,
             // Backup

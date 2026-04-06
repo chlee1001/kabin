@@ -117,6 +117,24 @@ pub fn move_card_by_status_category(
     }
 }
 
+#[tauri::command]
+pub fn reorder_unified_cards(
+    db: State<DbState>,
+    card_ids: Vec<String>,
+) -> Result<(), String> {
+    let conn = db.0.lock().map_err(|e| e.to_string())?;
+    let tx = conn.unchecked_transaction().map_err(|e| e.to_string())?;
+    for (i, id) in card_ids.iter().enumerate() {
+        tx.execute(
+            "UPDATE cards SET sort_order = ?1, updated_at = datetime('now') WHERE id = ?2",
+            params![i as i64, id],
+        )
+        .map_err(|e| e.to_string())?;
+    }
+    tx.commit().map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 fn query_unified_cards(
     conn: &rusqlite::Connection,
     filters: &CardFilter,

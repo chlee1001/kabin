@@ -64,3 +64,16 @@ export function useMoveCardByStatus() {
     },
   })
 }
+
+export function useReorderUnifiedCards() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (cardIds: string[]) =>
+      invoke<void>("reorder_unified_cards", { cardIds }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["unified-cards"] })
+      qc.invalidateQueries({ queryKey: ["filtered-cards"] })
+      qc.invalidateQueries({ queryKey: ["cards"] })
+    },
+  })
+}
