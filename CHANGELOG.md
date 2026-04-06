@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.5](https://github.com/chlee1001/kabin/compare/kabin-v0.1.4...kabin-v0.1.5) (2026-04-06)
+
+
+### Bug Fixes
+
+* **hooks:** Backspace 키 뒤로가기 방지 ([d436bfc](https://github.com/chlee1001/kabin/commit/d436bfcdb17cf526d2dbef0ea7f04d41717bb612))
+* **hooks:** 필터 검색 입력 시 포커스 유실 방지 ([199b343](https://github.com/chlee1001/kabin/commit/199b34301707bb6b3e69b8a5897f5db06f95d426))
+* **hooks:** 필터 검색 포커스 유실 및 Backspace 뒤로가기 방지 ([b696890](https://github.com/chlee1001/kabin/commit/b696890e22b5c126a8e9b809bd34758f9505fec6))
+
 ## [0.1.4](https://github.com/chlee1001/kabin/compare/kabin-v0.1.3...kabin-v0.1.4) (2026-04-06)
 
 
