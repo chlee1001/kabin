@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next"
-import { useRef, useState } from "react"
-import { useVirtualizer } from "@tanstack/react-virtual"
+import { useState } from "react"
 import { useFilteredCards, useMoveCardByStatus, type CardFilter } from "@/hooks/use-unified"
 import { useUpdateCard } from "@/hooks/use-cards"
 import { STATUS_CATEGORIES } from "@/lib/constants"
@@ -141,21 +140,13 @@ function StatusColumn({
         <span className="text-sm font-medium">{t(`common:${label}` as never)}</span>
         <span className="text-xs text-muted-foreground">{cards.length}</span>
       </div>
-      <VirtualizedCardList cards={cards} onCardClick={onCardClick} />
+      <CardList cards={cards} onCardClick={onCardClick} />
     </div>
   )
 }
 
-function VirtualizedCardList({ cards, onCardClick }: { cards: UnifiedCard[]; onCardClick: (cardId: string) => void }) {
+function CardList({ cards, onCardClick }: { cards: UnifiedCard[]; onCardClick: (cardId: string) => void }) {
   const { t } = useTranslation(["board", "common"])
-  const parentRef = useRef<HTMLDivElement>(null)
-
-  const virtualizer = useVirtualizer({
-    count: cards.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 80,
-    overscan: 5,
-  })
 
   if (cards.length === 0) {
     return (
@@ -166,30 +157,10 @@ function VirtualizedCardList({ cards, onCardClick }: { cards: UnifiedCard[]; onC
   }
 
   return (
-    <div ref={parentRef} className="flex-1 overflow-y-auto p-2">
-      <div
-        style={{ height: `${virtualizer.getTotalSize()}px`, position: "relative" }}
-      >
-        {virtualizer.getVirtualItems().map((virtualItem) => {
-          const card = cards[virtualItem.index]
-          return (
-            <div
-              key={card.card_id}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: `${virtualItem.size}px`,
-                transform: `translateY(${virtualItem.start}px)`,
-              }}
-              className="pb-1.5"
-            >
-              <UnifiedCardItem card={card} onClick={() => onCardClick(card.card_id)} />
-            </div>
-          )
-        })}
-      </div>
+    <div className="flex flex-1 flex-col gap-1.5 overflow-y-auto p-2">
+      {cards.map((card) => (
+        <UnifiedCardItem key={card.card_id} card={card} onClick={() => onCardClick(card.card_id)} />
+      ))}
     </div>
   )
 }
@@ -204,9 +175,21 @@ function UnifiedCardItem({ card, onClick }: { card: UnifiedCard; onClick?: () =>
         e.dataTransfer.setData("cardId", card.card_id)
         e.dataTransfer.setData("sourceStatus", card.status_category)
         e.dataTransfer.effectAllowed = "move"
-        // Explicit drag image — absolute-positioned virtualizer items
-        // can produce invisible ghost images in some browsers
-        e.dataTransfer.setDragImage(e.currentTarget, e.currentTarget.offsetWidth / 2, 20)
+        const el = e.currentTarget
+        const clone = el.cloneNode(true) as HTMLElement
+        Object.assign(clone.style, {
+          position: "fixed",
+          top: "-9999px",
+          left: "-9999px",
+          width: `${el.offsetWidth}px`,
+          transform: "rotate(2deg) scale(1.02)",
+          boxShadow: "0 12px 28px rgba(0,0,0,0.15)",
+          opacity: "0.92",
+          zIndex: "9999",
+        })
+        document.body.appendChild(clone)
+        e.dataTransfer.setDragImage(clone, el.offsetWidth / 2, 20)
+        requestAnimationFrame(() => clone.remove())
       }}
       onClick={onClick}
       className="relative cursor-grab rounded-md border border-border bg-card p-3 shadow-sm hover:shadow-md active:opacity-70"
