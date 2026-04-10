@@ -67,11 +67,22 @@ export function Sidebar() {
         sidebarCollapsed ? "w-14" : "w-60",
       )}
     >
-      <div className="flex h-12 items-center px-4">
-        {!sidebarCollapsed && (
-          <span className="text-lg font-semibold">{customAppName || t("appName")}</span>
-        )}
-      </div>
+      <div
+        data-tauri-drag-region
+        className="sidebar-drag-spacer flex h-11 shrink-0 items-center"
+        style={{
+          paddingLeft: sidebarCollapsed ? "0.5rem" : "var(--traffic-light-inset)",
+          paddingRight: "0.75rem",
+        }}
+      />
+
+      {!sidebarCollapsed && (
+        <div className="flex items-center gap-2 px-4 py-1.5">
+          <span className="text-sm font-semibold tracking-tight">
+            {customAppName || t("appName")}
+          </span>
+        </div>
+      )}
 
       <Separator />
 
