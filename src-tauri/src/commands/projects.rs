@@ -104,10 +104,20 @@ pub fn update_project(
 }
 
 #[tauri::command]
-pub fn delete_project(db: State<DbState>, id: String) -> Result<(), String> {
+pub fn delete_project(db: State<DbState>, app: tauri::AppHandle, id: String) -> Result<(), String> {
     let conn = db.0.lock().map_err(|e| e.to_string())?;
+    // Collect attachment paths first; remove files after the DELETE succeeds.
+    let attachment_paths = super::attachments::collect_attachment_paths(
+        &conn,
+        "SELECT a.stored_path FROM card_attachments a \
+         JOIN cards c ON c.id = a.card_id \
+         JOIN columns co ON co.id = c.column_id \
+         JOIN boards b ON b.id = co.board_id WHERE b.project_id = ?1",
+        &id,
+    );
     conn.execute("DELETE FROM projects WHERE id = ?1", params![id])
         .map_err(|e| e.to_string())?;
+    super::attachments::remove_files(&app, &attachment_paths);
     Ok(())
 }
 

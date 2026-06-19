@@ -160,10 +160,19 @@ pub fn get_board(db: State<DbState>, id: String) -> Result<Board, String> {
 }
 
 #[tauri::command]
-pub fn delete_board(db: State<DbState>, id: String) -> Result<(), String> {
+pub fn delete_board(db: State<DbState>, app: tauri::AppHandle, id: String) -> Result<(), String> {
     let conn = db.0.lock().map_err(|e| e.to_string())?;
+    // Collect attachment paths first; remove files after the DELETE succeeds.
+    let attachment_paths = super::attachments::collect_attachment_paths(
+        &conn,
+        "SELECT a.stored_path FROM card_attachments a \
+         JOIN cards c ON c.id = a.card_id \
+         JOIN columns co ON co.id = c.column_id WHERE co.board_id = ?1",
+        &id,
+    );
     conn.execute("DELETE FROM boards WHERE id = ?1", params![id])
         .map_err(|e| e.to_string())?;
+    super::attachments::remove_files(&app, &attachment_paths);
     Ok(())
 }
 
@@ -190,6 +199,7 @@ fn get_board_by_id(conn: &rusqlite::Connection, id: &str) -> Result<Board, Strin
 #[tauri::command]
 pub fn clone_board(
     db: State<DbState>,
+    app: tauri::AppHandle,
     board_id: String,
     new_name: String,
     include_cards: bool,
@@ -317,6 +327,9 @@ pub fn clone_board(
                     params![new_card_id, old_card_id],
                 )
                 .map_err(|e| e.to_string())?;
+
+                // Clone attachments (fresh ids + physical file copies — DEC-8)
+                super::attachments::clone_attachments(&app, &tx, old_card_id, &new_card_id)?;
 
                 // Sync FTS for the new card
                 super::cards::sync_fts(&tx, &new_card_id, title, description);
