@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.1.9](https://github.com/chlee1001/kabin/compare/kabin-v0.1.8...kabin-v0.1.9) (2026-06-19)
+
+
+### Features
+
+* **layout:** 커스텀 overlay 타이틀바 및 신호등 겹침 해결 ([25578bc](https://github.com/chlee1001/kabin/commit/25578bc4b957e19119268aee2648fddd06a35671))
+* **layout:** 커스텀 titlebar 드래그 영역 및 신호등 간격 수정 ([bfcae11](https://github.com/chlee1001/kabin/commit/bfcae11d227395114f43c9b91b69493ee3758198))
+* **tauri:** overlay titlebar 모드 활성화 및 신호등 위치 설정 ([54a6d86](https://github.com/chlee1001/kabin/commit/54a6d86b75c4c26c8bae7a16eb740424e9575c44))
+
+
+### Bug Fixes
+
+* **layout:** 신호등 겹침 해결 및 타이틀바 구조 개편 ([beb475b](https://github.com/chlee1001/kabin/commit/beb475bc6a51232a453cb430cc14b2d361c38706))
+
+
+### Miscellaneous Chores
+
+* 0.1.9 릴리스 지정 ([5c6cb8a](https://github.com/chlee1001/kabin/commit/5c6cb8a26f3e625b03b39959fd19601df1c57af1))
+
 ## [0.1.8](https://github.com/chlee1001/kabin/compare/kabin-v0.1.7...kabin-v0.1.8) (2026-04-06)
 
 
