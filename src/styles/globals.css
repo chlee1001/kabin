@@ -40,6 +40,9 @@
 
 :root {
   --traffic-light-inset: 76px;
+  /* Light theme titlebar is near-white, so macOS's dimmed (unfocused) traffic
+     lights nearly vanish. A subtle dark tint behind them restores contrast. */
+  --traffic-light-bg: oklch(0 0 0 / 0.07);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -72,6 +75,8 @@
 
 .dark {
   --background: oklch(0.14 0.01 250);
+  /* Dark titlebar already contrasts the dimmed gray traffic lights — no tint. */
+  --traffic-light-bg: transparent;
   --foreground: oklch(0.985 0.01 250);
   --card: oklch(0.18 0.015 250);
   --card-foreground: oklch(0.985 0.01 250);
@@ -159,6 +164,19 @@
 
 .topbar-drag {
   -webkit-app-region: drag;
+}
+
+/* Subtle backdrop behind the native macOS traffic lights (light theme only),
+   fading out toward the toolbar content. Purely visual — the native buttons
+   render above the webview, so this never intercepts their clicks. */
+.traffic-light-backdrop {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--traffic-light-inset);
+  background: linear-gradient(to right, var(--traffic-light-bg), transparent);
+  pointer-events: none;
 }
 
 .topbar-no-drag {
