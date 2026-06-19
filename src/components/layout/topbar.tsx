@@ -77,9 +77,10 @@ export function Topbar() {
     <header
       ref={headerRef}
       data-tauri-drag-region
-      className="topbar-drag flex h-8 items-center justify-between border-b border-border/30 bg-background/95 backdrop-blur-md pr-2 select-none"
+      className="topbar-drag relative flex h-8 items-center justify-between border-b border-border/30 bg-background/95 backdrop-blur-md pr-2 select-none"
       style={{ paddingLeft: "var(--traffic-light-inset)" }}
     >
+      <div className="traffic-light-backdrop" aria-hidden="true" />
       <div className="topbar-no-drag flex items-center gap-0.5 overflow-hidden">
         <TooltipProvider delayDuration={500}>
           <Tooltip>
