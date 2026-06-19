@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.11](https://github.com/chlee1001/kabin/compare/kabin-v0.1.10...kabin-v0.1.11) (2026-06-19)
+
+
+### Build System
+
+* macOS 번들 ad-hoc 서명 적용 릴리스 ([9b6f2c0](https://github.com/chlee1001/kabin/commit/9b6f2c0a0819bc1d09e4afb231cbbfbecea2797f))
+
 ## [0.1.10](https://github.com/chlee1001/kabin/compare/kabin-v0.1.9...kabin-v0.1.10) (2026-06-19)
 
 
