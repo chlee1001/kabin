@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.10](https://github.com/chlee1001/kabin/compare/kabin-v0.1.9...kabin-v0.1.10) (2026-06-19)
+
+
+### Features
+
+* **board:** 카드 생성 시 마감일·색상·태그 인라인 입력 ([#20](https://github.com/chlee1001/kabin/issues/20)) ([7278f7b](https://github.com/chlee1001/kabin/commit/7278f7b1ff53f93d4e4d40db552821467bd0b8d4))
+* **card:** done 컬럼으로 이동 시 자동 완료 처리 ([#23](https://github.com/chlee1001/kabin/issues/23)) ([34f19a3](https://github.com/chlee1001/kabin/commit/34f19a389627325d26df1f7f41ec73e9dc3d553d))
+* **cards:** 완료일(completed_at) 필드 추가 ([#19](https://github.com/chlee1001/kabin/issues/19)) ([f06d2ff](https://github.com/chlee1001/kabin/commit/f06d2ff8f4c19262f09d6a11b89d460a708c6b92))
+* **card:** 완료/기한 표시 개선 ([#22](https://github.com/chlee1001/kabin/issues/22)) ([cbaaad4](https://github.com/chlee1001/kabin/commit/cbaaad4cd02287133b48530dbd0386d7535c84a8))
+
+
+### Bug Fixes
+
+* **board:** 드래그 시 자동 스크롤 동작 복구 ([#18](https://github.com/chlee1001/kabin/issues/18)) ([ffb71dc](https://github.com/chlee1001/kabin/commit/ffb71dcdea4d780fab8a94a91f1537e178c174d9))
+* **cards:** nullable 필드 null 해제 직렬화 버그 수정 ([#16](https://github.com/chlee1001/kabin/issues/16)) ([74bf11a](https://github.com/chlee1001/kabin/commit/74bf11a0c541e67fb150eeb7799f60a4019097aa))
+* **card:** 완료 카드 기한 배지 숨김 및 마지막 저장 위치 이동 ([#24](https://github.com/chlee1001/kabin/issues/24)) ([cf4f1e7](https://github.com/chlee1001/kabin/commit/cf4f1e781e013fac29b7c40f9c35eae86c4424e4))
+
 ## [0.1.9](https://github.com/chlee1001/kabin/compare/kabin-v0.1.8...kabin-v0.1.9) (2026-06-19)
 
 
