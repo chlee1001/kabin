@@ -8,6 +8,7 @@ import { useProjects, useUpdateProject } from "@/hooks/use-projects"
 import React, { useEffect, useRef, useState } from "react"
 import { ColumnEditDialog } from "./column-edit-dialog"
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+import { autoScrollForElements } from "@atlaskit/pragmatic-drag-and-drop-auto-scroll/element"
 import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
 import { BoardColumn } from "./board-column"
@@ -100,6 +101,18 @@ export function BoardDetailPage() {
       },
     })
   }, [columns, boardId, reorderColumns])
+
+  // Horizontal auto-scroll: dragging a card or column near the left/right edge
+  // of the board scrolls the board. Deps [] — registered once on the container.
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    return autoScrollForElements({
+      element: el,
+      canScroll: ({ source }) =>
+        source.data.type === "card" || source.data.type === "column",
+    })
+  }, [])
 
   const createCard = useCreateCard()
   const promptForTitle = usePrompt()
