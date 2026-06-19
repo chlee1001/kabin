@@ -99,6 +99,10 @@ pub fn create_card(
     column_id: String,
     title: String,
     description: Option<String>,
+    start_date: Option<String>,
+    due_date: Option<String>,
+    color: Option<String>,
+    tag_ids: Option<Vec<String>>,
 ) -> Result<Card, String> {
     let conn = db.0.lock().map_err(|e| e.to_string())?;
     let description = description.unwrap_or_else(|| "{}".to_string());
@@ -111,15 +115,31 @@ pub fn create_card(
         )
         .map_err(|e| e.to_string())?;
 
-    conn.execute(
-        "INSERT INTO cards (column_id, title, description, sort_order) VALUES (?1, ?2, ?3, ?4)",
-        params![column_id, title, description, max_order + 1],
+    // Atomic: card + tag links in one transaction so a failed tag insert can't
+    // leave a half-created card.
+    let tx = conn.unchecked_transaction().map_err(|e| e.to_string())?;
+    tx.execute(
+        "INSERT INTO cards (column_id, title, description, start_date, due_date, color, sort_order) \
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        params![column_id, title, description, start_date, due_date, color, max_order + 1],
     )
     .map_err(|e| e.to_string())?;
 
-    let id: String = conn
+    let id: String = tx
         .query_row("SELECT id FROM cards WHERE rowid = last_insert_rowid()", [], |r| r.get(0))
         .map_err(|e| e.to_string())?;
+
+    if let Some(tag_ids) = &tag_ids {
+        for tag_id in tag_ids {
+            tx.execute(
+                "INSERT OR IGNORE INTO card_tags (card_id, tag_id) VALUES (?1, ?2)",
+                params![id, tag_id],
+            )
+            .map_err(|e| e.to_string())?;
+        }
+    }
+
+    tx.commit().map_err(|e| e.to_string())?;
 
     sync_fts(&conn, &id, &title, &description);
     get_card_by_id(&conn, &id)

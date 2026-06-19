@@ -6,10 +6,10 @@ import { preserveOffsetOnSource } from "@atlaskit/pragmatic-drag-and-drop/elemen
 import { attachClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
 import { autoScrollForElements } from "@atlaskit/pragmatic-drag-and-drop-auto-scroll/element"
-import { useCardsEnriched, useCreateCard, useReorderCards } from "@/hooks/use-cards"
-import { usePrompt } from "@/components/shared/prompt-dialog"
+import { useCardsEnriched, useReorderCards } from "@/hooks/use-cards"
 import { BoardCard } from "./board-card"
 import { ColumnHeader } from "./column-header"
+import { CardQuickAdd } from "./card-quick-add"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import type { Column } from "@/lib/tauri"
@@ -28,7 +28,6 @@ interface BoardColumnProps {
 export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", sortDir = "asc" }: BoardColumnProps) {
   const { t } = useTranslation("board")
   const { data: cards } = useCardsEnriched(column.id)
-  const createCard = useCreateCard()
   const reorderCards = useReorderCards()
   const columnRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -210,10 +209,11 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
     })
   }, [])
 
-  const prompt = usePrompt()
-  const handleAddCard = async () => {
-    const title = await prompt(t("card.title"))
-    if (title) createCard.mutate({ columnId: column.id, title })
+  const handleAddCard = () => {
+    // Focus this column's inline quick-add form (handled by CardQuickAdd).
+    window.dispatchEvent(
+      new CustomEvent("kanban:quick-add", { detail: { columnId: column.id } }),
+    )
   }
 
   return (
@@ -254,6 +254,9 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
             {t("column.empty", "카드 없음")}
           </div>
         )}
+      </div>
+      <div className="px-2 pb-2">
+        <CardQuickAdd columnId={column.id} />
       </div>
     </div>
       {closestColumnEdge === "right" && (
