@@ -63,30 +63,21 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "flex h-full flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-200",
+        "flex h-full flex-col border-r border-sidebar-border/50 bg-sidebar text-sidebar-foreground transition-all duration-200 select-none",
         sidebarCollapsed ? "w-14" : "w-60",
       )}
     >
-      <div
-        data-tauri-drag-region
-        className="sidebar-drag-spacer flex h-11 shrink-0 items-center"
-        style={{
-          paddingLeft: sidebarCollapsed ? "0.5rem" : "var(--traffic-light-inset)",
-          paddingRight: "0.75rem",
-        }}
-      />
-
       {!sidebarCollapsed && (
-        <div className="flex items-center gap-2 px-4 py-1.5">
-          <span className="text-sm font-semibold tracking-tight">
+        <div className="flex items-center px-4 pt-2.5 pb-1.5 mb-1">
+          <span className="text-[13px] font-semibold tracking-tight text-sidebar-foreground/70 truncate uppercase">
             {customAppName || t("appName")}
           </span>
         </div>
       )}
 
-      <Separator />
+      {!sidebarCollapsed && <Separator className="opacity-40" />}
 
-      <nav className="flex flex-col gap-1 p-2">
+      <nav className="flex flex-col gap-0.5 p-2">
         <TooltipProvider delayDuration={0}>
           {NAV_ITEMS.map(({ to, labelKey, icon: Icon }) => {
             const link = (
@@ -94,13 +85,13 @@ export function Sidebar() {
                 key={to}
                 to={to}
                 className={cn(
-                  "flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                  "flex cursor-pointer items-center gap-3 rounded-md px-2.5 py-1.5 text-[13px] transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                   sidebarCollapsed && "justify-center px-2",
                   router.state.location.pathname === to &&
                     "bg-sidebar-accent text-sidebar-accent-foreground font-medium",
                 )}
               >
-                <Icon className="h-4 w-4 shrink-0" />
+                <Icon className="h-4 w-4 shrink-0 opacity-70" />
                 {!sidebarCollapsed && <span>{t(labelKey)}</span>}
               </Link>
             )
@@ -117,7 +108,7 @@ export function Sidebar() {
         </TooltipProvider>
       </nav>
 
-      <Separator />
+      <Separator className="opacity-40" />
 
       {sidebarCollapsed ? (
         <div className="flex justify-center py-2">
@@ -133,8 +124,8 @@ export function Sidebar() {
           </TooltipProvider>
         </div>
       ) : (
-        <div className="flex items-center justify-between px-4 py-2">
-          <span className="text-xs font-medium uppercase text-muted-foreground">
+        <div className="flex items-center justify-between px-4 py-2 mt-2">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60">
             {t("projects")}
           </span>
           <NewProjectButton />
@@ -147,7 +138,7 @@ export function Sidebar() {
         ))}
       </ScrollArea>
 
-      <Separator />
+      <Separator className="opacity-40" />
 
       <nav className="p-2">
         <TooltipProvider delayDuration={0}>
@@ -158,7 +149,7 @@ export function Sidebar() {
                   to="/settings"
                   className="flex cursor-pointer items-center justify-center rounded-md px-2 py-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 >
-                  <Settings className="h-4 w-4 shrink-0" />
+                  <Settings className="h-4 w-4 shrink-0 opacity-70" />
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right" className="text-xs font-medium">
@@ -168,9 +159,9 @@ export function Sidebar() {
           ) : (
             <Link
               to="/settings"
-              className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              className="flex cursor-pointer items-center gap-3 rounded-md px-2.5 py-1.5 text-[13px] transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
             >
-              <Settings className="h-4 w-4 shrink-0" />
+              <Settings className="h-4 w-4 shrink-0 opacity-70" />
               <span>{t("nav.settings")}</span>
             </Link>
           )}
@@ -186,7 +177,7 @@ function NewProjectButton() {
   const [open, setOpen] = useState(false)
   return (
     <>
-      <Button variant="ghost" size="icon" className="h-6 w-6 cursor-pointer" onClick={() => setOpen(true)}>
+      <Button variant="ghost" size="icon" className="h-5 w-5 cursor-pointer opacity-50 hover:opacity-100" onClick={() => setOpen(true)}>
         <Plus className="h-3.5 w-3.5" />
       </Button>
       <ProjectEditDialog
@@ -262,28 +253,28 @@ function ProjectItem({
       <div className="group relative flex items-center overflow-hidden rounded-md hover:bg-sidebar-accent">
         <button
           onClick={() => setExpanded(!expanded)}
-          className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 overflow-hidden px-3 py-1.5 text-sm"
+          className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 overflow-hidden px-2.5 py-1 text-[13px] font-medium"
         >
           {expanded ? (
-            <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+            <ChevronDown className="h-3 w-3 shrink-0 text-muted-foreground/50" />
           ) : (
-            <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+            <ChevronRight className="h-3 w-3 shrink-0 text-muted-foreground/50" />
           )}
           <div
-            className="h-2.5 w-2.5 rounded-full shrink-0"
+            className="h-2 w-2 rounded-full shrink-0 opacity-80"
             style={{ backgroundColor: project.color }}
           />
           <InlineEdit
             value={project.name}
             onSave={(name) => updateProject.mutate({ id: project.id, updates: { name } })}
-            className="truncate"
+            className="truncate text-sidebar-foreground/80"
           />
         </button>
         <div className="absolute right-0 top-0 flex h-full items-center gap-0.5 pl-4 pr-1 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-transparent to-sidebar-accent to-30%">
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6 shrink-0 cursor-pointer"
+            className="h-5 w-5 shrink-0 cursor-pointer"
             onClick={handleNewBoard}
           >
             <Plus className="h-3 w-3" />
@@ -293,14 +284,14 @@ function ProjectItem({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-6 w-6 shrink-0 cursor-pointer"
+                className="h-5 w-5 shrink-0 cursor-pointer"
               >
                 <MoreHorizontal className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="text-xs">
               <DropdownMenuItem onClick={() => setEditProjectOpen(true)}>
-                <Pencil className="mr-2 h-3.5 w-3.5" />
+                <Pencil className="mr-2 h-3 w-3" />
                 {t("common:button.edit")}
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -310,7 +301,7 @@ function ProjectItem({
                   if (ok) deleteProject.mutate(project.id)
                 }}
               >
-                <Trash2 className="mr-2 h-3.5 w-3.5" />
+                <Trash2 className="mr-2 h-3 w-3" />
                 {t("common:button.delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -369,7 +360,7 @@ function CollapsedProjectItem({
           className="flex w-full cursor-pointer items-center justify-center rounded-md p-2 hover:bg-sidebar-accent"
         >
           <div
-            className="h-3 w-3 rounded-full"
+            className="h-2.5 w-2.5 rounded-full opacity-80"
             style={{ backgroundColor: project.color }}
           />
         </button>
@@ -379,24 +370,24 @@ function CollapsedProjectItem({
           className="flex items-center gap-2 px-3 py-2 border-b cursor-pointer hover:bg-accent/50 transition-colors"
           onClick={() => router.navigate({ to: "/projects/$projectId", params: { projectId: project.id } })}
         >
-          <div className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
-          <span className="text-sm font-medium truncate">{project.name}</span>
+          <div className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
+          <span className="text-xs font-semibold truncate uppercase tracking-wider text-muted-foreground/80">{project.name}</span>
         </div>
         {boards && boards.length > 0 ? (
           <div className="py-1">
             {boards.map((board) => (
               <div
                 key={board.id}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 text-[13px] text-muted-foreground cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
                 onClick={() => router.navigate({ to: "/boards/$boardId", params: { boardId: board.id } })}
               >
-                <FolderOpen className="h-3.5 w-3.5 shrink-0" />
+                <FolderOpen className="h-3.5 w-3.5 shrink-0 opacity-60" />
                 <span className="truncate">{board.name}</span>
               </div>
             ))}
           </div>
         ) : (
-          <div className="px-3 py-2 text-xs text-muted-foreground/60">
+          <div className="px-3 py-2 text-[10px] text-muted-foreground/60 uppercase tracking-tight">
             {t("project.noBoards", "보드 없음")}
           </div>
         )}
@@ -441,9 +432,9 @@ function SidebarBoardItem({
     >
       <div
         onClick={() => router.navigate({ to: "/boards/$boardId", params: { boardId: board.id } })}
-        className="flex min-w-0 flex-1 cursor-grab items-center gap-2 overflow-hidden py-1.5 pl-10 pr-1 text-sm text-muted-foreground"
+        className="flex min-w-0 flex-1 cursor-grab items-center gap-2 overflow-hidden py-1 pl-9 pr-1 text-[13px] text-muted-foreground/80"
       >
-        <FolderOpen className="h-3.5 w-3.5 shrink-0" />
+        <FolderOpen className="h-3 w-3 shrink-0 opacity-60" />
         <InlineEdit
           value={board.name}
           onSave={(name) => onRename(name)}
@@ -456,18 +447,18 @@ function SidebarBoardItem({
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 shrink-0"
+              className="h-5 w-5 shrink-0"
             >
               <MoreHorizontal className="h-3 w-3" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="text-xs">
             <DropdownMenuItem onClick={onMove}>
-              <ArrowRightLeft className="mr-2 h-3.5 w-3.5" />
+              <ArrowRightLeft className="mr-2 h-3 w-3" />
               {t("moveToProject")}
             </DropdownMenuItem>
             <DropdownMenuItem className="text-destructive" onClick={onDelete}>
-              <Trash2 className="mr-2 h-3.5 w-3.5" />
+              <Trash2 className="mr-2 h-3 w-3" />
               {t("common:button.delete")}
             </DropdownMenuItem>
           </DropdownMenuContent>

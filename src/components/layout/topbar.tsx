@@ -37,23 +37,12 @@ export function Topbar() {
   const effectiveProjectId = projectId || (boardId && allBoards?.find(b => b.id === boardId)?.project_id)
   const currentProject = projects?.find(p => p.id === effectiveProjectId)
 
-  // Traffic lights are at x:12, extend to ~59px. Sidebar collapsed = 56px wide.
-  // When sidebar is closed, topbar needs extra left padding to clear traffic lights.
-  // When sidebar is collapsed (56px), traffic lights are inside sidebar area so topbar needs less.
-  // When sidebar is collapsed (56px), traffic lights extend ~12px past it into topbar.
-  const topbarPaddingLeft = !sidebarOpen
-    ? "var(--traffic-light-inset)"
-    : sidebarCollapsed
-      ? "1.25rem"
-      : "0.5rem"
-
   useEffect(() => {
     const header = headerRef.current
     if (!header) return
 
     const handleMouseDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement
-      // Only drag if not clicking interactive elements
       if (target.closest("button, a, input, kbd, [role='button']")) return
       e.preventDefault()
       getCurrentWindow().startDragging()
@@ -88,40 +77,40 @@ export function Topbar() {
     <header
       ref={headerRef}
       data-tauri-drag-region
-      className="topbar-drag flex h-11 items-center justify-between border-b border-border/30 bg-background/95 backdrop-blur-md pr-3 transition-all duration-300"
-      style={{ paddingLeft: topbarPaddingLeft }}
+      className="topbar-drag flex h-8 items-center justify-between border-b border-border/30 bg-background/95 backdrop-blur-md pr-2 select-none"
+      style={{ paddingLeft: "var(--traffic-light-inset)" }}
     >
       <div className="topbar-no-drag flex items-center gap-0.5 overflow-hidden">
-        <TooltipProvider delayDuration={300}>
+        <TooltipProvider delayDuration={500}>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="h-[28px] w-[28px] shrink-0 text-muted-foreground/60 hover:text-foreground hover:bg-accent/40" 
+                className="h-6.5 w-6.5 shrink-0 text-muted-foreground/50 hover:text-foreground hover:bg-accent/40 transition-colors" 
                 onClick={handleToggleSidebar}
               >
                 {sidebarCollapsed || !sidebarOpen ? (
-                  <PanelLeft className="h-[18px] w-[18px]" />
+                  <PanelLeft className="h-4 w-4" />
                 ) : (
-                  <PanelLeftClose className="h-[18px] w-[18px]" />
+                  <PanelLeftClose className="h-4 w-4" />
                 )}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p className="text-xs">{sidebarOpen ? t("nav.collapseSidebar", "Collapse sidebar") : t("nav.expandSidebar", "Expand sidebar")}</p>
+            <TooltipContent side="bottom" className="text-[11px]">
+              <p>{sidebarOpen ? t("nav.collapseSidebar", "Collapse sidebar") : t("nav.expandSidebar", "Expand sidebar")}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
 
-        <nav className="flex items-center gap-1 overflow-hidden px-1 text-sm font-medium text-muted-foreground/80">
+        <nav className="flex items-center gap-0.5 overflow-hidden px-1 text-[13px] font-medium text-muted-foreground/70">
           {isDashboard && <span className="px-1">{t("nav.dashboard")}</span>}
           {isUnified && <span className="px-1">{t("nav.unifiedKanban")}</span>}
           {isTable && <span className="px-1">{t("nav.tableView")}</span>}
           {isSettings && <span className="px-1">{t("nav.settings")}</span>}
           
           {currentProject && (
-            <div className="flex items-center gap-1 overflow-hidden">
+            <div className="flex items-center gap-0.5 overflow-hidden">
               <span 
                 className="truncate px-1 hover:text-foreground cursor-pointer transition-colors"
                 onClick={() => router.navigate({ to: "/projects/$projectId", params: { projectId: currentProject.id } })}
@@ -130,8 +119,8 @@ export function Topbar() {
               </span>
               {board && (
                 <>
-                  <ChevronRight className="h-3 w-3 shrink-0 opacity-40" />
-                  <span className="truncate px-1 text-foreground cursor-default">{board.name}</span>
+                  <ChevronRight className="h-3 w-3 shrink-0 opacity-30" />
+                  <span className="truncate px-1 text-foreground/90 cursor-default font-semibold">{board.name}</span>
                 </>
               )}
             </div>
@@ -140,24 +129,24 @@ export function Topbar() {
       </div>
 
       <div className="topbar-no-drag flex items-center gap-0.5">
-        <TooltipProvider delayDuration={300}>
+        <TooltipProvider delayDuration={500}>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-[28px] w-[28px] text-muted-foreground/60 hover:text-foreground hover:bg-accent/40"
+                className="h-6.5 w-6.5 text-muted-foreground/50 hover:text-foreground hover:bg-accent/40 transition-colors"
                 onClick={() => {
                   document.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))
                 }}
               >
-                <Search className="h-[18px] w-[18px]" />
+                <Search className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
+            <TooltipContent className="text-[11px]">
               <div className="flex items-center gap-2">
-                <p className="text-xs">{t("search")}</p>
-                <kbd className="rounded border border-border bg-muted px-1 py-0 text-[10px] font-medium text-muted-foreground">⌘K</kbd>
+                <p>{t("search")}</p>
+                <kbd className="rounded border border-border/40 bg-muted/50 px-1 py-0 text-[9px] font-medium text-muted-foreground/60">⌘K</kbd>
               </div>
             </TooltipContent>
           </Tooltip>
@@ -167,7 +156,7 @@ export function Topbar() {
               <Button
                 variant="ghost"
                 className={cn(
-                  "h-[28px] w-[28px] text-muted-foreground/60 hover:text-foreground hover:bg-accent/40",
+                  "h-6.5 w-6.5 p-0 flex items-center justify-center text-muted-foreground/50 hover:text-foreground hover:bg-accent/40 transition-colors",
                   createBackup.isPending && "animate-pulse",
                 )}
                 onClick={() => {
@@ -178,12 +167,12 @@ export function Topbar() {
                 }}
                 disabled={createBackup.isPending}
               >
-                <HardDrive className={cn("h-[18px] w-[18px]", lastBackup ? "text-primary/60" : "")} />
+                <HardDrive className={cn("h-4 w-4", lastBackup ? "text-primary/40" : "")} />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top">
-              <p className="text-xs">{backupLabel}</p>
-              <p className="text-[10px] text-muted-foreground">{t("backupHint")}</p>
+            <TooltipContent side="top" className="text-[11px]">
+              <p>{backupLabel}</p>
+              <p className="text-[10px] opacity-70">{t("backupHint")}</p>
             </TooltipContent>
           </Tooltip>
 
@@ -192,14 +181,14 @@ export function Topbar() {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="h-[28px] w-[28px] text-muted-foreground/60 hover:text-foreground hover:bg-accent/40" 
+                className="h-6.5 w-6.5 text-muted-foreground/50 hover:text-foreground hover:bg-accent/40 transition-colors" 
                 onClick={toggleTheme}
               >
-                {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
-              <p className="text-xs">{theme === "dark" ? "Light Mode" : "Dark Mode"}</p>
+            <TooltipContent className="text-[11px]">
+              <p>{theme === "dark" ? "Light Mode" : "Dark Mode"}</p>
             </TooltipContent>
           </Tooltip>
 
@@ -208,14 +197,14 @@ export function Topbar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-[28px] w-[28px] text-muted-foreground/60 hover:text-foreground hover:bg-accent/40"
+                className="h-6.5 w-6.5 text-muted-foreground/50 hover:text-foreground hover:bg-accent/40 transition-colors"
                 onClick={() => router.navigate({ to: "/settings" })}
               >
-                <Settings className="h-[18px] w-[18px]" />
+                <Settings className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
-              <p className="text-xs">{t("nav.settings")}</p>
+            <TooltipContent className="text-[11px]">
+              <p>{t("nav.settings")}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
