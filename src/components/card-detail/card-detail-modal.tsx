@@ -233,6 +233,11 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
                   {t("deleteCard")}
                 </Button>
               </div>
+
+              {/* SQLite datetime('now') is UTC without a tz marker — parse as UTC */}
+              <p className="pt-1 text-right text-[10px] text-muted-foreground/60">
+                {t("lastSaved")}: {new Date(card.updated_at.replace(" ", "T") + "Z").toLocaleString()}
+              </p>
             </aside>
           </div>
         </div>

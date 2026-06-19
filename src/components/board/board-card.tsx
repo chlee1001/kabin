@@ -81,7 +81,8 @@ export function BoardCard({ card, columnId, boardId, onClick }: BoardCardProps) 
     )
   }, [card.id, columnId])
 
-  const hasMetadata = card.due_date || card.tags.length > 0 || card.subtask_total > 0
+  const showCompletedAt = Boolean(card.completed && card.completed_at)
+  const hasMetadata = card.due_date || card.tags.length > 0 || card.subtask_total > 0 || showCompletedAt
 
   return (
     <div className="relative group/card-wrapper">
@@ -160,10 +161,17 @@ export function BoardCard({ card, columnId, boardId, onClick }: BoardCardProps) 
 
         {hasMetadata && (
           <div className="flex flex-wrap items-center gap-2.5 mt-0.5">
+            {showCompletedAt && (
+              <div className="flex items-center gap-1 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
+                <Check className="h-3 w-3 stroke-[2.5px]" />
+                {/* SQLite datetime('now') is UTC without a tz marker — parse as UTC */}
+                {new Date(card.completed_at!.replace(" ", "T") + "Z").toLocaleDateString()}
+              </div>
+            )}
             {card.due_date && (
               <div className="flex items-center gap-1.5">
                 <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                <DeadlineBadge dueDate={card.due_date} />
+                <DeadlineBadge dueDate={card.due_date} completed={card.completed} />
               </div>
             )}
             

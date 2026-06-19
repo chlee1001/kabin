@@ -325,7 +325,7 @@ function UnifiedCardItem({
               {card.subtask_done}/{card.subtask_total}
             </span>
           )}
-          {card.due_date && <DeadlineBadge dueDate={card.due_date} />}
+          {card.due_date && <DeadlineBadge dueDate={card.due_date} completed={card.completed} />}
         </div>
         {card.tags.length > 0 && (
           <div className="ml-6 mt-1.5 flex flex-wrap gap-1">
