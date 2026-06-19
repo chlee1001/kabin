@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.12](https://github.com/chlee1001/kabin/compare/kabin-v0.1.11...kabin-v0.1.12) (2026-06-19)
+
+
+### Features
+
+* **card:** 카드 파일/사진 첨부 기능 ([#28](https://github.com/chlee1001/kabin/issues/28)) ([babe319](https://github.com/chlee1001/kabin/commit/babe319a136d634c9e165396e6f613c79bbdeb64))
+
+
+### Bug Fixes
+
+* **layout:** 라이트 테마 신호등 영역 대비 개선 ([#30](https://github.com/chlee1001/kabin/issues/30)) ([7e41352](https://github.com/chlee1001/kabin/commit/7e4135246640f5cfabf96ab26fa29a951b7dbc4e))
+* **layout:** 신호등 세로 정렬을 토픽바 중앙으로 ([#31](https://github.com/chlee1001/kabin/issues/31)) ([5b6e11e](https://github.com/chlee1001/kabin/commit/5b6e11e0193a28841e61f1f8890522d9a7ca8d48))
+* **layout:** 신호등·사이드바 토글 정렬 미세조정 ([#32](https://github.com/chlee1001/kabin/issues/32)) ([8d3535a](https://github.com/chlee1001/kabin/commit/8d3535af7cb258e40d09d4424d8b6784cfda0b37))
+
 ## [0.1.11](https://github.com/chlee1001/kabin/compare/kabin-v0.1.10...kabin-v0.1.11) (2026-06-19)
 
 
