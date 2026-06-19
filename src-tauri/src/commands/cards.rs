@@ -19,6 +19,7 @@ pub struct Card {
     pub completed: bool,
     pub created_at: String,
     pub updated_at: String,
+    pub completed_at: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -129,7 +130,7 @@ pub fn get_cards(db: State<DbState>, column_id: String) -> Result<Vec<Card>, Str
     let conn = db.0.lock().map_err(|e| e.to_string())?;
     let mut stmt = conn
         .prepare(
-            "SELECT id, column_id, title, description, start_date, due_date, color, sort_order, completed, created_at, updated_at
+            "SELECT id, column_id, title, description, start_date, due_date, color, sort_order, completed, created_at, updated_at, completed_at
              FROM cards WHERE column_id = ?1 ORDER BY sort_order ASC",
         )
         .map_err(|e| e.to_string())?;
@@ -146,7 +147,7 @@ pub fn get_cards_enriched(db: State<DbState>, column_id: String) -> Result<Vec<C
     let conn = db.0.lock().map_err(|e| e.to_string())?;
     let mut stmt = conn
         .prepare(
-            "SELECT id, column_id, title, description, start_date, due_date, color, sort_order, completed, created_at, updated_at
+            "SELECT id, column_id, title, description, start_date, due_date, color, sort_order, completed, created_at, updated_at, completed_at
              FROM cards WHERE column_id = ?1 ORDER BY sort_order ASC",
         )
         .map_err(|e| e.to_string())?;
@@ -270,8 +271,12 @@ pub fn update_card(
         .map_err(|e| e.to_string())?;
     }
     if let Some(completed) = updates.completed {
+        // Auto-stamp completed_at from the completed flag (single source of truth,
+        // backend-generated for timezone consistency): set on true, clear on false.
         conn.execute(
-            "UPDATE cards SET completed = ?1, updated_at = datetime('now') WHERE id = ?2",
+            "UPDATE cards SET completed = ?1, \
+             completed_at = CASE WHEN ?1 = 1 THEN datetime('now') ELSE NULL END, \
+             updated_at = datetime('now') WHERE id = ?2",
             params![completed as i64, id],
         )
         .map_err(|e| e.to_string())?;
@@ -417,12 +422,13 @@ pub fn row_to_card(row: &rusqlite::Row) -> rusqlite::Result<Card> {
         completed: row.get::<_, i64>(8)? != 0,
         created_at: row.get(9)?,
         updated_at: row.get(10)?,
+        completed_at: row.get(11)?,
     })
 }
 
 fn get_card_by_id(conn: &rusqlite::Connection, id: &str) -> Result<Card, String> {
     conn.query_row(
-        "SELECT id, column_id, title, description, start_date, due_date, color, sort_order, completed, created_at, updated_at
+        "SELECT id, column_id, title, description, start_date, due_date, color, sort_order, completed, created_at, updated_at, completed_at
          FROM cards WHERE id = ?1",
         params![id],
         |row| row_to_card(row),

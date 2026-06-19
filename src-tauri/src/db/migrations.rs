@@ -154,3 +154,17 @@ pub fn run_v3(conn: &Connection) {
     )
     .expect("failed to run v3 migrations");
 }
+
+pub fn run_v4(conn: &Connection) {
+    let exists: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM pragma_table_info('cards') WHERE name='completed_at'",
+            [],
+            |row| row.get(0),
+        )
+        .unwrap_or(0);
+    if exists == 0 {
+        conn.execute("ALTER TABLE cards ADD COLUMN completed_at TEXT", [])
+            .expect("failed to add cards.completed_at column");
+    }
+}

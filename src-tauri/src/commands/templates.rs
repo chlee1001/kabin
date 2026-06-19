@@ -161,7 +161,7 @@ pub fn create_card_from_template(
         .map_err(|e| e.to_string())?;
 
     let card = conn.query_row(
-        "SELECT id, column_id, title, description, start_date, due_date, color, sort_order, completed, created_at, updated_at FROM cards WHERE id = ?1",
+        "SELECT id, column_id, title, description, start_date, due_date, color, sort_order, completed, created_at, updated_at, completed_at FROM cards WHERE id = ?1",
         params![new_id],
         |row| super::cards::row_to_card(row),
     ).map_err(|e| e.to_string())?;

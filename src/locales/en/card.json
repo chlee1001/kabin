@@ -6,6 +6,7 @@
   "timeline": "Timeline",
   "startDate": "Start Date",
   "dueDate": "Due Date",
+  "completedAt": "Completed",
   "appearance": "Appearance",
   "tags": "Tags",
   "move": "Move",

@@ -28,6 +28,7 @@ pub fn init_db(app: &AppHandle) -> Connection {
     migrations::run(&conn);
     migrations::run_v2(&conn);
     migrations::run_v3(&conn);
+    migrations::run_v4(&conn);
 
     conn
 }
