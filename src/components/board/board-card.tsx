@@ -168,10 +168,10 @@ export function BoardCard({ card, columnId, boardId, onClick }: BoardCardProps) 
                 {new Date(card.completed_at!.replace(" ", "T") + "Z").toLocaleDateString()}
               </div>
             )}
-            {card.due_date && (
+            {card.due_date && !card.completed && (
               <div className="flex items-center gap-1.5">
                 <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                <DeadlineBadge dueDate={card.due_date} completed={card.completed} />
+                <DeadlineBadge dueDate={card.due_date} />
               </div>
             )}
             

@@ -1,14 +1,11 @@
 import { differenceInDays, parseISO } from "date-fns"
 import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
 
 interface DeadlineBadgeProps {
   dueDate: string
-  /** Completed cards show the deadline neutrally — no overdue (red) emphasis. */
-  completed?: boolean
 }
 
-export function DeadlineBadge({ dueDate, completed = false }: DeadlineBadgeProps) {
+export function DeadlineBadge({ dueDate }: DeadlineBadgeProps) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const due = parseISO(dueDate)
@@ -18,9 +15,7 @@ export function DeadlineBadge({ dueDate, completed = false }: DeadlineBadgeProps
   const label = diff === 0 ? "D-DAY" : diff > 0 ? `D-${diff}` : `D+${-diff}`
 
   let variant: "destructive" | "default" | "secondary" | "outline"
-  if (completed) {
-    variant = "outline"
-  } else if (diff <= 0) {
+  if (diff <= 0) {
     variant = "destructive"
   } else if (diff === 1) {
     variant = "default"
@@ -29,10 +24,7 @@ export function DeadlineBadge({ dueDate, completed = false }: DeadlineBadgeProps
   }
 
   return (
-    <Badge
-      variant={variant}
-      className={cn("shrink-0 text-xs tabular-nums", completed && "text-muted-foreground/60")}
-    >
+    <Badge variant={variant} className="shrink-0 text-xs tabular-nums">
       {label}
     </Badge>
   )
