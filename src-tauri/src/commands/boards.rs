@@ -2,6 +2,7 @@ use rusqlite::params;
 use serde::{Deserialize, Serialize};
 use tauri::{Manager, State};
 
+use crate::commands::deserialize_optional_nullable;
 use crate::db::connection::DbState;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -14,14 +15,6 @@ pub struct Board {
     pub updated_at: String,
     pub background_type: Option<String>,
     pub background_value: Option<String>,
-}
-
-fn deserialize_optional_nullable<'de, D>(deserializer: D) -> Result<Option<Option<String>>, D::Error>
-where
-    D: serde::Deserializer<'de>,
-{
-    // Field present with null → Some(None), field present with value → Some(Some(v)), field absent → None
-    Ok(Some(Option::deserialize(deserializer)?))
 }
 
 #[derive(Debug, Deserialize)]

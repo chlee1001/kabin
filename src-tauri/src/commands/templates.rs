@@ -2,6 +2,7 @@ use rusqlite::params;
 use serde::{Deserialize, Serialize};
 use tauri::State;
 
+use crate::commands::deserialize_optional_nullable;
 use crate::db::connection::DbState;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -22,6 +23,7 @@ pub struct UpdateTemplate {
     pub name: Option<String>,
     pub title: Option<String>,
     pub description: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_optional_nullable")]
     pub color: Option<Option<String>>,
 }
 
@@ -187,4 +189,29 @@ fn get_template_by_id(conn: &rusqlite::Connection, id: &str) -> Result<CardTempl
         },
     )
     .map_err(|e| e.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::UpdateTemplate;
+
+    // Same null-clear regression as cards: template color must be clearable.
+    #[test]
+    fn color_present_as_null_becomes_some_none() {
+        let u: UpdateTemplate = serde_json::from_str(r#"{"color": null}"#).unwrap();
+        assert_eq!(u.color, Some(None), "null color must clear (Some(None))");
+    }
+
+    #[test]
+    fn color_present_with_value_becomes_some_some() {
+        let u: UpdateTemplate = serde_json::from_str(r##"{"color": "#fff"}"##).unwrap();
+        assert_eq!(u.color, Some(Some("#fff".to_string())));
+    }
+
+    #[test]
+    fn color_absent_stays_none() {
+        let u: UpdateTemplate = serde_json::from_str(r#"{"name": "Tmpl"}"#).unwrap();
+        assert_eq!(u.name, Some("Tmpl".to_string()));
+        assert_eq!(u.color, None, "absent color must stay None");
+    }
 }

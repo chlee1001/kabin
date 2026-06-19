@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri::State;
 
+use crate::commands::deserialize_optional_nullable;
 use crate::db::connection::DbState;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -33,8 +34,11 @@ pub struct CardWithTags {
 pub struct CardUpdate {
     pub title: Option<String>,
     pub description: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_optional_nullable")]
     pub start_date: Option<Option<String>>,
+    #[serde(default, deserialize_with = "deserialize_optional_nullable")]
     pub due_date: Option<Option<String>>,
+    #[serde(default, deserialize_with = "deserialize_optional_nullable")]
     pub color: Option<Option<String>>,
     pub completed: Option<bool>,
 }
@@ -424,4 +428,46 @@ fn get_card_by_id(conn: &rusqlite::Connection, id: &str) -> Result<Card, String>
         |row| row_to_card(row),
     )
     .map_err(|e| e.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::CardUpdate;
+
+    // Regression for the null-clear bug: nullable update fields must distinguish
+    // "field absent" (None → don't touch) from "field present as null"
+    // (Some(None) → clear to SQL NULL). Before the custom deserializer, JSON null
+    // collapsed into the outer None, so clearing color/start_date/due_date silently
+    // skipped the UPDATE. This is a runtime serde behavior the compiler can't catch.
+
+    #[test]
+    fn nullable_fields_present_as_null_become_some_none() {
+        let u: CardUpdate =
+            serde_json::from_str(r#"{"start_date": null, "due_date": null, "color": null}"#)
+                .unwrap();
+        assert_eq!(u.start_date, Some(None), "null start_date must clear (Some(None))");
+        assert_eq!(u.due_date, Some(None), "null due_date must clear (Some(None))");
+        assert_eq!(u.color, Some(None), "null color must clear (Some(None))");
+    }
+
+    #[test]
+    fn nullable_fields_present_with_value_become_some_some() {
+        let u: CardUpdate = serde_json::from_str(
+            r##"{"start_date": "2026-01-01", "due_date": "2026-02-01", "color": "#fff"}"##,
+        )
+        .unwrap();
+        assert_eq!(u.start_date, Some(Some("2026-01-01".to_string())));
+        assert_eq!(u.due_date, Some(Some("2026-02-01".to_string())));
+        assert_eq!(u.color, Some(Some("#fff".to_string())));
+    }
+
+    #[test]
+    fn nullable_fields_absent_stay_none() {
+        // Partial update (e.g. only title) must leave the other columns untouched.
+        let u: CardUpdate = serde_json::from_str(r#"{"title": "Just a title"}"#).unwrap();
+        assert_eq!(u.title, Some("Just a title".to_string()));
+        assert_eq!(u.start_date, None, "absent start_date must stay None");
+        assert_eq!(u.due_date, None, "absent due_date must stay None");
+        assert_eq!(u.color, None, "absent color must stay None");
+    }
 }
