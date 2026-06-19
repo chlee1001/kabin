@@ -358,6 +358,28 @@ pub fn clone_card(db: State<DbState>, card_id: String) -> Result<Card, String> {
     Ok(new_card)
 }
 
+/// Whether a column belongs to the 'done' status category.
+fn column_is_done(conn: &rusqlite::Connection, column_id: &str) -> bool {
+    conn.query_row(
+        "SELECT status_category = 'done' FROM columns WHERE id = ?1",
+        params![column_id],
+        |r| r.get::<_, i64>(0).map(|v| v != 0),
+    )
+    .unwrap_or(false)
+}
+
+/// Mark a card completed (auto-stamping completed_at) when it enters a done
+/// column. The `completed = 0` guard means an already-completed card keeps its
+/// original completed_at.
+fn auto_complete_in_done(conn: &rusqlite::Connection, card_id: &str) -> rusqlite::Result<()> {
+    conn.execute(
+        "UPDATE cards SET completed = 1, completed_at = datetime('now'), \
+         updated_at = datetime('now') WHERE id = ?1 AND completed = 0",
+        params![card_id],
+    )?;
+    Ok(())
+}
+
 #[tauri::command]
 pub fn move_card(
     db: State<DbState>,
@@ -375,6 +397,11 @@ pub fn move_card(
         params![target_column_id, position, card_id],
     )
     .map_err(|e| e.to_string())?;
+
+    // Moving into a done column auto-completes the card.
+    if column_is_done(&tx, &target_column_id) {
+        auto_complete_in_done(&tx, &card_id).map_err(|e| e.to_string())?;
+    }
 
     // Reorder remaining cards in target column
     let other_ids: Vec<String> = {
@@ -417,12 +444,27 @@ pub fn reorder_cards(
     let conn = db.0.lock().map_err(|e| e.to_string())?;
 
     let tx = conn.unchecked_transaction().map_err(|e| e.to_string())?;
+    let target_done = column_is_done(&tx, &column_id);
     for (i, card_id) in card_ids.iter().enumerate() {
+        // Detect a card actually entering this column (cross-column move) before
+        // we overwrite its column_id — so a same-column reorder doesn't complete cards.
+        let entering = target_done
+            && tx
+                .query_row(
+                    "SELECT COUNT(*) FROM cards WHERE id = ?1 AND column_id = ?2",
+                    params![card_id, column_id],
+                    |r| r.get::<_, i64>(0),
+                )
+                .unwrap_or(1)
+                == 0;
         tx.execute(
             "UPDATE cards SET sort_order = ?1, column_id = ?2, updated_at = datetime('now') WHERE id = ?3",
             params![i as i64, column_id, card_id],
         )
         .map_err(|e| e.to_string())?;
+        if entering {
+            auto_complete_in_done(&tx, card_id).map_err(|e| e.to_string())?;
+        }
     }
     tx.commit().map_err(|e| e.to_string())?;
 

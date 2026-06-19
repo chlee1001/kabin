@@ -111,6 +111,17 @@ pub fn move_card_by_status_category(
             )
             .map_err(|e| e.to_string())?;
 
+            // Moving into the done category auto-completes the card (keep an
+            // already-completed card's original completed_at via the guard).
+            if target_status == "done" {
+                conn.execute(
+                    "UPDATE cards SET completed = 1, completed_at = datetime('now'), \
+                     updated_at = datetime('now') WHERE id = ?1 AND completed = 0",
+                    params![card_id],
+                )
+                .map_err(|e| e.to_string())?;
+            }
+
             Ok(col_id)
         }
         Err(_) => Err("해당 상태 컬럼이 없습니다".to_string()),
