@@ -74,18 +74,24 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
       <DialogContent className="max-h-[90vh] max-w-5xl overflow-hidden flex flex-col p-0 gap-0 border-none shadow-2xl">
         <DialogHeader className="p-6 pb-2 pr-12">
           <DialogTitle className="sr-only">{t("detail")}</DialogTitle>
-          {location && (
-            <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground/70 mb-2">
-              <Badge variant="outline" className="h-5 px-1.5 font-normal border-muted-foreground/20">
-                <div className="h-2 w-2 rounded-full mr-1.5" style={{ backgroundColor: location.project_color }} />
-                {location.project_name}
-              </Badge>
-              <span className="opacity-40">/</span>
-              <span>{location.board_name}</span>
-              <span className="opacity-40">/</span>
-              <span className="text-foreground/80">{location.column_name}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground/70 mb-2">
+            {location && (
+              <>
+                <Badge variant="outline" className="h-5 px-1.5 font-normal border-muted-foreground/20">
+                  <div className="h-2 w-2 rounded-full mr-1.5" style={{ backgroundColor: location.project_color }} />
+                  {location.project_name}
+                </Badge>
+                <span className="opacity-40">/</span>
+                <span>{location.board_name}</span>
+                <span className="opacity-40">/</span>
+                <span className="text-foreground/80">{location.column_name}</span>
+              </>
+            )}
+            {/* SQLite datetime('now') is UTC without a tz marker — parse as UTC */}
+            <span className="ml-auto whitespace-nowrap text-muted-foreground/50">
+              {t("lastSaved")}: {new Date(card.updated_at.replace(" ", "T") + "Z").toLocaleString()}
+            </span>
+          </div>
           <div className="flex items-center gap-3">
             <div className="flex-1">
               <Input
@@ -233,11 +239,6 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
                   {t("deleteCard")}
                 </Button>
               </div>
-
-              {/* SQLite datetime('now') is UTC without a tz marker — parse as UTC */}
-              <p className="pt-1 text-right text-[10px] text-muted-foreground/60">
-                {t("lastSaved")}: {new Date(card.updated_at.replace(" ", "T") + "Z").toLocaleString()}
-              </p>
             </aside>
           </div>
         </div>
