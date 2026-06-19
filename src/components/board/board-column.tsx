@@ -5,6 +5,7 @@ import { setCustomNativeDragPreview } from "@atlaskit/pragmatic-drag-and-drop/el
 import { preserveOffsetOnSource } from "@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source"
 import { attachClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { combine } from "@atlaskit/pragmatic-drag-and-drop/combine"
+import { autoScrollForElements } from "@atlaskit/pragmatic-drag-and-drop-auto-scroll/element"
 import { useCardsEnriched, useCreateCard, useReorderCards } from "@/hooks/use-cards"
 import { usePrompt } from "@/components/shared/prompt-dialog"
 import { BoardCard } from "./board-card"
@@ -31,6 +32,7 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
   const reorderCards = useReorderCards()
   const columnRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
+  const cardListRef = useRef<HTMLDivElement>(null)
   const [isDragOver, setIsDragOver] = useState(false)
   const [isCardDragOver, setIsCardDragOver] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
@@ -196,6 +198,18 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
     })
   }, [column.id, cards, reorderCards, sortBy])
 
+  // Vertical auto-scroll: when dragging a card near the top/bottom of a long
+  // column, scroll the card list. Deps must be [] — re-registering mid-drag
+  // (e.g. on cards change) would cancel the in-flight scroll.
+  useEffect(() => {
+    const el = cardListRef.current
+    if (!el) return
+    return autoScrollForElements({
+      element: el,
+      canScroll: ({ source }) => source.data.type === "card",
+    })
+  }, [])
+
   const prompt = usePrompt()
   const handleAddCard = async () => {
     const title = await prompt(t("card.title"))
@@ -226,7 +240,7 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
         cardCount={cards?.length ?? 0}
         onAddCard={handleAddCard}
       />
-      <div className="flex flex-1 min-h-0 flex-col gap-1.5 overflow-y-auto p-2">
+      <div ref={cardListRef} className="flex flex-1 min-h-0 flex-col gap-1.5 overflow-y-auto p-2">
         {sortedCards?.map((card) => (
           <BoardCard key={card.id} card={card} columnId={column.id} boardId={boardId} onClick={() => onCardClick?.(card.id)} />
         ))}
