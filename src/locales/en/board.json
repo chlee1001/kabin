@@ -22,7 +22,14 @@
     "deleteConfirm": "Delete \"{{name}}\"?",
     "moveToColumn": "Move card to another column",
     "moveTo": "Move to {{name}}",
-    "moveError": "Card move failed"
+    "moveError": "Card move failed",
+    "addPlaceholder": "+ Add card",
+    "moreOptions": "More options",
+    "dueDate": "Due date",
+    "color": "Color",
+    "tags": "Tags",
+    "add": "Add",
+    "createFailed": "Failed to create card"
   },
   "column": {
     "new": "New Column",

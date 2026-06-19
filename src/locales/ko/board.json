@@ -22,7 +22,14 @@
     "deleteConfirm": "\"{{name}}\"을(를) 삭제할까요?",
     "moveToColumn": "다른 컬럼으로 카드 이동",
     "moveTo": "{{name}}(으)로 이동",
-    "moveError": "카드 이동에 실패했어요"
+    "moveError": "카드 이동에 실패했어요",
+    "addPlaceholder": "+ 카드 추가",
+    "moreOptions": "추가 옵션",
+    "dueDate": "마감일",
+    "color": "색상",
+    "tags": "태그",
+    "add": "추가",
+    "createFailed": "카드 생성에 실패했어요"
   },
   "column": {
     "new": "새 컬럼",

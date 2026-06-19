@@ -36,10 +36,32 @@ export function useCardLocation(id: string | undefined) {
 export function useCreateCard() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ columnId, title, description }: { columnId: string; title: string; description?: string }) =>
-      cardApi.create(columnId, title, description),
-    onSuccess: (_data, vars) =>
-      qc.invalidateQueries({ queryKey: ["cards", vars.columnId] }),
+    mutationFn: ({
+      columnId,
+      title,
+      description,
+      start_date,
+      due_date,
+      color,
+      tag_ids,
+    }: {
+      columnId: string
+      title: string
+      description?: string
+      start_date?: string | null
+      due_date?: string | null
+      color?: string | null
+      tag_ids?: string[]
+    }) => cardApi.create(columnId, title, description, { start_date, due_date, color, tag_ids }),
+    // Creating with a due date / tags affects summaries, urgent, and unified
+    // views — invalidate the full card key set (project rule), not just one column.
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["cards"] })
+      qc.invalidateQueries({ queryKey: ["project-summaries"] })
+      qc.invalidateQueries({ queryKey: ["urgent-cards"] })
+      qc.invalidateQueries({ queryKey: ["unified-cards"] })
+      qc.invalidateQueries({ queryKey: ["filtered-cards"] })
+    },
   })
 }
 

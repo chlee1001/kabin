@@ -143,8 +143,26 @@ export const columnApi = {
 // ─── Cards ───────────────────────────────────────────────
 
 export const cardApi = {
-  create: (columnId: string, title: string, description?: string) =>
-    invoke<Card>("create_card", { columnId, title, description }),
+  create: (
+    columnId: string,
+    title: string,
+    description?: string,
+    options?: {
+      start_date?: string | null
+      due_date?: string | null
+      color?: string | null
+      tag_ids?: string[]
+    },
+  ) =>
+    invoke<Card>("create_card", {
+      columnId,
+      title,
+      description,
+      startDate: options?.start_date ?? null,
+      dueDate: options?.due_date ?? null,
+      color: options?.color ?? null,
+      tagIds: options?.tag_ids,
+    }),
   list: (columnId: string) =>
     invoke<Card[]>("get_cards", { columnId }),
   listEnriched: (columnId: string) =>
