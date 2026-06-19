@@ -102,6 +102,26 @@ npm run tauri build
 
 The built app will be in `src-tauri/target/release/bundle/`.
 
+### Installing a release on macOS
+
+Kabin is **not notarized by Apple** (notarization requires a paid Apple Developer
+account), so macOS Gatekeeper blocks it with _"Kabin.app can't be opened because
+Apple cannot check it for malicious software."_ This appears for **every new
+version** — allowing one build does not carry over to the next.
+
+To run it, remove the quarantine flag once per install:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/Kabin.app
+```
+
+Or via the GUI: **System Settings → Privacy & Security**, scroll down, and click
+**Open Anyway** next to the Kabin notice.
+
+> The release build is ad-hoc signed (`signingIdentity: "-"`), which gives it a
+> stable local signature but does **not** remove the Gatekeeper prompt. Only
+> Developer ID signing + notarization would.
+
 ## Project Structure
 
 ```
