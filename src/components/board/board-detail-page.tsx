@@ -10,6 +10,7 @@ import { autoScrollForElements } from "@atlaskit/pragmatic-drag-and-drop-auto-sc
 import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 import { reorderWithEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/util/reorder-with-edge"
 import { BoardColumn } from "./board-column"
+import { CardCreateDialog } from "./card-create-dialog"
 import { BoardBackgroundPicker } from "./board-background-picker"
 import { BoardCloneDialog } from "./board-clone-dialog"
 import { TemplatePanel } from "./template-panel"
@@ -45,6 +46,7 @@ export function BoardDetailPage() {
   const reorderColumns = useReorderColumns()
   const ref = useRef<HTMLDivElement>(null)
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
+  const [createColumnId, setCreateColumnId] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<SortBy>("manual")
   const [sortDir, setSortDir] = useState<SortDir>("asc")
   const [cloneDialogOpen, setCloneDialogOpen] = useState(false)
@@ -114,14 +116,11 @@ export function BoardDetailPage() {
 
   const handleAddColumn = () => setAddColumnOpen(true)
 
-  // N / ⌘N → focus the last column's inline quick-add form
+  // N / ⌘N → open the create-card dialog for the last column
   useEffect(() => {
     const handler = () => {
       if (!columns || columns.length === 0) return
-      const lastColumn = columns[columns.length - 1]
-      window.dispatchEvent(
-        new CustomEvent("kanban:quick-add", { detail: { columnId: lastColumn.id } }),
-      )
+      setCreateColumnId(columns[columns.length - 1].id)
     }
     window.addEventListener("kanban:new-card", handler)
     return () => window.removeEventListener("kanban:new-card", handler)
@@ -217,6 +216,7 @@ export function BoardDetailPage() {
             column={column}
             boardId={boardId}
             onCardClick={setSelectedCardId}
+            onAddCard={setCreateColumnId}
             sortBy={sortBy}
             sortDir={sortDir}
           />
@@ -234,6 +234,7 @@ export function BoardDetailPage() {
         saving={createColumn.isPending}
       />
       <CardDetailModal cardId={selectedCardId} onClose={() => setSelectedCardId(null)} />
+      <CardCreateDialog columnId={createColumnId} onClose={() => setCreateColumnId(null)} />
       {board && (
         <BoardCloneDialog
           open={cloneDialogOpen}

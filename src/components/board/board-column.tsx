@@ -9,7 +9,6 @@ import { autoScrollForElements } from "@atlaskit/pragmatic-drag-and-drop-auto-sc
 import { useCardsEnriched, useReorderCards } from "@/hooks/use-cards"
 import { BoardCard } from "./board-card"
 import { ColumnHeader } from "./column-header"
-import { CardQuickAdd } from "./card-quick-add"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import type { Column } from "@/lib/tauri"
@@ -21,11 +20,12 @@ interface BoardColumnProps {
   column: Column
   boardId: string
   onCardClick?: (cardId: string) => void
+  onAddCard?: (columnId: string) => void
   sortBy?: "manual" | "due_date" | "title" | "created_at"
   sortDir?: "asc" | "desc"
 }
 
-export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", sortDir = "asc" }: BoardColumnProps) {
+export function BoardColumn({ column, boardId, onCardClick, onAddCard, sortBy = "manual", sortDir = "asc" }: BoardColumnProps) {
   const { t } = useTranslation("board")
   const { data: cards } = useCardsEnriched(column.id)
   const reorderCards = useReorderCards()
@@ -209,12 +209,7 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
     })
   }, [])
 
-  const handleAddCard = () => {
-    // Focus this column's inline quick-add form (handled by CardQuickAdd).
-    window.dispatchEvent(
-      new CustomEvent("kanban:quick-add", { detail: { columnId: column.id } }),
-    )
-  }
+  const handleAddCard = () => onAddCard?.(column.id)
 
   return (
     <div className="relative shrink-0 h-full">
@@ -254,9 +249,6 @@ export function BoardColumn({ column, boardId, onCardClick, sortBy = "manual", s
             {t("column.empty", "카드 없음")}
           </div>
         )}
-      </div>
-      <div className="px-2 pb-2">
-        <CardQuickAdd columnId={column.id} />
       </div>
     </div>
       {closestColumnEdge === "right" && (
