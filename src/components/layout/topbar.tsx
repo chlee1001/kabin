@@ -81,14 +81,14 @@ export function Topbar() {
       style={{ paddingLeft: "var(--traffic-light-inset)" }}
     >
       <div className="traffic-light-backdrop" aria-hidden="true" />
-      <div className="topbar-no-drag flex items-center gap-0.5 overflow-hidden">
+      <div className="topbar-no-drag flex items-center  overflow-hidden">
         <TooltipProvider delayDuration={500}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-6.5 w-6.5 shrink-0 text-muted-foreground/50 hover:text-foreground hover:bg-accent/40 transition-colors" 
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6.5 w-6.5 shrink-0 text-muted-foreground/50 hover:text-foreground hover:bg-accent/40 transition-colors mb-0.5 ml-1"
                 onClick={handleToggleSidebar}
               >
                 {sidebarCollapsed || !sidebarOpen ? (
@@ -109,10 +109,10 @@ export function Topbar() {
           {isUnified && <span className="px-1">{t("nav.unifiedKanban")}</span>}
           {isTable && <span className="px-1">{t("nav.tableView")}</span>}
           {isSettings && <span className="px-1">{t("nav.settings")}</span>}
-          
+
           {currentProject && (
             <div className="flex items-center gap-0.5 overflow-hidden">
-              <span 
+              <span
                 className="truncate px-1 hover:text-foreground cursor-pointer transition-colors"
                 onClick={() => router.navigate({ to: "/projects/$projectId", params: { projectId: currentProject.id } })}
               >
@@ -179,10 +179,10 @@ export function Topbar() {
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-6.5 w-6.5 text-muted-foreground/50 hover:text-foreground hover:bg-accent/40 transition-colors" 
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6.5 w-6.5 text-muted-foreground/50 hover:text-foreground hover:bg-accent/40 transition-colors"
                 onClick={toggleTheme}
               >
                 {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
