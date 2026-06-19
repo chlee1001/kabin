@@ -308,20 +308,30 @@ pub fn update_card(
 }
 
 #[tauri::command]
-pub fn delete_card(db: State<DbState>, id: String) -> Result<(), String> {
+pub fn delete_card(db: State<DbState>, app: tauri::AppHandle, id: String) -> Result<(), String> {
     let conn = db.0.lock().map_err(|e| e.to_string())?;
+    // Collect attachment paths first; remove the files only after the DELETE succeeds
+    // (a crash in between leaves orphan files, which the GC reclaims).
+    let attachment_paths = super::attachments::collect_attachment_paths(
+        &conn,
+        "SELECT stored_path FROM card_attachments WHERE card_id = ?1",
+        &id,
+    );
     delete_fts(&conn, &id);
     conn.execute("DELETE FROM cards WHERE id = ?1", params![id])
         .map_err(|e| e.to_string())?;
+    super::attachments::remove_files(&app, &attachment_paths);
     Ok(())
 }
 
 #[tauri::command]
-pub fn clone_card(db: State<DbState>, card_id: String) -> Result<Card, String> {
+pub fn clone_card(db: State<DbState>, app: tauri::AppHandle, card_id: String) -> Result<Card, String> {
     let conn = db.0.lock().map_err(|e| e.to_string())?;
-    let source = get_card_by_id(&conn, &card_id)?;
+    // Atomic clone: card + tags + subtasks + attachments in one transaction.
+    let tx = conn.unchecked_transaction().map_err(|e| e.to_string())?;
+    let source = get_card_by_id(&tx, &card_id)?;
 
-    let max_order: i64 = conn
+    let max_order: i64 = tx
         .query_row(
             "SELECT COALESCE(MAX(sort_order), -1) FROM cards WHERE column_id = ?1",
             params![source.column_id],
@@ -329,32 +339,37 @@ pub fn clone_card(db: State<DbState>, card_id: String) -> Result<Card, String> {
         )
         .map_err(|e| e.to_string())?;
 
-    conn.execute(
+    tx.execute(
         "INSERT INTO cards (column_id, title, description, start_date, due_date, color, completed, sort_order) VALUES (?1, ?2, ?3, ?4, ?5, ?6, 0, ?7)",
         params![source.column_id, format!("{} (copy)", source.title), source.description, source.start_date, source.due_date, source.color, max_order + 1],
     )
     .map_err(|e| e.to_string())?;
 
-    let new_id: String = conn
+    let new_id: String = tx
         .query_row("SELECT id FROM cards WHERE rowid = last_insert_rowid()", [], |r| r.get(0))
         .map_err(|e| e.to_string())?;
 
     // Clone tags
-    conn.execute(
+    tx.execute(
         "INSERT INTO card_tags (card_id, tag_id) SELECT ?1, tag_id FROM card_tags WHERE card_id = ?2",
         params![new_id, card_id],
     )
     .map_err(|e| e.to_string())?;
 
     // Clone subtasks
-    conn.execute(
+    tx.execute(
         "INSERT INTO subtasks (card_id, title, completed, sort_order) SELECT ?1, title, 0, sort_order FROM subtasks WHERE card_id = ?2",
         params![new_id, card_id],
     )
     .map_err(|e| e.to_string())?;
 
-    let new_card = get_card_by_id(&conn, &new_id)?;
-    sync_fts(&conn, &new_id, &new_card.title, &new_card.description);
+    // Clone attachments (fresh ids + physical file copies — DEC-8). File copies are
+    // non-transactional; a rollback after this leaves orphan files for the GC.
+    super::attachments::clone_attachments(&app, &tx, &card_id, &new_id)?;
+
+    let new_card = get_card_by_id(&tx, &new_id)?;
+    sync_fts(&tx, &new_id, &new_card.title, &new_card.description);
+    tx.commit().map_err(|e| e.to_string())?;
     Ok(new_card)
 }
 

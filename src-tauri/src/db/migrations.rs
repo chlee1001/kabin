@@ -168,3 +168,24 @@ pub fn run_v4(conn: &Connection) {
             .expect("failed to add cards.completed_at column");
     }
 }
+
+pub fn run_v5(conn: &Connection) {
+    conn.execute_batch(
+        "
+        CREATE TABLE IF NOT EXISTS card_attachments (
+            id            TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+            card_id       TEXT NOT NULL REFERENCES cards(id) ON DELETE CASCADE,
+            original_name TEXT NOT NULL,
+            stored_path   TEXT NOT NULL,
+            mime_type     TEXT,
+            extension     TEXT,
+            size_bytes    INTEGER,
+            thumb_path    TEXT,
+            sort_order    INTEGER NOT NULL DEFAULT 0,
+            created_at    TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        CREATE INDEX IF NOT EXISTS idx_card_attachments_card ON card_attachments(card_id);
+        ",
+    )
+    .expect("failed to run v5 migrations");
+}

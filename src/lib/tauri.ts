@@ -80,6 +80,21 @@ export interface CardWithTags extends Card {
   subtask_done: number
 }
 
+export interface Attachment {
+  id: string
+  card_id: string
+  original_name: string
+  stored_path: string
+  mime_type: string | null
+  extension: string | null
+  size_bytes: number | null
+  thumb_path: string | null
+  sort_order: number
+  created_at: string
+  /** Absolute path for convertFileSrc (computed by the backend). */
+  src: string
+}
+
 export interface CardUpdate {
   title?: string
   description?: string
@@ -181,6 +196,19 @@ export const cardApi = {
     invoke<void>("move_card", { cardId, targetColumnId, position }),
   reorder: (columnId: string, cardIds: string[]) =>
     invoke<void>("reorder_cards", { columnId, cardIds }),
+}
+
+// ─── Attachments ─────────────────────────────────────────
+
+export const attachmentApi = {
+  add: (cardId: string, sourcePath: string) =>
+    invoke<Attachment>("add_card_attachment", { cardId, sourcePath }),
+  list: (cardId: string) =>
+    invoke<Attachment[]>("get_card_attachments", { cardId }),
+  delete: (id: string) =>
+    invoke<void>("delete_card_attachment", { id }),
+  open: (id: string) =>
+    invoke<void>("open_attachment", { id }),
 }
 
 // ─── Subtasks ────────────────────────────────────────────

@@ -65,6 +65,19 @@ fn setup_db() -> Connection {
             tag_id TEXT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
             PRIMARY KEY (card_id, tag_id)
         );
+        CREATE TABLE card_attachments (
+            id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+            card_id TEXT NOT NULL REFERENCES cards(id) ON DELETE CASCADE,
+            original_name TEXT NOT NULL,
+            stored_path TEXT NOT NULL,
+            mime_type TEXT,
+            extension TEXT,
+            size_bytes INTEGER,
+            thumb_path TEXT,
+            sort_order INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+        CREATE INDEX idx_card_attachments_card ON card_attachments(card_id);
         CREATE INDEX idx_boards_project ON boards(project_id);
         CREATE INDEX idx_columns_board ON columns(board_id);
         CREATE INDEX idx_cards_column ON cards(column_id);
@@ -407,6 +420,66 @@ fn test_subtask_crud_and_toggle() {
         .query_row("SELECT COUNT(*) FROM subtasks", [], |r| r.get(0))
         .unwrap();
     assert_eq!(count, 0);
+}
+
+#[test]
+fn test_card_attachments_cascade_and_cleanup_queries() {
+    let conn = setup_db();
+    let proj = insert_project(&conn, "P1");
+    let board = insert_board(&conn, &proj, "B1");
+    let col = insert_column(&conn, &board, "Todo", "todo", 0);
+    let card = insert_card(&conn, &col, "Card", 0);
+
+    let insert_att = |card_id: &str, name: &str, path: &str| {
+        conn.execute(
+            "INSERT INTO card_attachments (card_id, original_name, stored_path) VALUES (?1, ?2, ?3)",
+            params![card_id, name, path],
+        )
+        .unwrap();
+    };
+    insert_att(&card, "a.png", "attachments/a.png");
+    insert_att(&card, "b.pdf", "attachments/b.pdf");
+
+    let count: i64 = conn
+        .query_row("SELECT COUNT(*) FROM card_attachments WHERE card_id = ?1", params![card], |r| r.get(0))
+        .unwrap();
+    assert_eq!(count, 2);
+
+    // The delete_board cleanup query must find both stored_paths via the JOIN.
+    let mut stmt = conn
+        .prepare(
+            "SELECT a.stored_path FROM card_attachments a \
+             JOIN cards c ON c.id = a.card_id \
+             JOIN columns co ON co.id = c.column_id WHERE co.board_id = ?1",
+        )
+        .unwrap();
+    let paths: Vec<String> = stmt
+        .query_map(params![board], |r| r.get(0))
+        .unwrap()
+        .collect::<Result<Vec<_>, _>>()
+        .unwrap();
+    assert_eq!(paths.len(), 2);
+    assert!(paths.iter().all(|p| p.starts_with("attachments/")));
+
+    // The delete_project cleanup query must also find them via the full JOIN chain.
+    let proj_paths: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM card_attachments a \
+             JOIN cards c ON c.id = a.card_id \
+             JOIN columns co ON co.id = c.column_id \
+             JOIN boards b ON b.id = co.board_id WHERE b.project_id = ?1",
+            params![proj],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(proj_paths, 2);
+
+    // FK cascade: deleting the project removes attachment rows.
+    conn.execute("DELETE FROM projects WHERE id = ?1", params![proj]).unwrap();
+    let remaining: i64 = conn
+        .query_row("SELECT COUNT(*) FROM card_attachments", [], |r| r.get(0))
+        .unwrap();
+    assert_eq!(remaining, 0, "attachment rows must cascade-delete with the project");
 }
 
 #[test]

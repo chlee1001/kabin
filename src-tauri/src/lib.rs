@@ -12,9 +12,13 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             let conn = init_db(&app.handle());
             app.manage(DbState(Mutex::new(conn)));
+
+            // Sweep attachment files with no referencing DB row (crash/import safety net).
+            commands::attachments::run_startup_gc(app.handle());
 
             // Periodic auto-backup with configurable interval
             let handle = app.handle().clone();
@@ -155,6 +159,12 @@ pub fn run() {
             // Import
             commands::import::preview_import,
             commands::import::execute_import,
+            // Attachments
+            commands::attachments::add_card_attachment,
+            commands::attachments::get_card_attachments,
+            commands::attachments::delete_card_attachment,
+            commands::attachments::open_attachment,
+            commands::attachments::gc_orphan_attachments,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

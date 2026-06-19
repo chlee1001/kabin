@@ -32,3 +32,4 @@ pub mod backup;
 pub mod settings;
 pub mod templates;
 pub mod import;
+pub mod attachments;

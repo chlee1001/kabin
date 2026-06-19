@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { MoveCardPicker } from "./move-card-picker"
-import { Trash2, Check, Calendar, Tag, Palette, MoveRight, ListTodo, AlignLeft } from "lucide-react"
+import { AttachmentList } from "./attachment-list"
+import { Trash2, Check, Calendar, Tag, Palette, MoveRight, ListTodo, AlignLeft, Paperclip } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useConfirm } from "@/components/shared/prompt-dialog"
@@ -203,6 +204,16 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
                     {t("tags")}
                   </label>
                   <TagPicker cardId={card.id} />
+                </div>
+
+                <Separator className="bg-border/50" />
+
+                <div>
+                  <label className="flex items-center gap-2 mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
+                    <Paperclip className="h-3.5 w-3.5" />
+                    {t("attachments")}
+                  </label>
+                  <AttachmentList cardId={card.id} />
                 </div>
 
                 <Separator className="bg-border/50" />
