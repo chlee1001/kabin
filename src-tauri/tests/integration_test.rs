@@ -288,6 +288,56 @@ fn test_completed_at_toggle() {
 }
 
 #[test]
+fn test_auto_complete_on_move_to_done_column() {
+    // Mirrors move_card/reorder_cards: entering a done-category column auto-stamps
+    // completed=1 + completed_at, guarded by `completed = 0` so it isn't re-stamped.
+    let conn = setup_db();
+    let proj_id = insert_project(&conn, "P1");
+    let board_id = insert_board(&conn, &proj_id, "B1");
+    let todo_col = insert_column(&conn, &board_id, "Todo", "todo", 0);
+    let done_col = insert_column(&conn, &board_id, "Done", "done", 1);
+    let card_id = insert_card(&conn, &todo_col, "Card", 0);
+
+    let is_done = |conn: &Connection, col: &str| -> bool {
+        conn.query_row(
+            "SELECT status_category = 'done' FROM columns WHERE id = ?1",
+            params![col],
+            |r| r.get::<_, i64>(0).map(|v| v != 0),
+        )
+        .unwrap_or(false)
+    };
+    let auto_complete = "UPDATE cards SET completed = 1, completed_at = datetime('now'), \
+         updated_at = datetime('now') WHERE id = ?1 AND completed = 0";
+
+    // Move into the done column → auto-complete
+    conn.execute("UPDATE cards SET column_id = ?1 WHERE id = ?2", params![done_col, card_id]).unwrap();
+    assert!(is_done(&conn, &done_col));
+    conn.execute(auto_complete, params![card_id]).unwrap();
+    let (completed, completed_at): (i64, Option<String>) = conn
+        .query_row("SELECT completed, completed_at FROM cards WHERE id = ?1", params![card_id], |r| {
+            Ok((r.get(0)?, r.get(1)?))
+        })
+        .unwrap();
+    assert_eq!(completed, 1, "moving into done column must complete the card");
+    let stamped = completed_at.expect("completed_at must be set");
+
+    // Re-running the guarded update must NOT re-stamp completed_at.
+    conn.execute(auto_complete, params![card_id]).unwrap();
+    let after: Option<String> = conn
+        .query_row("SELECT completed_at FROM cards WHERE id = ?1", params![card_id], |r| r.get(0))
+        .unwrap();
+    assert_eq!(after, Some(stamped), "already-completed card keeps its original completed_at");
+
+    // A non-done column must not trigger auto-complete.
+    let card2 = insert_card(&conn, &todo_col, "Card 2", 1);
+    assert!(!is_done(&conn, &todo_col));
+    let completed2: i64 = conn
+        .query_row("SELECT completed FROM cards WHERE id = ?1", params![card2], |r| r.get(0))
+        .unwrap();
+    assert_eq!(completed2, 0);
+}
+
+#[test]
 fn test_batch_reorder_cards() {
     let conn = setup_db();
     let proj_id = insert_project(&conn, "P1");
