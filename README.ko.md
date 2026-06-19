@@ -102,6 +102,26 @@ npm run tauri build
 
 빌드 결과물은 `src-tauri/target/release/bundle/`에 생성됩니다.
 
+### macOS에서 릴리스 설치
+
+Kabin은 **Apple 공증(notarization)을 받지 않았습니다**(공증은 유료 Apple
+Developer 계정 필요). 그래서 macOS Gatekeeper가 _"악성 코드가 없음을 확인할 수
+없어 차단했습니다"_ 라며 막습니다. 이 경고는 **버전마다 새로 뜹니다** — 한 버전을
+허용해도 다음 버전엔 적용되지 않습니다.
+
+실행하려면 설치할 때마다 한 번씩 quarantine 속성을 제거하세요:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/Kabin.app
+```
+
+또는 GUI로: **시스템 설정 → 개인정보 보호 및 보안** → 아래로 스크롤 → Kabin 항목
+옆 **"그래도 열기"** 클릭.
+
+> 릴리스 빌드는 ad-hoc 서명(`signingIdentity: "-"`)이라 로컬 서명은 안정적으로
+> 붙지만, Gatekeeper 경고 자체를 없애주진 **않습니다**. 경고를 완전히 없애려면
+> Developer ID 서명 + 공증이 필요합니다.
+
 ## 프로젝트 구조
 
 ```
