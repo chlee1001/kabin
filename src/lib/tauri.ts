@@ -46,6 +46,7 @@ export interface Card {
   completed: boolean
   created_at: string
   updated_at: string
+  completed_at: string | null
 }
 
 export interface Subtask {

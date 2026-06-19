@@ -161,6 +161,16 @@ export function CardDetailModal({ cardId, onClose }: CardDetailModalProps) {
                         }
                       />
                     </div>
+                    {card.completed && card.completed_at && (
+                      <div className="space-y-1">
+                        <span className="text-[10px] text-muted-foreground ml-1">{t("completedAt")}</span>
+                        <div className="flex items-center gap-1.5 ml-1 text-xs text-muted-foreground">
+                          <Check className="h-3.5 w-3.5 text-emerald-500" />
+                          {/* SQLite datetime('now') is UTC without a tz marker — parse as UTC */}
+                          {new Date(card.completed_at.replace(" ", "T") + "Z").toLocaleString()}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 

@@ -43,7 +43,9 @@ fn setup_db() -> Connection {
             color TEXT,
             sort_order INTEGER NOT NULL DEFAULT 0,
             created_at TEXT NOT NULL DEFAULT (datetime('now')),
-            updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+            updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+            completed INTEGER NOT NULL DEFAULT 0,
+            completed_at TEXT
         );
         CREATE TABLE subtasks (
             id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
@@ -247,6 +249,42 @@ fn test_card_crud_and_move() {
         .query_row("SELECT column_id FROM cards WHERE id = ?1", params![card_id], |r| r.get(0))
         .unwrap();
     assert_eq!(col, col2_id);
+}
+
+#[test]
+fn test_completed_at_toggle() {
+    // Mirrors update_card's completed branch: completed_at is auto-stamped from
+    // the completed flag (set on true, cleared on false). Guards the CASE SQL.
+    let conn = setup_db();
+    let proj_id = insert_project(&conn, "P1");
+    let board_id = insert_board(&conn, &proj_id, "B1");
+    let col_id = insert_column(&conn, &board_id, "Todo", "todo", 0);
+    let card_id = insert_card(&conn, &col_id, "Card", 0);
+
+    let completed_at_sql =
+        "UPDATE cards SET completed = ?1, \
+         completed_at = CASE WHEN ?1 = 1 THEN datetime('now') ELSE NULL END, \
+         updated_at = datetime('now') WHERE id = ?2";
+
+    // Initially not completed → completed_at NULL
+    let initial: Option<String> = conn
+        .query_row("SELECT completed_at FROM cards WHERE id = ?1", params![card_id], |r| r.get(0))
+        .unwrap();
+    assert_eq!(initial, None);
+
+    // Mark complete → completed_at set
+    conn.execute(completed_at_sql, params![1i64, card_id]).unwrap();
+    let after_complete: Option<String> = conn
+        .query_row("SELECT completed_at FROM cards WHERE id = ?1", params![card_id], |r| r.get(0))
+        .unwrap();
+    assert!(after_complete.is_some(), "completing a card must stamp completed_at");
+
+    // Un-complete → completed_at cleared to NULL
+    conn.execute(completed_at_sql, params![0i64, card_id]).unwrap();
+    let after_uncomplete: Option<String> = conn
+        .query_row("SELECT completed_at FROM cards WHERE id = ?1", params![card_id], |r| r.get(0))
+        .unwrap();
+    assert_eq!(after_uncomplete, None, "un-completing must clear completed_at");
 }
 
 #[test]
