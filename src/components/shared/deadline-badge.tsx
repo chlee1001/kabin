@@ -1,37 +1,38 @@
 import { differenceInDays, parseISO } from "date-fns"
 import { Badge } from "@/components/ui/badge"
-import { useTranslation } from "react-i18next"
+import { cn } from "@/lib/utils"
 
 interface DeadlineBadgeProps {
   dueDate: string
+  /** Completed cards show the deadline neutrally — no overdue (red) emphasis. */
+  completed?: boolean
 }
 
-export function DeadlineBadge({ dueDate }: DeadlineBadgeProps) {
-  const { t } = useTranslation("common")
+export function DeadlineBadge({ dueDate, completed = false }: DeadlineBadgeProps) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const due = parseISO(dueDate)
   const diff = differenceInDays(due, today)
 
-  let label: string
-  let variant: "destructive" | "default" | "secondary" | "outline"
+  // D-day notation: future → D-3, due today → D-DAY, overdue → D+2.
+  const label = diff === 0 ? "D-DAY" : diff > 0 ? `D-${diff}` : `D+${-diff}`
 
-  if (diff < 0) {
-    label = t("deadline.overdue")
-    variant = "destructive"
-  } else if (diff === 0) {
-    label = t("deadline.today")
+  let variant: "destructive" | "default" | "secondary" | "outline"
+  if (completed) {
+    variant = "outline"
+  } else if (diff <= 0) {
     variant = "destructive"
   } else if (diff === 1) {
-    label = t("deadline.tomorrow")
     variant = "default"
   } else {
-    label = t("deadline.days", { count: diff })
     variant = "secondary"
   }
 
   return (
-    <Badge variant={variant} className="shrink-0 text-xs">
+    <Badge
+      variant={variant}
+      className={cn("shrink-0 text-xs tabular-nums", completed && "text-muted-foreground/60")}
+    >
       {label}
     </Badge>
   )

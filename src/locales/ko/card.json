@@ -7,6 +7,7 @@
   "startDate": "시작일",
   "dueDate": "마감일",
   "completedAt": "완료일",
+  "lastSaved": "마지막 저장",
   "appearance": "외관",
   "tags": "태그",
   "move": "이동",
