@@ -24,7 +24,7 @@ export function hexToOklch(hex: string): { l: number; c: number; h: number } {
   return { l: L, c: C, h: H < 0 ? H + 360 : H }
 }
 
-/** @param alpha Opacity as CSS percentage (0–100), e.g. 10 → "/ 10%" */
+/** @param alpha Opacity as CSS percentage (0–100): 10 becomes "/ 10%" */
 export function oklchToCss(l: number, c: number, h: number, alpha?: number): string {
   const base = `oklch(${l.toFixed(3)} ${c.toFixed(3)} ${h.toFixed(1)}`
   return alpha != null ? `${base} / ${alpha}%)` : `${base})`

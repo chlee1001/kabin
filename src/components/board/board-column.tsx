@@ -197,9 +197,9 @@ export function BoardColumn({ column, boardId, onCardClick, onAddCard, sortBy = 
     })
   }, [column.id, cards, reorderCards, sortBy])
 
-  // Vertical auto-scroll: when dragging a card near the top/bottom of a long
+  // Vertical auto-scroll: when dragging a card near the top or bottom of a long
   // column, scroll the card list. Deps must be [] — re-registering mid-drag
-  // (e.g. on cards change) would cancel the in-flight scroll.
+  // (such as on a cards change) would cancel the in-flight scroll.
   useEffect(() => {
     const el = cardListRef.current
     if (!el) return

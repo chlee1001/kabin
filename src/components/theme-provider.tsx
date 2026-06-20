@@ -25,7 +25,7 @@ interface TintedVar {
   darkL: number
   lightC: number
   darkC: number
-  /** Dark-mode opacity as CSS percentage (0–100), e.g. 10 → "/ 10%" */
+  /** Dark-mode opacity as CSS percentage (0–100): 10 becomes "/ 10%" */
   darkAlpha?: number
 }
 
@@ -73,7 +73,7 @@ function applyAccentColor(hex: string | null, isDark: boolean) {
 
   let { l, c, h } = hexToOklch(hex)
 
-  // Skip neutral tinting for achromatic accents (e.g. Zinc)
+  // Skip neutral tinting for achromatic accents such as Zinc
   const isAchromatic = c < 0.03
 
   if (isDark && l < 0.4) {

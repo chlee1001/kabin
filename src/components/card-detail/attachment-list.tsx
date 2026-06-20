@@ -74,7 +74,7 @@ export function AttachmentList({ cardId }: { cardId: string }) {
                       alt={att.original_name}
                       className="h-20 w-full bg-muted object-cover"
                       onError={(e) => {
-                        // Missing file (e.g. after a DB-only backup import) → fall back to icon.
+                        // Missing file, such as after a database-only backup import: fall back to the icon.
                         e.currentTarget.style.display = "none"
                       }}
                     />

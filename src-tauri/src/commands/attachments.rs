@@ -301,7 +301,7 @@ pub fn clone_attachments(
     src_card_id: &str,
     dst_card_id: &str,
 ) -> Result<(), String> {
-    // `stored_path` is relative to app_data_dir (e.g. "attachments/{id}.ext").
+    // `stored_path` is relative to app_data_dir, such as "attachments/{id}.ext".
     let base = app.path().app_data_dir().map_err(|e| e.to_string())?;
     std::fs::create_dir_all(base.join("attachments")).map_err(|e| e.to_string())?;
 
