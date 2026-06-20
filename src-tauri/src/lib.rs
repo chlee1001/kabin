@@ -1,6 +1,8 @@
 mod commands;
 mod db;
 mod import;
+#[cfg(target_os = "macos")]
+mod macos;
 
 use db::backup::perform_backup;
 use db::connection::{init_db, DbState};
@@ -65,6 +67,34 @@ pub fn run() {
             Ok(())
         })
         .on_window_event(|window, event| {
+            // Re-apply the custom traffic-light position on focus/resize/scale
+            // changes. Release builds skip redraws for unfocused windows, so the
+            // tao draw_rect inset never runs and the buttons vanish on blur.
+            #[cfg(target_os = "macos")]
+            match event {
+                tauri::WindowEvent::Focused(focused) => {
+                    macos::reposition_traffic_lights(
+                        window,
+                        macos::TRAFFIC_LIGHT_X,
+                        macos::TRAFFIC_LIGHT_Y,
+                    );
+                    // Diagnostic: capture button state at the blur/focus moment.
+                    macos::dump_traffic_lights(
+                        window,
+                        if *focused { "focus" } else { "blur" },
+                    );
+                }
+                tauri::WindowEvent::Resized(_)
+                | tauri::WindowEvent::ScaleFactorChanged { .. } => {
+                    macos::reposition_traffic_lights(
+                        window,
+                        macos::TRAFFIC_LIGHT_X,
+                        macos::TRAFFIC_LIGHT_Y,
+                    );
+                }
+                _ => {}
+            }
+
             if let tauri::WindowEvent::CloseRequested { .. } = event {
                 let handle = window.app_handle();
                 let backup_dir = handle
