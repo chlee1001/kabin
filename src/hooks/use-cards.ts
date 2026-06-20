@@ -104,6 +104,7 @@ export function useCloneCard() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["cards"] })
       qc.invalidateQueries({ queryKey: ["project-summaries"] })
+      qc.invalidateQueries({ queryKey: ["urgent-cards"] })
       qc.invalidateQueries({ queryKey: ["unified-cards"] })
       qc.invalidateQueries({ queryKey: ["filtered-cards"] })
     },

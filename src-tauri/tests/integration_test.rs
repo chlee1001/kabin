@@ -351,6 +351,93 @@ fn test_auto_complete_on_move_to_done_column() {
 }
 
 #[test]
+fn test_dashboard_done_uses_completed_flag() {
+    // Mirrors get_project_summaries (completed-flag basis): done_count counts
+    // completed=1 regardless of column; a completed card in a non-done column
+    // still counts as done, and the 4 segments sum to total.
+    let conn = setup_db();
+    let proj = insert_project(&conn, "P1");
+    let board = insert_board(&conn, &proj, "B1");
+    let todo_col = insert_column(&conn, &board, "Todo", "todo", 0);
+    let done_col = insert_column(&conn, &board, "Done", "done", 1);
+
+    let c1 = insert_card(&conn, &todo_col, "in todo", 0);
+    insert_card(&conn, &todo_col, "in todo 2", 1);
+    insert_card(&conn, &done_col, "in done", 0);
+    // Mark a card in the TODO column completed — it must count as done.
+    conn.execute("UPDATE cards SET completed = 1 WHERE id = ?1", params![c1]).unwrap();
+    // Mark the done-column card completed too (normal flow).
+    conn.execute("UPDATE cards SET completed = 1 WHERE title = 'in done'", []).unwrap();
+
+    let summary_sql = "SELECT
+        COUNT(ca.id),
+        SUM(CASE WHEN ca.completed = 0 AND co.status_category = 'todo' THEN 1 ELSE 0 END),
+        SUM(CASE WHEN ca.completed = 0 AND co.status_category IN ('in_progress','done') THEN 1 ELSE 0 END),
+        SUM(CASE WHEN ca.completed = 1 THEN 1 ELSE 0 END),
+        SUM(CASE WHEN ca.completed = 0 AND co.status_category = 'other' THEN 1 ELSE 0 END)
+      FROM cards ca JOIN columns co ON co.id = ca.column_id";
+    let (total, todo, in_prog, done, other): (i64, i64, i64, i64, i64) = conn
+        .query_row(summary_sql, [], |r| {
+            Ok((r.get(0)?, r.get(1)?, r.get(2)?, r.get(3)?, r.get(4)?))
+        })
+        .unwrap();
+    assert_eq!(total, 3);
+    assert_eq!(done, 2, "both completed cards count as done regardless of column");
+    assert_eq!(todo, 1, "only the non-completed todo card");
+    assert_eq!(in_prog, 0);
+    assert_eq!(other, 0);
+    assert_eq!(todo + in_prog + done + other, total, "segments must partition total");
+}
+
+#[test]
+fn test_auto_uncomplete_leaving_done_column() {
+    // Mirrors move_card/reorder/unified: leaving a done column for a non-done one
+    // clears completion, but moving between two non-done columns must NOT clear a
+    // manually completed card.
+    let conn = setup_db();
+    let proj = insert_project(&conn, "P1");
+    let board = insert_board(&conn, &proj, "B1");
+    let todo_col = insert_column(&conn, &board, "Todo", "todo", 0);
+    let prog_col = insert_column(&conn, &board, "Doing", "in_progress", 1);
+    let done_col = insert_column(&conn, &board, "Done", "done", 2);
+
+    let card_in_done = |conn: &Connection, id: &str| -> bool {
+        conn.query_row(
+            "SELECT co.status_category = 'done' FROM cards ca JOIN columns co ON co.id = ca.column_id WHERE ca.id = ?1",
+            params![id], |r| r.get::<_, i64>(0).map(|v| v != 0),
+        ).unwrap_or(false)
+    };
+    let uncomplete = "UPDATE cards SET completed = 0, completed_at = NULL WHERE id = ?1 AND completed = 1";
+    // The guarded move used by move_card/reorder/unified.
+    let move_card = |conn: &Connection, id: &str, target: &str, target_done: bool| {
+        let was_in_done = card_in_done(conn, id);
+        conn.execute("UPDATE cards SET column_id = ?1 WHERE id = ?2", params![target, id]).unwrap();
+        if !target_done && was_in_done {
+            conn.execute(uncomplete, params![id]).unwrap();
+        }
+    };
+    let completed_of = |conn: &Connection, id: &str| -> i64 {
+        conn.query_row("SELECT completed FROM cards WHERE id = ?1", params![id], |r| r.get(0)).unwrap()
+    };
+
+    // Card completed while in a done column, then moved out → cleared.
+    let leaving = insert_card(&conn, &done_col, "Leaving", 0);
+    conn.execute("UPDATE cards SET completed = 1, completed_at = datetime('now') WHERE id = ?1", params![leaving]).unwrap();
+    move_card(&conn, &leaving, &todo_col, false);
+    assert_eq!(completed_of(&conn, &leaving), 0, "leaving done column clears completed");
+    let leaving_at: Option<String> = conn
+        .query_row("SELECT completed_at FROM cards WHERE id = ?1", params![leaving], |r| r.get(0)).unwrap();
+    assert_eq!(leaving_at, None, "completed_at cleared too");
+
+    // Card manually completed in a non-done column, moved to another non-done
+    // column → completion preserved (the bug this guards against).
+    let manual = insert_card(&conn, &todo_col, "Manual", 1);
+    conn.execute("UPDATE cards SET completed = 1, completed_at = datetime('now') WHERE id = ?1", params![manual]).unwrap();
+    move_card(&conn, &manual, &prog_col, false);
+    assert_eq!(completed_of(&conn, &manual), 1, "non-done to non-done keeps manual completion");
+}
+
+#[test]
 fn test_batch_reorder_cards() {
     let conn = setup_db();
     let proj_id = insert_project(&conn, "P1");
