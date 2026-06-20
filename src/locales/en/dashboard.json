@@ -11,5 +11,7 @@
   "cardCount_other": "{{count}} cards",
   "urgentCount": "{{count}} due soon",
   "urgentCount_other": "{{count}} due soon",
-  "noUrgentDeadlines": "No upcoming deadlines"
+  "noUrgentDeadlines": "No upcoming deadlines",
+  "overdue": "Overdue",
+  "upcoming": "Upcoming"
 }
