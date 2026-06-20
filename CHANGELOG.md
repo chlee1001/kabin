@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.13](https://github.com/chlee1001/kabin/compare/kabin-v0.1.12...kabin-v0.1.13) (2026-06-20)
+
+
+### Bug Fixes
+
+* **macos:** 신호등 비활성 시 사라짐 네이티브 재적용 ([#33](https://github.com/chlee1001/kabin/issues/33)) ([855cce6](https://github.com/chlee1001/kabin/commit/855cce6f8f5477731134c5c01108b09c8dd71ced))
+
 ## [0.1.12](https://github.com/chlee1001/kabin/compare/kabin-v0.1.11...kabin-v0.1.12) (2026-06-19)
 
 
