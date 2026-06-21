@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { format } from "date-fns"
+import { Check } from "lucide-react"
 import type { UrgentCard } from "@/hooks/use-dashboard"
 import { DeadlineBadge } from "@/components/shared/deadline-badge"
 import { cn } from "@/lib/utils"
@@ -7,17 +8,21 @@ import { cn } from "@/lib/utils"
 interface UrgentListProps {
   cards: UrgentCard[]
   onCardClick?: (cardId: string) => void
+  onComplete?: (cardId: string) => void
 }
 
 function UrgentRow({
   card,
   onCardClick,
+  onComplete,
   last,
 }: {
   card: UrgentCard
   onCardClick?: (cardId: string) => void
+  onComplete?: (cardId: string) => void
   last: boolean
 }) {
+  const { t } = useTranslation("dashboard")
   return (
     <div
       role="button"
@@ -34,6 +39,18 @@ function UrgentRow({
         !last && "border-b border-border",
       )}
     >
+      <button
+        type="button"
+        aria-label={t("markComplete")}
+        title={t("markComplete")}
+        onClick={(e) => {
+          e.stopPropagation()
+          onComplete?.(card.card_id)
+        }}
+        className="group/check flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-input transition-colors hover:border-primary hover:bg-primary/10"
+      >
+        <Check className="h-3 w-3 text-transparent transition-colors group-hover/check:text-primary" />
+      </button>
       <div
         className="h-2.5 w-2.5 shrink-0 rounded-full"
         style={{ backgroundColor: card.project_color }}
@@ -52,11 +69,13 @@ function UrgentGroup({
   tone,
   cards,
   onCardClick,
+  onComplete,
 }: {
   title: string
   tone?: "danger"
   cards: UrgentCard[]
   onCardClick?: (cardId: string) => void
+  onComplete?: (cardId: string) => void
 }) {
   return (
     <div className="space-y-1.5">
@@ -72,6 +91,7 @@ function UrgentGroup({
             key={card.card_id}
             card={card}
             onCardClick={onCardClick}
+            onComplete={onComplete}
             last={i === cards.length - 1}
           />
         ))}
@@ -80,7 +100,7 @@ function UrgentGroup({
   )
 }
 
-export function UrgentList({ cards, onCardClick }: UrgentListProps) {
+export function UrgentList({ cards, onCardClick, onComplete }: UrgentListProps) {
   const { t } = useTranslation("dashboard")
   if (cards.length === 0) {
     return (
@@ -99,10 +119,21 @@ export function UrgentList({ cards, onCardClick }: UrgentListProps) {
   return (
     <div className="space-y-4">
       {overdue.length > 0 && (
-        <UrgentGroup title={t("overdue")} tone="danger" cards={overdue} onCardClick={onCardClick} />
+        <UrgentGroup
+          title={t("overdue")}
+          tone="danger"
+          cards={overdue}
+          onCardClick={onCardClick}
+          onComplete={onComplete}
+        />
       )}
       {upcoming.length > 0 && (
-        <UrgentGroup title={t("upcoming")} cards={upcoming} onCardClick={onCardClick} />
+        <UrgentGroup
+          title={t("upcoming")}
+          cards={upcoming}
+          onCardClick={onCardClick}
+          onComplete={onComplete}
+        />
       )}
     </div>
   )
