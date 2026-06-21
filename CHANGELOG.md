@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.15](https://github.com/chlee1001/kabin/compare/kabin-v0.1.14...kabin-v0.1.15) (2026-06-21)
+
+
+### Bug Fixes
+
+* **macos:** 신호등 정렬 회귀 수정 — 위치 재적용 제거 ([9752c36](https://github.com/chlee1001/kabin/commit/9752c36c3d6c56dac176e17a46e5c0569e09a074))
+* **macos:** 신호등 정렬 회귀 수정 — 위치 재적용 제거 ([8da5c0d](https://github.com/chlee1001/kabin/commit/8da5c0d6888d5f484378d3e47e45171107abcaf9))
+
 ## [0.1.14](https://github.com/chlee1001/kabin/compare/kabin-v0.1.13...kabin-v0.1.14) (2026-06-21)
 
 
