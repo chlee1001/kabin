@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   release-please:
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
@@ -28,12 +29,12 @@ jobs:
 
   build-tauri:
     needs: release-please
-    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    if: ${{ always() && (needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch') }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - platform: macos-latest
+          - platform: macos-26
             args: '--target universal-apple-darwin'
             rust_targets: 'aarch64-apple-darwin,x86_64-apple-darwin'
           - platform: ubuntu-22.04
@@ -66,6 +67,15 @@ jobs:
         with:
           targets: ${{ matrix.rust_targets }}
 
+      - name: Show macOS toolchain
+        if: startsWith(matrix.platform, 'macos')
+        run: |
+          sw_vers
+          xcodebuild -version
+          rustc --version
+          cargo --version
+          uname -m
+
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
@@ -81,3 +91,14 @@ jobs:
         with:
           releaseId: ${{ needs.release-please.outputs.release_id }}
           args: ${{ matrix.args }}
+
+      - name: Upload macOS artifact (manual run)
+        if: github.event_name == 'workflow_dispatch' && startsWith(matrix.platform, 'macos')
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kabin-macos-26-universal-${{ github.sha }}
+          path: |
+            src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/*.app
+          if-no-files-found: error
+          retention-days: 7
