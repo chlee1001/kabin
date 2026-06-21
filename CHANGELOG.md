@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0](https://github.com/chlee1001/kabin/compare/kabin-v0.1.15...kabin-v1.0.0) (2026-06-21)
+
+
+### Miscellaneous Chores
+
+* release 1.0.0 ([0b9c86a](https://github.com/chlee1001/kabin/commit/0b9c86a2cff6f939a65b5d74111b62e5e49fbf36))
+
 ## [0.1.15](https://github.com/chlee1001/kabin/compare/kabin-v0.1.14...kabin-v0.1.15) (2026-06-21)
 
 
