@@ -1,23 +1,17 @@
-//! macOS traffic-light (window control button) repositioning.
+//! macOS traffic-light (window control button) visibility.
 //!
-//! Tauri/tao apply `trafficLightPosition` inside the title bar's `draw_rect`,
-//! re-running on every redraw. In release builds, an unfocused window's redraws
-//! are aggressively skipped, so the buttons never get repositioned to the custom
-//! inset and effectively vanish on blur. We fix that by re-applying the position
-//! ourselves on focus/resize/scale-change events (see `lib.rs`).
+//! Tauri/tao position `trafficLightPosition` inside the title bar's `draw_rect`,
+//! re-running on every redraw. In release builds an unfocused window's redraws
+//! are aggressively skipped, so the buttons effectively vanish on blur. We force
+//! them visible and request a redraw on focus/resize events (see `lib.rs`).
+//! Positioning stays entirely with tao via the conf value, so this never fights
+//! the layout — it only restores visibility.
 
 #![cfg(target_os = "macos")]
 
 use objc2::MainThreadMarker;
 use objc2_app_kit::{NSView, NSWindow, NSWindowButton};
-use objc2_foundation::NSPoint;
 use tauri::{Manager, Runtime, Window};
-
-/// Custom traffic-light origin — kept in sync with `tauri.conf.json`
-/// `trafficLightPosition` (the conf value seeds the initial layout; this value
-/// re-applies it on events). If you change one, change the other.
-pub const TRAFFIC_LIGHT_X: f64 = 12.0;
-pub const TRAFFIC_LIGHT_Y: f64 = 16.5;
 
 const BUTTONS: [NSWindowButton; 3] = [
     NSWindowButton::CloseButton,
@@ -25,10 +19,10 @@ const BUTTONS: [NSWindowButton; 3] = [
     NSWindowButton::ZoomButton,
 ];
 
-/// Re-apply the custom traffic-light position. Safe to call from any thread —
-/// it hops to the main thread (AppKit requires it) and no-ops if the NSWindow
-/// or its buttons aren't realized yet.
-pub fn reposition_traffic_lights<R: Runtime>(window: &Window<R>, x: f64, y: f64) {
+/// Force the traffic lights visible and request a redraw. Safe to call from any
+/// thread — it hops to the main thread (AppKit requires it) and no-ops if the
+/// NSWindow or its buttons aren't realized yet. Positioning is left to tao.
+pub fn ensure_traffic_lights_visible<R: Runtime>(window: &Window<R>) {
     let Ok(ns_window_ptr) = window.ns_window() else {
         return;
     };
@@ -48,47 +42,18 @@ pub fn reposition_traffic_lights<R: Runtime>(window: &Window<R>, x: f64, y: f64)
             return;
         };
         let ns_window: &NSWindow = unsafe { &*(addr as *const NSWindow) };
-        apply(ns_window, x, y);
+        for button in BUTTONS {
+            let Some(b) = ns_window.standardWindowButton(button) else {
+                continue;
+            };
+            b.setHidden(false);
+            // Disambiguate from NSControl's 0-arg setNeedsDisplay.
+            NSView::setNeedsDisplay(&b, true);
+            if let Some(sv) = unsafe { b.superview() } {
+                NSView::setNeedsDisplay(&sv, true);
+            }
+        }
     });
-}
-
-/// `x` is the inset from the left (AppKit x and conf x share orientation).
-/// `fallback_y` is only used if the live close-button frame can't be read —
-/// AppKit's y axis is flipped relative to the conf's top-inset, so we reuse the button's
-/// current (tao-set) y rather than the raw conf value to avoid a space mismatch.
-fn apply(ns_window: &NSWindow, x: f64, fallback_y: f64) {
-    // Measure horizontal spacing and the baseline y from the live button frames
-    // so the repositioned cluster keeps macOS's exact gaps and vertical offset.
-    let mut origins: Vec<NSPoint> = Vec::with_capacity(3);
-    for button in BUTTONS {
-        if let Some(b) = ns_window.standardWindowButton(button) {
-            origins.push(b.frame().origin);
-        }
-    }
-    let y = origins.first().map(|p| p.y).unwrap_or(fallback_y);
-    let mut spacing = 20.0_f64; // empirical macOS default gap; overridden below
-    if origins.len() >= 2 {
-        let measured = (origins[1].x - origins[0].x).abs();
-        if measured >= 1.0 {
-            spacing = measured;
-        }
-    }
-
-    // Reposition to the custom inset, unhide, and force a redraw of each button
-    // and its title-bar container (the redraw is what the release build skipped).
-    for (i, button) in BUTTONS.into_iter().enumerate() {
-        let Some(b) = ns_window.standardWindowButton(button) else {
-            continue;
-        };
-        let bx = x + (i as f64) * spacing;
-        b.setFrameOrigin(NSPoint::new(bx, y));
-        b.setHidden(false);
-        // Disambiguate from NSControl's 0-arg setNeedsDisplay.
-        NSView::setNeedsDisplay(&b, true);
-        if let Some(sv) = unsafe { b.superview() } {
-            NSView::setNeedsDisplay(&sv, true);
-        }
-    }
 }
 
 /// One-line stderr dump of each traffic-light button's state. Run the release
