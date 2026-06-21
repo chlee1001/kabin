@@ -115,5 +115,8 @@
       "failed": "Import failed: {{error}}",
       "invalidFile": "This file is not a valid {{source}} export"
     }
-  }
+  },
+  "urgentDays": "Due Soon Threshold",
+  "urgentDaysDesc": "How many days ahead a deadline counts as due soon",
+  "urgentDaysOption": "{{days}} days"
 }

@@ -7,7 +7,7 @@ import { useCreateBackup, useExportBackup, useImportBackup, useLastBackupTime } 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Moon, Sun, Monitor, HardDrive, Tags, Clock, Type, Info, Download, Upload, Keyboard, Database, Trash2 } from "lucide-react"
+import { Moon, Sun, Monitor, HardDrive, Tags, Clock, CalendarClock, Type, Info, Download, Upload, Keyboard, Database, Trash2 } from "lucide-react"
 import { getVersion } from "@tauri-apps/api/app"
 import { useQuery } from "@tanstack/react-query"
 import { TagManager } from "./tag-manager"
@@ -28,6 +28,8 @@ const BACKUP_INTERVALS = [
   { value: "0", labelKey: "backupInterval.manual" },
 ] as const
 
+const URGENT_DAYS_OPTIONS = ["3", "5", "7", "14"] as const
+
 export function SettingsPage() {
   const { t, i18n } = useTranslation(["settings", "common"])
   const { theme, setTheme, accentColor, setAccentColor } = useTheme()
@@ -37,6 +39,7 @@ export function SettingsPage() {
   const exportBackup = useExportBackup()
   const importBackup = useImportBackup()
   const [backupInterval, setBackupInterval] = useState("3600")
+  const [urgentDays, setUrgentDays] = useState("5")
   const { data: appVersion } = useQuery({
     queryKey: ["app", "version"],
     queryFn: getVersion,
@@ -54,7 +57,19 @@ export function SettingsPage() {
     settingsApi.get("backup_interval_secs").then((val) => {
       if (val) setBackupInterval(val)
     })
+    settingsApi.get("urgent_days").then((val) => {
+      if (val) setUrgentDays(val)
+    })
   }, [])
+
+  const handleUrgentDaysChange = (value: string) => {
+    setUrgentDays(value)
+    settingsApi.set("urgent_days", value).then(() => {
+      queryClient.invalidateQueries({ queryKey: ["setting", "urgent_days"] })
+      queryClient.invalidateQueries({ queryKey: ["project-summaries"] })
+      queryClient.invalidateQueries({ queryKey: ["urgent-cards"] })
+    })
+  }
 
   useEffect(() => {
     setAppNameDraft(savedAppName ?? "")
@@ -364,6 +379,30 @@ export function SettingsPage() {
                 </Button>
               ))}
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <CalendarClock className="h-4 w-4" />
+            {t("urgentDays")}
+          </CardTitle>
+          <CardDescription>{t("urgentDaysDesc")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            {URGENT_DAYS_OPTIONS.map((value) => (
+              <Button
+                key={value}
+                variant={urgentDays === value ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleUrgentDaysChange(value)}
+              >
+                {t("urgentDaysOption", { days: value })}
+              </Button>
+            ))}
           </div>
         </CardContent>
       </Card>
