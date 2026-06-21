@@ -8,18 +8,37 @@
 
 Cabin + Kanban. A fast desktop app where your tasks stay on your machine — no account, no internet, no compromise.
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri%202-ffc131.svg)](https://tauri.app)
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev)
+[![Latest release](https://img.shields.io/github/v/release/chlee1001/kabin?sort=semver)](https://github.com/chlee1001/kabin/releases/latest)
 
 [English](./README.md) | [한국어](./README.ko.md)
 
-<!-- TODO: Add screenshot -->
-<!-- ![Kabin Screenshot](docs/screenshot.png) -->
+<!-- Add a screenshot at docs/screenshot.png and uncomment the line below. -->
+<!-- <img src="docs/screenshot.png" alt="Kabin screenshot" width="820" /> -->
 
 </div>
 
 ---
+
+## Download
+
+Grab the installer for your platform from the [latest release](https://github.com/chlee1001/kabin/releases/latest):
+
+| Platform | File |
+|----------|------|
+| macOS (Apple Silicon + Intel) | `Kabin_*_universal.dmg` |
+| Windows | `Kabin_*_x64-setup.exe` |
+| Linux | `.AppImage`, `.deb`, or `.rpm` |
+
+> **macOS first launch.** Kabin is not notarized by Apple, so Gatekeeper blocks it
+> on first open. Remove the quarantine flag once per install:
+> ```bash
+> xattr -dr com.apple.quarantine /Applications/Kabin.app
+> ```
+> Or open **System Settings → Privacy & Security** and click **Open Anyway**.
+> See [Building from source](#building-from-source) for details.
 
 ## Features
 
@@ -27,12 +46,13 @@ Cabin + Kanban. A fast desktop app where your tasks stay on your machine — no 
 - Board view with drag-and-drop columns and cards
 - Table view with multi-field filtering and sorting
 - Unified view across all projects by status category
-- Dashboard with project summaries and urgent items
+- Dashboard with project summaries and deadline focus
 
 **Rich Card Editing** — More than sticky notes.
 - Tiptap rich text editor with code blocks, links, and task lists
 - Subtasks with progress tracking
 - Tags, color labels, and deadline badges
+- File and image attachments
 - Move cards across boards and projects
 
 **Keyboard-First Workflow**
@@ -48,8 +68,8 @@ Cabin + Kanban. A fast desktop app where your tasks stay on your machine — no 
 
 **Data Ownership**
 - Local SQLite database — nothing leaves your machine
-- Auto-backup every 60 seconds
-- Manual backup and restore
+- Auto-backup on an interval you choose
+- Manual backup, export, and restore
 
 **Internationalization**
 - English and Korean included
@@ -72,7 +92,9 @@ Cabin + Kanban. A fast desktop app where your tasks stay on your machine — no 
 | Database | SQLite (rusqlite, bundled) |
 | Build | Vite 6 |
 
-## Getting Started
+## Building from Source
+
+For contributors and anyone who prefers to build their own binary.
 
 ### Prerequisites
 
@@ -100,27 +122,11 @@ npm run dev
 npm run tauri build
 ```
 
-The built app will be in `src-tauri/target/release/bundle/`.
+The built app lands in `src-tauri/target/release/bundle/`.
 
-### Installing a release on macOS
-
-Kabin is **not notarized by Apple** (notarization requires a paid Apple Developer
-account), so macOS Gatekeeper blocks it with _"Kabin.app can't be opened because
-Apple cannot check it for malicious software."_ This appears for **every new
-version** — allowing one build does not carry over to the next.
-
-To run it, remove the quarantine flag once per install:
-
-```bash
-xattr -dr com.apple.quarantine /Applications/Kabin.app
-```
-
-Or via the GUI: **System Settings → Privacy & Security**, scroll down, and click
-**Open Anyway** next to the Kabin notice.
-
-> The release build is ad-hoc signed (`signingIdentity: "-"`), which gives it a
-> stable local signature but does **not** remove the Gatekeeper prompt. Only
-> Developer ID signing + notarization would.
+> Release builds are ad-hoc signed (`signingIdentity: "-"`), which gives a stable
+> local signature but does not remove the macOS Gatekeeper prompt. Only Developer
+> ID signing plus notarization would.
 
 ## Project Structure
 
@@ -154,7 +160,8 @@ kanban/
 
 ```
 Projects → Boards → Columns → Cards → Subtasks
-                                 └──→ Tags (many-to-many)
+                                 ├──→ Tags (many-to-many)
+                                 └──→ Attachments
 ```
 
 Columns have status categories (`todo`, `in_progress`, `done`, `other`) that power the unified view and dashboard aggregations.
@@ -173,7 +180,7 @@ npm run build
 
 ## License
 
-MIT
+[MIT](./LICENSE) © Chaehyeon Lee
 
 ---
 
