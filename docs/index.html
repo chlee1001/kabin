@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kabin — Your cozy, offline Kanban board</title>
+  <meta name="description" content="A fast, offline-first Kanban board for macOS, Windows, and Linux. No account, no sync, no subscription — your tasks stay on your machine." />
+  <link rel="canonical" href="https://chlee1001.github.io/kabin/" />
+  <meta property="og:title" content="Kabin — Your cozy, offline Kanban board" />
+  <meta property="og:description" content="A fast desktop Kanban app. Offline, no account, free and open source." />
+  <meta property="og:image" content="https://chlee1001.github.io/kabin/screenshot.png" />
+  <meta property="og:image:alt" content="Kabin board view" />
+  <meta property="og:url" content="https://chlee1001.github.io/kabin/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="logo.png" />
+  <link rel="stylesheet" href="landing.css" />
+  <!-- Set theme/lang before first paint to avoid a flash of the wrong theme. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("kabin-theme") ||
+          (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", t);
+        var l = localStorage.getItem("kabin-lang") ||
+          ((navigator.language || "en").toLowerCase().startsWith("ko") ? "ko" : "en");
+        document.documentElement.lang = l;
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top">
+        <img src="logo.png" alt="Kabin" />
+        <span>Kabin</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features" data-i18n="nav.features">Features</a>
+        <a href="#screenshots" data-i18n="nav.screenshots">Screenshots</a>
+        <a href="https://github.com/chlee1001/kabin">GitHub</a>
+      </div>
+      <div class="nav-tools">
+        <button class="icon-btn" id="lang-toggle" aria-label="Switch to Korean">EN</button>
+        <button class="icon-btn" id="theme-toggle" aria-label="Switch to dark mode">◐</button>
+        <a class="btn btn-primary" href="https://github.com/chlee1001/kabin/releases/latest" data-i18n="nav.download">Download</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header id="top" class="hero">
+    <div class="wrap">
+      <img class="hero-logo" src="logo.png" alt="Kabin" />
+      <h1 data-i18n="hero.tagline">Your cozy, offline Kanban board.</h1>
+      <p class="sub" data-i18n="hero.sub">A fast desktop app where your tasks stay on your machine — no account, no internet, no compromise.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="https://github.com/chlee1001/kabin/releases/latest" data-i18n="hero.download">Download for free</a>
+        <a class="btn btn-ghost" href="https://github.com/chlee1001/kabin" data-i18n="hero.github">View on GitHub</a>
+      </div>
+      <div class="trust" data-i18n="hero.trust">Offline · No account · Free &amp; open source</div>
+      <div class="badges">
+        <a href="https://github.com/chlee1001/kabin/releases/latest"><img src="https://img.shields.io/github/v/release/chlee1001/kabin?sort=semver&label=version&color=444" alt="Latest version" /></a>
+        <a href="https://github.com/chlee1001/kabin"><img src="https://img.shields.io/github/stars/chlee1001/kabin?style=flat&logo=github&logoColor=white&label=stars&color=444" alt="GitHub stars" /></a>
+      </div>
+      <div class="hero-shot">
+        <img src="screenshot.png" alt="Kabin board view" />
+      </div>
+    </div>
+  </header>
+
+  <!-- Features -->
+  <section id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 data-i18n="features.title">Everything you need, nothing you don't</h2>
+        <p data-i18n="features.sub">A focused Kanban tool that respects your data and your keyboard.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span>
+          <h3 data-i18n="feat.views.t">Multiple views</h3>
+          <p data-i18n="feat.views.d">Board, table, a unified cross-project view, and a dashboard with deadline focus.</p>
+        </div>
+        <div class="feature">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></span>
+          <h3 data-i18n="feat.edit.t">Rich card editing</h3>
+          <p data-i18n="feat.edit.d">Rich text, subtasks, tags, color labels, deadlines, and file attachments.</p>
+        </div>
+        <div class="feature">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg></span>
+          <h3 data-i18n="feat.kbd.t">Keyboard-first</h3>
+          <p data-i18n="feat.kbd.d">A Cmd+K command palette with full-text search and customizable shortcuts.</p>
+        </div>
+        <div class="feature">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg></span>
+          <h3 data-i18n="feat.custom.t">Make it yours</h3>
+          <p data-i18n="feat.custom.d">Light/dark themes, 10 accent colors, board backgrounds, and card templates.</p>
+        </div>
+        <div class="feature">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          <h3 data-i18n="feat.data.t">Your data stays yours</h3>
+          <p data-i18n="feat.data.d">A local SQLite database with automatic backups. Nothing leaves your machine.</p>
+        </div>
+        <div class="feature">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg></span>
+          <h3 data-i18n="feat.i18n.t">Bilingual</h3>
+          <p data-i18n="feat.i18n.d">English and Korean included, with a structure built for adding more languages.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screenshots -->
+  <section id="screenshots">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 data-i18n="shots.title">See it in action</h2>
+      </div>
+      <div class="shots">
+        <div class="shot">
+          <img src="dashboard.png" alt="Dashboard" />
+          <div class="cap"><b data-i18n="shot.dash.t">Dashboard</b> — <span data-i18n="shot.dash.d">project progress and what's due soon</span></div>
+        </div>
+        <div class="shot">
+          <img src="table.png" alt="Table view" />
+          <div class="cap"><b data-i18n="shot.table.t">Table view</b> — <span data-i18n="shot.table.d">filter and sort across every field</span></div>
+        </div>
+        <div class="shot">
+          <img src="card-detail.png" alt="Card editor" />
+          <div class="cap"><b data-i18n="shot.card.t">Card editor</b> — <span data-i18n="shot.card.d">rich text, subtasks, tags, attachments</span></div>
+        </div>
+        <div class="shot">
+          <img src="board-drag.png" alt="Drag and drop" />
+          <div class="cap"><b data-i18n="shot.drag.t">Drag and drop</b> — <span data-i18n="shot.drag.d">move cards across columns and boards</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download -->
+  <section id="download">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 data-i18n="dl.title">Download Kabin</h2>
+        <p data-i18n="dl.sub">Free and open source. Pick the installer for your platform.</p>
+      </div>
+      <div class="dl-grid">
+        <a class="dl-card" href="https://github.com/chlee1001/kabin/releases/latest">
+          <div class="os">macOS</div>
+          <div class="file">Kabin_*_universal.dmg</div>
+        </a>
+        <a class="dl-card" href="https://github.com/chlee1001/kabin/releases/latest">
+          <div class="os">Windows</div>
+          <div class="file">Kabin_*_x64-setup.exe</div>
+        </a>
+        <a class="dl-card" href="https://github.com/chlee1001/kabin/releases/latest">
+          <div class="os">Linux</div>
+          <div class="file">.AppImage · .deb · .rpm</div>
+        </a>
+      </div>
+      <div class="dl-note">
+        <span data-i18n="dl.note">On macOS the app isn't notarized, so on first launch right-click it and choose Open.</span>
+        <details>
+          <summary data-i18n="dl.note2">Prefer the terminal?</summary>
+          <code>xattr -dr com.apple.quarantine /Applications/Kabin.app</code>
+        </details>
+      </div>
+      <div class="dl-center">
+        <a class="btn btn-primary" href="https://github.com/chlee1001/kabin/releases/latest" data-i18n="dl.button">Go to latest release</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="wrap footer-inner">
+      <span>Kabin · <span data-i18n="footer.license">MIT License</span> © Chaehyeon Lee</span>
+      <span class="spacer"></span>
+      <a href="https://github.com/chlee1001/kabin">GitHub</a>
+      <a href="https://github.com/chlee1001/kabin/releases/latest" data-i18n="footer.releases">Releases</a>
+    </div>
+  </footer>
+
+  <script>
+    const I18N = {
+      en: {
+        "nav.features": "Features",
+        "nav.screenshots": "Screenshots",
+        "nav.download": "Download",
+        "hero.tagline": "Your cozy, offline Kanban board.",
+        "hero.sub": "A fast desktop app where your tasks stay on your machine — no account, no internet, no compromise.",
+        "hero.download": "Download for free",
+        "hero.github": "View on GitHub",
+        "hero.trust": "Offline · No account · Free & open source",
+        "features.title": "Everything you need, nothing you don't",
+        "features.sub": "A focused Kanban tool that respects your data and your keyboard.",
+        "feat.views.t": "Multiple views",
+        "feat.views.d": "Board, table, a unified cross-project view, and a dashboard with deadline focus.",
+        "feat.edit.t": "Rich card editing",
+        "feat.edit.d": "Rich text, subtasks, tags, color labels, deadlines, and file attachments.",
+        "feat.kbd.t": "Keyboard-first",
+        "feat.kbd.d": "A Cmd+K command palette with full-text search and customizable shortcuts.",
+        "feat.custom.t": "Make it yours",
+        "feat.custom.d": "Light/dark themes, 10 accent colors, board backgrounds, and card templates.",
+        "feat.data.t": "Your data stays yours",
+        "feat.data.d": "A local SQLite database with automatic backups. Nothing leaves your machine.",
+        "feat.i18n.t": "Bilingual",
+        "feat.i18n.d": "English and Korean included, with a structure built for adding more languages.",
+        "shots.title": "See it in action",
+        "shot.dash.t": "Dashboard",
+        "shot.dash.d": "project progress and what's due soon",
+        "shot.table.t": "Table view",
+        "shot.table.d": "filter and sort across every field",
+        "shot.card.t": "Card editor",
+        "shot.card.d": "rich text, subtasks, tags, attachments",
+        "shot.drag.t": "Drag and drop",
+        "shot.drag.d": "move cards across columns and boards",
+        "dl.title": "Download Kabin",
+        "dl.sub": "Free and open source. Pick the installer for your platform.",
+        "dl.note": "On macOS the app isn't notarized, so on first launch right-click it and choose Open.",
+        "dl.note2": "Prefer the terminal?",
+        "dl.button": "Go to latest release",
+        "footer.license": "MIT License",
+        "footer.releases": "Releases"
+      },
+      ko: {
+        "nav.features": "기능",
+        "nav.screenshots": "스크린샷",
+        "nav.download": "다운로드",
+        "hero.tagline": "나만의 오프라인 칸반 보드.",
+        "hero.sub": "내 컴퓨터 안에서만 동작하는 칸반 데스크톱 앱. 계정도, 인터넷도 필요 없습니다.",
+        "hero.download": "무료로 다운로드",
+        "hero.github": "GitHub에서 보기",
+        "hero.trust": "오프라인 · 계정 불필요 · 무료 오픈소스",
+        "features.title": "필요한 것만, 군더더기 없이",
+        "features.sub": "데이터와 키보드를 존중하는 담백한 칸반 도구.",
+        "feat.views.t": "다양한 뷰",
+        "feat.views.d": "보드, 테이블, 프로젝트 통합 뷰, 그리고 마감 임박을 보여주는 대시보드.",
+        "feat.edit.t": "풍부한 카드 편집",
+        "feat.edit.d": "리치 텍스트, 하위 작업, 태그, 색상 라벨, 마감일, 파일 첨부.",
+        "feat.kbd.t": "키보드 중심",
+        "feat.kbd.d": "전문 검색이 되는 Cmd+K 명령 팔레트와 커스텀 단축키.",
+        "feat.custom.t": "내 취향대로",
+        "feat.custom.d": "라이트/다크 테마, 10가지 강조색, 보드 배경, 카드 템플릿.",
+        "feat.data.t": "데이터는 내 것",
+        "feat.data.d": "자동 백업되는 로컬 SQLite. 데이터가 외부로 나가지 않습니다.",
+        "feat.i18n.t": "한국어·영어 지원",
+        "feat.i18n.d": "한국어와 영어 기본 포함, 언어 추가가 쉬운 구조.",
+        "shots.title": "직접 보세요",
+        "shot.dash.t": "대시보드",
+        "shot.dash.d": "프로젝트 진행률과 마감 임박 항목",
+        "shot.table.t": "테이블 뷰",
+        "shot.table.d": "모든 필드로 필터·정렬",
+        "shot.card.t": "카드 편집",
+        "shot.card.d": "리치 텍스트, 하위 작업, 태그, 첨부",
+        "shot.drag.t": "드래그 앤 드롭",
+        "shot.drag.d": "컬럼과 보드 사이로 카드 이동",
+        "dl.title": "Kabin 다운로드",
+        "dl.sub": "무료 오픈소스. 운영체제에 맞는 설치 파일을 받으세요.",
+        "dl.note": "macOS에서는 앱이 공증을 받지 않아, 첫 실행 시 앱을 우클릭하고 \"열기\"를 선택하면 됩니다.",
+        "dl.note2": "터미널이 편하다면?",
+        "dl.button": "최신 릴리스로 이동",
+        "footer.license": "MIT 라이선스",
+        "footer.releases": "릴리스"
+      }
+    };
+
+    const langToggle = document.getElementById("lang-toggle");
+    const themeToggle = document.getElementById("theme-toggle");
+
+    // Note: textContent replacement targets the innermost [data-i18n] element only,
+    // so sibling markup (the <code> in the download note, the footer name) is preserved.
+    function applyLang(lang) {
+      const dict = I18N[lang] || I18N.en;
+      document.documentElement.lang = lang;
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key] != null) el.textContent = dict[key];
+      });
+      // Button shows the language you'd switch TO.
+      langToggle.textContent = lang === "ko" ? "EN" : "한";
+      langToggle.setAttribute("aria-label", lang === "ko" ? "Switch to English" : "Switch to Korean");
+      localStorage.setItem("kabin-lang", lang);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      themeToggle.textContent = theme === "dark" ? "☀" : "◐";
+      themeToggle.setAttribute("aria-label", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
+      localStorage.setItem("kabin-theme", theme);
+    }
+
+    // The <head> script already set theme/lang to avoid a flash; mirror that here
+    // to wire up text, button labels, and listeners.
+    const storedLang = localStorage.getItem("kabin-lang");
+    const browserKo = (navigator.language || "en").toLowerCase().startsWith("ko");
+    applyLang(storedLang || (browserKo ? "ko" : "en"));
+
+    const storedTheme = localStorage.getItem("kabin-theme");
+    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme(storedTheme || (prefersDark ? "dark" : "light"));
+
+    langToggle.addEventListener("click", () =>
+      applyLang(document.documentElement.lang === "ko" ? "en" : "ko")
+    );
+    themeToggle.addEventListener("click", () =>
+      applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark")
+    );
+  </script>
+</body>
+</html>
