@@ -67,17 +67,13 @@ pub fn run() {
             Ok(())
         })
         .on_window_event(|window, event| {
-            // Re-apply the custom traffic-light position on focus/resize/scale
-            // changes. Release builds skip redraws for unfocused windows, so the
-            // tao draw_rect inset never runs and the buttons vanish on blur.
+            // Keep the traffic lights visible on focus/resize/scale changes.
+            // Release builds skip redraws for unfocused windows, so without this
+            // the buttons vanish on blur. Positioning stays with tao via the conf.
             #[cfg(target_os = "macos")]
             match event {
                 tauri::WindowEvent::Focused(focused) => {
-                    macos::reposition_traffic_lights(
-                        window,
-                        macos::TRAFFIC_LIGHT_X,
-                        macos::TRAFFIC_LIGHT_Y,
-                    );
+                    macos::ensure_traffic_lights_visible(window);
                     // Diagnostic: capture button state at the blur/focus moment.
                     macos::dump_traffic_lights(
                         window,
@@ -86,11 +82,7 @@ pub fn run() {
                 }
                 tauri::WindowEvent::Resized(_)
                 | tauri::WindowEvent::ScaleFactorChanged { .. } => {
-                    macos::reposition_traffic_lights(
-                        window,
-                        macos::TRAFFIC_LIGHT_X,
-                        macos::TRAFFIC_LIGHT_Y,
-                    );
+                    macos::ensure_traffic_lights_visible(window);
                 }
                 _ => {}
             }
