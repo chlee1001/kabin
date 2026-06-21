@@ -3,6 +3,23 @@ use tauri::State;
 
 use crate::db::connection::DbState;
 
+/// How many days ahead a deadline counts as "urgent", from the `urgent_days`
+/// setting (default 5, clamped to a sane range). Returned as a SQLite date
+/// modifier so it can be bound as a parameter rather than interpolated.
+fn urgent_modifier(conn: &rusqlite::Connection) -> String {
+    let days = conn
+        .query_row(
+            "SELECT value FROM settings WHERE key = 'urgent_days'",
+            [],
+            |row| row.get::<_, String>(0),
+        )
+        .ok()
+        .and_then(|v| v.parse::<i64>().ok())
+        .map(|n| n.clamp(0, 365))
+        .unwrap_or(5);
+    format!("+{days} days")
+}
+
 #[derive(Debug, Serialize)]
 pub struct ProjectSummary {
     pub id: String,
@@ -35,14 +52,18 @@ pub fn get_project_summaries(db: State<DbState>) -> Result<Vec<ProjectSummary>, 
     let conn = db.0.lock().map_err(|e| e.to_string())?;
     let mut stmt = conn
         .prepare(
+            // 'done' is defined by the completed flag, not the column status.
+            // Non-completed cards are grouped by their column's status_category;
+            // a card in a 'done' column that is not completed counts as
+            // in_progress, so the four segments always sum to total_cards.
             "SELECT
                 p.id, p.name, p.color,
                 COUNT(ca.id) as total_cards,
-                SUM(CASE WHEN co.status_category = 'todo' THEN 1 ELSE 0 END) as todo_count,
-                SUM(CASE WHEN co.status_category = 'in_progress' THEN 1 ELSE 0 END) as in_progress_count,
-                SUM(CASE WHEN co.status_category = 'done' THEN 1 ELSE 0 END) as done_count,
-                SUM(CASE WHEN co.status_category = 'other' THEN 1 ELSE 0 END) as other_count,
-                SUM(CASE WHEN ca.due_date IS NOT NULL AND ca.due_date <= date('now', '+5 days') AND co.status_category != 'done' AND ca.completed = 0 THEN 1 ELSE 0 END) as urgent_count
+                SUM(CASE WHEN ca.completed = 0 AND co.status_category = 'todo' THEN 1 ELSE 0 END) as todo_count,
+                SUM(CASE WHEN ca.completed = 0 AND co.status_category IN ('in_progress', 'done') THEN 1 ELSE 0 END) as in_progress_count,
+                SUM(CASE WHEN ca.completed = 1 THEN 1 ELSE 0 END) as done_count,
+                SUM(CASE WHEN ca.completed = 0 AND co.status_category = 'other' THEN 1 ELSE 0 END) as other_count,
+                SUM(CASE WHEN ca.due_date IS NOT NULL AND ca.due_date <= date('now', ?1) AND ca.completed = 0 THEN 1 ELSE 0 END) as urgent_count
              FROM projects p
              LEFT JOIN boards b ON b.project_id = p.id
              LEFT JOIN columns co ON co.board_id = b.id
@@ -53,7 +74,7 @@ pub fn get_project_summaries(db: State<DbState>) -> Result<Vec<ProjectSummary>, 
         .map_err(|e| e.to_string())?;
 
     let rows = stmt
-        .query_map([], |row| {
+        .query_map([urgent_modifier(&conn)], |row| {
             Ok(ProjectSummary {
                 id: row.get(0)?,
                 name: row.get(1)?,
@@ -86,8 +107,7 @@ pub fn get_urgent_cards(db: State<DbState>) -> Result<Vec<UrgentCard>, String> {
              JOIN boards b ON b.id = co.board_id
              JOIN projects p ON p.id = b.project_id
              WHERE ca.due_date IS NOT NULL
-               AND ca.due_date <= date('now', '+5 days')
-               AND co.status_category != 'done'
+               AND ca.due_date <= date('now', ?1)
                AND ca.completed = 0
              ORDER BY ca.due_date ASC
              LIMIT 50",
@@ -95,7 +115,7 @@ pub fn get_urgent_cards(db: State<DbState>) -> Result<Vec<UrgentCard>, String> {
         .map_err(|e| e.to_string())?;
 
     let rows = stmt
-        .query_map([], |row| {
+        .query_map([urgent_modifier(&conn)], |row| {
             Ok(UrgentCard {
                 card_id: row.get(0)?,
                 title: row.get(1)?,

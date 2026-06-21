@@ -54,7 +54,7 @@ pub fn reposition_traffic_lights<R: Runtime>(window: &Window<R>, x: f64, y: f64)
 
 /// `x` is the inset from the left (AppKit x and conf x share orientation).
 /// `fallback_y` is only used if the live close-button frame can't be read —
-/// AppKit's y axis is flipped vs the conf's top-inset, so we reuse the button's
+/// AppKit's y axis is flipped relative to the conf's top-inset, so we reuse the button's
 /// current (tao-set) y rather than the raw conf value to avoid a space mismatch.
 fn apply(ns_window: &NSWindow, x: f64, fallback_y: f64) {
     // Measure horizontal spacing and the baseline y from the live button frames

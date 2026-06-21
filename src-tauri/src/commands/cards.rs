@@ -291,8 +291,8 @@ pub fn update_card(
         .map_err(|e| e.to_string())?;
     }
     if let Some(completed) = updates.completed {
-        // Auto-stamp completed_at from the completed flag (single source of truth,
-        // backend-generated for timezone consistency): set on true, clear on false.
+        // Derive completed_at from the completed flag, generated on the backend
+        // for a consistent timezone: set it on true, clear it on false.
         conn.execute(
             "UPDATE cards SET completed = ?1, \
              completed_at = CASE WHEN ?1 = 1 THEN datetime('now') ELSE NULL END, \
@@ -383,6 +383,17 @@ fn column_is_done(conn: &rusqlite::Connection, column_id: &str) -> bool {
     .unwrap_or(false)
 }
 
+/// Whether a card currently sits in a 'done' column (checked before a move).
+fn card_in_done_column(conn: &rusqlite::Connection, card_id: &str) -> bool {
+    conn.query_row(
+        "SELECT co.status_category = 'done' FROM cards ca \
+         JOIN columns co ON co.id = ca.column_id WHERE ca.id = ?1",
+        params![card_id],
+        |r| r.get::<_, i64>(0).map(|v| v != 0),
+    )
+    .unwrap_or(false)
+}
+
 /// Mark a card completed (auto-stamping completed_at) when it enters a done
 /// column. The `completed = 0` guard means an already-completed card keeps its
 /// original completed_at.
@@ -390,6 +401,18 @@ fn auto_complete_in_done(conn: &rusqlite::Connection, card_id: &str) -> rusqlite
     conn.execute(
         "UPDATE cards SET completed = 1, completed_at = datetime('now'), \
          updated_at = datetime('now') WHERE id = ?1 AND completed = 0",
+        params![card_id],
+    )?;
+    Ok(())
+}
+
+/// Clear completion when a card leaves a done column for a non-done one. The
+/// inverse of `auto_complete_in_done`: the completed flag and the column stay
+/// consistent.
+fn auto_uncomplete_leaving_done(conn: &rusqlite::Connection, card_id: &str) -> rusqlite::Result<()> {
+    conn.execute(
+        "UPDATE cards SET completed = 0, completed_at = NULL, \
+         updated_at = datetime('now') WHERE id = ?1 AND completed = 1",
         params![card_id],
     )?;
     Ok(())
@@ -406,6 +429,9 @@ pub fn move_card(
 
     let tx = conn.unchecked_transaction().map_err(|e| e.to_string())?;
 
+    // Capture the source column's done-status before moving.
+    let was_in_done = card_in_done_column(&tx, &card_id);
+
     // Move card to new column
     tx.execute(
         "UPDATE cards SET column_id = ?1, sort_order = ?2, updated_at = datetime('now') WHERE id = ?3",
@@ -413,9 +439,12 @@ pub fn move_card(
     )
     .map_err(|e| e.to_string())?;
 
-    // Moving into a done column auto-completes the card.
+    // Entering a done column auto-completes; leaving one for a non-done column
+    // auto-clears completion (keeps the completed flag = column consistent).
     if column_is_done(&tx, &target_column_id) {
         auto_complete_in_done(&tx, &card_id).map_err(|e| e.to_string())?;
+    } else if was_in_done {
+        auto_uncomplete_leaving_done(&tx, &card_id).map_err(|e| e.to_string())?;
     }
 
     // Reorder remaining cards in target column
@@ -472,6 +501,8 @@ pub fn reorder_cards(
                 )
                 .unwrap_or(1)
                 == 0;
+        // Leaving a done column for this non-done one clears completion.
+        let leaving_done = !target_done && card_in_done_column(&tx, card_id);
         tx.execute(
             "UPDATE cards SET sort_order = ?1, column_id = ?2, updated_at = datetime('now') WHERE id = ?3",
             params![i as i64, column_id, card_id],
@@ -479,6 +510,8 @@ pub fn reorder_cards(
         .map_err(|e| e.to_string())?;
         if entering {
             auto_complete_in_done(&tx, card_id).map_err(|e| e.to_string())?;
+        } else if leaving_done {
+            auto_uncomplete_leaving_done(&tx, card_id).map_err(|e| e.to_string())?;
         }
     }
     tx.commit().map_err(|e| e.to_string())?;
@@ -546,7 +579,7 @@ mod tests {
 
     #[test]
     fn nullable_fields_absent_stay_none() {
-        // Partial update (e.g. only title) must leave the other columns untouched.
+        // A partial update such as title-only must leave the other columns untouched.
         let u: CardUpdate = serde_json::from_str(r#"{"title": "Just a title"}"#).unwrap();
         assert_eq!(u.title, Some("Just a title".to_string()));
         assert_eq!(u.start_date, None, "absent start_date must stay None");

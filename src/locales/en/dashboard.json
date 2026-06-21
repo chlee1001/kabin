@@ -3,7 +3,7 @@
   "newProject": "New Project",
   "projectsOverview": "Projects Overview",
   "urgentFocus": "Due Soon",
-  "urgentFocusDesc": "Cards due within 5 days",
+  "urgentFocusDesc": "Cards due within {{days}} days",
   "noProjectsYet": "No projects yet",
   "createFirstProject": "Create your first project",
   "projectName": "Project name",
@@ -11,5 +11,8 @@
   "cardCount_other": "{{count}} cards",
   "urgentCount": "{{count}} due soon",
   "urgentCount_other": "{{count}} due soon",
-  "noUrgentDeadlines": "No upcoming deadlines"
+  "noUrgentDeadlines": "No upcoming deadlines",
+  "overdue": "Overdue",
+  "upcoming": "Upcoming",
+  "markComplete": "Mark complete"
 }

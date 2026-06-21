@@ -97,6 +97,17 @@ pub fn move_card_by_status_category(
 
     match target_column_id {
         Ok(col_id) => {
+            // Was the card in a done column before this move? Captured before the
+            // UPDATE so we only clear completion when it actually leaves done.
+            let was_in_done: bool = conn
+                .query_row(
+                    "SELECT co.status_category = 'done' FROM cards ca \
+                     JOIN columns co ON co.id = ca.column_id WHERE ca.id = ?1",
+                    params![card_id],
+                    |r| r.get::<_, i64>(0).map(|v| v != 0),
+                )
+                .unwrap_or(false);
+
             let max_order: i64 = conn
                 .query_row(
                     "SELECT COALESCE(MAX(sort_order), -1) FROM cards WHERE column_id = ?1",
@@ -111,12 +122,20 @@ pub fn move_card_by_status_category(
             )
             .map_err(|e| e.to_string())?;
 
-            // Moving into the done category auto-completes the card (keep an
-            // already-completed card's original completed_at via the guard).
+            // Entering the done category completes the card; leaving it for a
+            // non-done category clears completion. Moves between two non-done
+            // categories leave a manually completed card untouched.
             if target_status == "done" {
                 conn.execute(
                     "UPDATE cards SET completed = 1, completed_at = datetime('now'), \
                      updated_at = datetime('now') WHERE id = ?1 AND completed = 0",
+                    params![card_id],
+                )
+                .map_err(|e| e.to_string())?;
+            } else if was_in_done {
+                conn.execute(
+                    "UPDATE cards SET completed = 0, completed_at = NULL, \
+                     updated_at = datetime('now') WHERE id = ?1 AND completed = 1",
                     params![card_id],
                 )
                 .map_err(|e| e.to_string())?;

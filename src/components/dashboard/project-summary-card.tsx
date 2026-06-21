@@ -1,15 +1,24 @@
 import { useTranslation } from "react-i18next"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { ProjectSummary } from "@/hooks/use-dashboard"
+import { STATUS_CATEGORY_MAP } from "@/lib/constants"
 
 interface ProjectSummaryCardProps {
   summary: ProjectSummary
 }
 
 export function ProjectSummaryCard({ summary }: ProjectSummaryCardProps) {
-  const { t } = useTranslation("dashboard")
+  const { t } = useTranslation(["dashboard", "common"])
   const { total_cards, todo_count, in_progress_count, done_count, other_count } = summary
   const total = total_cards || 1
+
+  // Segments in render order; colors come from STATUS_CATEGORY_MAP.
+  const segments = [
+    { key: "todo", count: todo_count },
+    { key: "in_progress", count: in_progress_count },
+    { key: "done", count: done_count },
+    { key: "other", count: other_count },
+  ] as const
 
   return (
     <Card className="cursor-pointer transition-shadow hover:shadow-md">
@@ -25,17 +34,31 @@ export function ProjectSummaryCard({ summary }: ProjectSummaryCardProps) {
         </p>
 
         <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
-          {todo_count > 0 && (
-            <div className="bg-[#64748b]" style={{ width: `${(todo_count / total) * 100}%` }} />
+          {segments.map(({ key, count }) =>
+            count > 0 ? (
+              <div
+                key={key}
+                style={{
+                  backgroundColor: STATUS_CATEGORY_MAP[key].color,
+                  width: `${(count / total) * 100}%`,
+                }}
+              />
+            ) : null,
           )}
-          {in_progress_count > 0 && (
-            <div className="bg-[#3b82f6]" style={{ width: `${(in_progress_count / total) * 100}%` }} />
-          )}
-          {done_count > 0 && (
-            <div className="bg-[#22c55e]" style={{ width: `${(done_count / total) * 100}%` }} />
-          )}
-          {other_count > 0 && (
-            <div className="bg-[#a855f7]" style={{ width: `${(other_count / total) * 100}%` }} />
+        </div>
+
+        {/* Legend so each bar color is identifiable, including 'other'. */}
+        <div className="flex flex-wrap gap-x-3 gap-y-1">
+          {segments.map(({ key, count }) =>
+            count > 0 ? (
+              <span key={key} className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                <span
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{ backgroundColor: STATUS_CATEGORY_MAP[key].color }}
+                />
+                {t(STATUS_CATEGORY_MAP[key].label, { ns: "common" })} {count}
+              </span>
+            ) : null,
           )}
         </div>
 

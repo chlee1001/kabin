@@ -115,5 +115,8 @@
       "failed": "가져오기 실패: {{error}}",
       "invalidFile": "유효한 {{source}} 내보내기 파일이 아닙니다"
     }
-  }
+  },
+  "urgentDays": "마감 임박 기준",
+  "urgentDaysDesc": "며칠 이내 마감을 임박으로 볼지 설정해요",
+  "urgentDaysOption": "{{days}}일"
 }
