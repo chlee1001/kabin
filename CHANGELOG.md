@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.14](https://github.com/chlee1001/kabin/compare/kabin-v0.1.13...kabin-v0.1.14) (2026-06-21)
+
+
+### Features
+
+* **dashboard:** 완료 정합성 + 마감 임박 개선 (P0~P2) ([#35](https://github.com/chlee1001/kabin/issues/35)) ([d2b1625](https://github.com/chlee1001/kabin/commit/d2b1625ec554fb31f5687025a3bd5df6bd1be49f))
+
 ## [0.1.13](https://github.com/chlee1001/kabin/compare/kabin-v0.1.12...kabin-v0.1.13) (2026-06-20)
 
 
