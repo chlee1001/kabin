@@ -6,20 +6,38 @@
 
 **나만의 오프라인 칸반 보드.**
 
-Cabin + Kanban. 내 컴퓨터 안에서만 동작하는 칸반 데스크톱 앱. 계정도, 인터넷도 필요 없습니다.
+내 컴퓨터 안에서만 동작하는 칸반 데스크톱 앱. 계정도, 인터넷도 필요 없습니다.
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](#라이선스)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri%202-ffc131.svg)](https://tauri.app)
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev)
+[![Latest release](https://img.shields.io/github/v/release/chlee1001/kabin?sort=semver)](https://github.com/chlee1001/kabin/releases/latest)
 
 [English](./README.md) | [한국어](./README.ko.md)
 
-<!-- TODO: 스크린샷 추가 -->
-<!-- ![Kabin 스크린샷](docs/screenshot.png) -->
+<img src="docs/screenshot.png" alt="Kabin 보드 뷰" width="820" />
 
 </div>
 
 ---
+
+## 다운로드
+
+[최신 릴리스](https://github.com/chlee1001/kabin/releases/latest)에서 운영체제에 맞는 설치 파일을 받으세요.
+
+| 플랫폼 | 파일 |
+|--------|------|
+| macOS (Apple Silicon + Intel) | `Kabin_*_universal.dmg` |
+| Windows | `Kabin_*_x64-setup.exe` |
+| Linux | `.AppImage`, `.deb`, `.rpm` |
+
+> **macOS 첫 실행.** Kabin은 Apple 공증을 받지 않아 첫 실행 시 Gatekeeper가 막습니다.
+> 설치할 때마다 한 번씩 quarantine 속성을 제거하세요.
+> ```bash
+> xattr -dr com.apple.quarantine /Applications/Kabin.app
+> ```
+> 또는 **시스템 설정 → 개인정보 보호 및 보안**에서 **"그래도 열기"** 를 누르세요.
+> 자세한 내용은 [소스에서 빌드하기](#소스에서-빌드하기) 참고.
 
 ## 주요 기능
 
@@ -27,12 +45,13 @@ Cabin + Kanban. 내 컴퓨터 안에서만 동작하는 칸반 데스크톱 앱.
 - 드래그 앤 드롭 칸반 보드
 - 필터/정렬이 가능한 테이블 뷰
 - 프로젝트 전체를 상태별로 보는 통합 뷰
-- 프로젝트 요약과 긴급 항목을 보여주는 대시보드
+- 프로젝트 요약과 마감 임박을 보여주는 대시보드
 
 **풍부한 카드 편집** — 포스트잇 그 이상입니다.
 - Tiptap 리치 텍스트 에디터 (코드 블록, 링크, 체크리스트)
 - 하위 작업과 진행률 추적
 - 태그, 색상 라벨, 마감일 뱃지
+- 파일·이미지 첨부
 - 보드·프로젝트 간 카드 이동
 
 **키보드 중심 워크플로우**
@@ -48,12 +67,22 @@ Cabin + Kanban. 내 컴퓨터 안에서만 동작하는 칸반 데스크톱 앱.
 
 **데이터 소유권**
 - 로컬 SQLite — 데이터가 외부로 나가지 않습니다
-- 60초마다 자동 백업
-- 수동 백업 및 복원
+- 원하는 주기로 자동 백업
+- 수동 백업, 내보내기, 복원
 
 **다국어 지원**
 - 한국어, 영어 기본 포함
 - 기능별 네임스페이스 구조로 언어 추가가 쉽습니다
+
+## 스크린샷
+
+| 대시보드 | 테이블 뷰 |
+|----------|-----------|
+| <img src="docs/dashboard.png" alt="대시보드" width="400" /> | <img src="docs/table.png" alt="테이블 뷰" width="400" /> |
+
+| 카드 편집 | 드래그 앤 드롭 |
+|-----------|----------------|
+| <img src="docs/card-detail.png" alt="카드 편집" width="400" /> | <img src="docs/board-drag.png" alt="드래그 앤 드롭" width="400" /> |
 
 ## 기술 스택
 
@@ -72,7 +101,9 @@ Cabin + Kanban. 내 컴퓨터 안에서만 동작하는 칸반 데스크톱 앱.
 | 데이터베이스 | SQLite (rusqlite, bundled) |
 | 빌드 | Vite 6 |
 
-## 시작하기
+## 소스에서 빌드하기
+
+직접 빌드하거나 기여하려는 분을 위한 안내입니다.
 
 ### 사전 준비
 
@@ -102,24 +133,8 @@ npm run tauri build
 
 빌드 결과물은 `src-tauri/target/release/bundle/`에 생성됩니다.
 
-### macOS에서 릴리스 설치
-
-Kabin은 **Apple 공증(notarization)을 받지 않았습니다**(공증은 유료 Apple
-Developer 계정 필요). 그래서 macOS Gatekeeper가 _"악성 코드가 없음을 확인할 수
-없어 차단했습니다"_ 라며 막습니다. 이 경고는 **버전마다 새로 뜹니다** — 한 버전을
-허용해도 다음 버전엔 적용되지 않습니다.
-
-실행하려면 설치할 때마다 한 번씩 quarantine 속성을 제거하세요:
-
-```bash
-xattr -dr com.apple.quarantine /Applications/Kabin.app
-```
-
-또는 GUI로: **시스템 설정 → 개인정보 보호 및 보안** → 아래로 스크롤 → Kabin 항목
-옆 **"그래도 열기"** 클릭.
-
 > 릴리스 빌드는 ad-hoc 서명(`signingIdentity: "-"`)이라 로컬 서명은 안정적으로
-> 붙지만, Gatekeeper 경고 자체를 없애주진 **않습니다**. 경고를 완전히 없애려면
+> 붙지만, Gatekeeper 경고 자체를 없애주진 않습니다. 경고를 완전히 없애려면
 > Developer ID 서명 + 공증이 필요합니다.
 
 ## 프로젝트 구조
@@ -154,7 +169,8 @@ kanban/
 
 ```
 Projects → Boards → Columns → Cards → Subtasks
-                                 └──→ Tags (다대다)
+                                 ├──→ Tags (다대다)
+                                 └──→ Attachments (첨부)
 ```
 
 Column에는 상태 카테고리(`todo`, `in_progress`, `done`, `other`)가 있고, 통합 뷰와 대시보드 집계의 기반이 됩니다.
@@ -173,7 +189,7 @@ npm run build
 
 ## 라이선스
 
-MIT
+[MIT](./LICENSE) © Chaehyeon Lee
 
 ---
 
