@@ -6,7 +6,7 @@
 
 **나만의 오프라인 칸반 보드.**
 
-Cabin + Kanban. 내 컴퓨터 안에서만 동작하는 칸반 데스크톱 앱. 계정도, 인터넷도 필요 없습니다.
+내 컴퓨터 안에서만 동작하는 칸반 데스크톱 앱. 계정도, 인터넷도 필요 없습니다.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri%202-ffc131.svg)](https://tauri.app)
@@ -15,8 +15,7 @@ Cabin + Kanban. 내 컴퓨터 안에서만 동작하는 칸반 데스크톱 앱.
 
 [English](./README.md) | [한국어](./README.ko.md)
 
-<!-- docs/screenshot.png 에 스크린샷을 넣고 아래 줄의 주석을 해제하세요. -->
-<!-- <img src="docs/screenshot.png" alt="Kabin 스크린샷" width="820" /> -->
+<img src="docs/screenshot.png" alt="Kabin 보드 뷰" width="820" />
 
 </div>
 
@@ -74,6 +73,16 @@ Cabin + Kanban. 내 컴퓨터 안에서만 동작하는 칸반 데스크톱 앱.
 **다국어 지원**
 - 한국어, 영어 기본 포함
 - 기능별 네임스페이스 구조로 언어 추가가 쉽습니다
+
+## 스크린샷
+
+| 대시보드 | 테이블 뷰 |
+|----------|-----------|
+| <img src="docs/dashboard.png" alt="대시보드" width="400" /> | <img src="docs/table.png" alt="테이블 뷰" width="400" /> |
+
+| 카드 편집 | 드래그 앤 드롭 |
+|-----------|----------------|
+| <img src="docs/card-detail.png" alt="카드 편집" width="400" /> | <img src="docs/board-drag.png" alt="드래그 앤 드롭" width="400" /> |
 
 ## 기술 스택
 

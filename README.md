@@ -6,7 +6,7 @@
 
 **Your cozy, offline Kanban board.**
 
-Cabin + Kanban. A fast desktop app where your tasks stay on your machine — no account, no internet, no compromise.
+A fast desktop app where your tasks stay on your machine — no account, no internet, no compromise.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri%202-ffc131.svg)](https://tauri.app)
@@ -15,8 +15,7 @@ Cabin + Kanban. A fast desktop app where your tasks stay on your machine — no 
 
 [English](./README.md) | [한국어](./README.ko.md)
 
-<!-- Add a screenshot at docs/screenshot.png and uncomment the line below. -->
-<!-- <img src="docs/screenshot.png" alt="Kabin screenshot" width="820" /> -->
+<img src="docs/screenshot.png" alt="Kabin board view" width="820" />
 
 </div>
 
@@ -74,6 +73,16 @@ Grab the installer for your platform from the [latest release](https://github.co
 **Internationalization**
 - English and Korean included
 - Namespace-by-feature translation structure for easy extension
+
+## Screenshots
+
+| Dashboard | Table view |
+|-----------|------------|
+| <img src="docs/dashboard.png" alt="Dashboard" width="400" /> | <img src="docs/table.png" alt="Table view" width="400" /> |
+
+| Card editor | Drag and drop |
+|-------------|---------------|
+| <img src="docs/card-detail.png" alt="Card editor" width="400" /> | <img src="docs/board-drag.png" alt="Drag and drop" width="400" /> |
 
 ## Tech Stack
 
